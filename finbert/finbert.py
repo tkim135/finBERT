@@ -18,6 +18,7 @@ from transformers import AutoTokenizer
 
 logger = logging.getLogger(__name__)
 
+logging.basicConfig(filename='example.log', filemode='w', level=logging.ERROR)
 
 class Config(object):
     """The configuration class for training."""
@@ -42,6 +43,7 @@ class Config(object):
                  discriminate=True,
                  gradual_unfreeze=True,
                  encoder_no=12,
+                 decay=0.01,
                  base_model='bert-base-uncased'):
         """
         Parameters
@@ -108,7 +110,12 @@ class Config(object):
         self.gradual_unfreeze = gradual_unfreeze
         self.encoder_no = encoder_no
         self.base_model = base_model
-
+        self.decay = decay
+        print (f"Current Batch Size: {self.train_batch_size}")
+        print (f"Max Seq Len: {self.max_seq_length}")
+        print (f"Current LR: {self.learning_rate}")
+        print (f"Current Epochs: {self.num_train_epochs}")
+        print (f"Current Decays: {self.decay}")
 
 class FinBert(object):
     """
@@ -146,8 +153,8 @@ class FinBert(object):
             self.n_gpu = 1
             # Initializes the distributed backend which will take care of sychronizing nodes/GPUs
             torch.distributed.init_process_group(backend='nccl')
-        logger.info("device: {} n_gpu: {}, distributed training: {}, 16-bits training: {}".format(
-            self.device, self.n_gpu, bool(self.config.local_rank != -1), self.config.fp16))
+        #logger.info("device: {} n_gpu: {}, distributed training: {}, 16-bits training: {}".format(
+        #    self.device, self.n_gpu, bool(self.config.local_rank != -1), self.config.fp16))
 
         if self.config.gradient_accumulation_steps < 1:
             raise ValueError("Invalid gradient_accumulation_steps parameter: {}, should be >= 1".format(
@@ -229,7 +236,7 @@ class FinBert(object):
                 encoder_decay = {
                     'params': [p for n, p in list(model.bert.encoder.layer[i].named_parameters()) if
                                not any(nd in n for nd in no_decay)],
-                    'weight_decay': 0.01,
+                    'weight_decay': self.config.decay,
                     'lr': lr / (dft_rate ** (12 - i))}
                 encoder_nodecay = {
                     'params': [p for n, p in list(model.bert.encoder.layer[i].named_parameters()) if
@@ -242,7 +249,7 @@ class FinBert(object):
             optimizer_grouped_parameters = [
                 {'params': [p for n, p in list(model.bert.embeddings.named_parameters()) if
                             not any(nd in n for nd in no_decay)],
-                 'weight_decay': 0.01,
+                 'weight_decay': self.config.decay,
                  'lr': lr / (dft_rate ** 13)},
                 {'params': [p for n, p in list(model.bert.embeddings.named_parameters()) if
                             any(nd in n for nd in no_decay)],
@@ -250,7 +257,7 @@ class FinBert(object):
                  'lr': lr / (dft_rate ** 13)},
                 {'params': [p for n, p in list(model.bert.pooler.named_parameters()) if
                             not any(nd in n for nd in no_decay)],
-                 'weight_decay': 0.01,
+                 'weight_decay': self.config.decay,
                  'lr': lr},
                 {'params': [p for n, p in list(model.bert.pooler.named_parameters()) if
                             any(nd in n for nd in no_decay)],
@@ -258,7 +265,7 @@ class FinBert(object):
                  'lr': lr},
                 {'params': [p for n, p in list(model.classifier.named_parameters()) if
                             not any(nd in n for nd in no_decay)],
-                 'weight_decay': 0.01,
+                 'weight_decay': self.config.decay,
                  'lr': lr},
                 {'params': [p for n, p in list(model.classifier.named_parameters()) if any(nd in n for nd in no_decay)],
                  'weight_decay': 0.0,
@@ -272,7 +279,7 @@ class FinBert(object):
 
             optimizer_grouped_parameters = [
                 {'params': [p for n, p in param_optimizer if not any(nd in n for nd in no_decay)],
-                 'weight_decay': 0.01},
+                 'weight_decay': self.config.decay},
                 {'params': [p for n, p in param_optimizer if any(nd in n for nd in no_decay)], 'weight_decay': 0.0}
             ]
 
@@ -312,10 +319,10 @@ class FinBert(object):
                                                 self.config.output_mode)
 
         # Log the necessasry information
-        logger.info("***** Loading data *****")
-        logger.info("  Num examples = %d", len(examples))
-        logger.info("  Batch size = %d", self.config.train_batch_size)
-        logger.info("  Num steps = %d", self.num_train_optimization_steps)
+        #logger.info("***** Loading data *****")
+        #logger.info("  Num examples = %d", len(examples))
+        #logger.info("  Batch size = %d", self.config.train_batch_size)
+        #logger.info("  Num steps = %d", self.num_train_optimization_steps)
 
         # Load the data, make it into TensorDataset
         all_input_ids = torch.tensor([f.input_ids for f in features], dtype=torch.long)
@@ -364,7 +371,7 @@ class FinBert(object):
 
         global_step = 0
 
-        self.validation_losses = []
+        self.validation_accuracies = []
 
         # Training
         train_dataloader = self.get_loader(train_examples, 'train')
@@ -374,14 +381,14 @@ class FinBert(object):
         step_number = len(train_dataloader)
 
         i = 0
-        for _ in trange(int(self.config.num_train_epochs), desc="Epoch"):
+        for _ in trange(int(self.config.num_train_epochs), desc="Epoch", disable=True):
 
             model.train()
 
             tr_loss = 0
             nb_tr_examples, nb_tr_steps = 0, 0
 
-            for step, batch in enumerate(tqdm(train_dataloader, desc='Iteration')):
+            for step, batch in enumerate(tqdm(train_dataloader, desc='Iteration', disable=True)):
 
                 if (self.config.gradual_unfreeze and i == 0):
                     for param in model.bert.parameters():
@@ -443,10 +450,11 @@ class FinBert(object):
             validation_loader = self.get_loader(validation_examples, phase='eval')
             model.eval()
 
-            valid_loss, valid_accuracy = 0, 0
+            valid_loss, valid_accuracy, valid_acc = 0, 0, 0
+            total_correct, total_items = 0, 0
             nb_valid_steps, nb_valid_examples = 0, 0
 
-            for input_ids, attention_mask, token_type_ids, label_ids, agree_ids in tqdm(validation_loader, desc="Validating"):
+            for input_ids, attention_mask, token_type_ids, label_ids, agree_ids in tqdm(validation_loader, desc="Validating", disable=True):
                 input_ids = input_ids.to(self.device)
                 attention_mask = attention_mask.to(self.device)
                 token_type_ids = token_type_ids.to(self.device)
@@ -459,20 +467,25 @@ class FinBert(object):
                     if self.config.output_mode == "classification":
                         loss_fct = CrossEntropyLoss(weight=weights)
                         tmp_valid_loss = loss_fct(logits.view(-1, self.num_labels), label_ids.view(-1))
+                        #valid_accuracy = ((logits.view(-1, self.num_labels).argmax(dim=1) == label_ids.view(-1)).sum() / label_ids.view(-1).shape[0]).item()
+                        total_correct += (logits.view(-1, self.num_labels).argmax(dim=1) == label_ids.view(-1)).sum().item()
+                        total_items += label_ids.view(-1).shape[0]
                     elif self.config.output_mode == "regression":
+                        raise NotImplementedError
                         loss_fct = MSELoss()
                         tmp_valid_loss = loss_fct(logits.view(-1), label_ids.view(-1))
 
-                    valid_loss += tmp_valid_loss.mean().item()
-
+                    #valid_loss += tmp_valid_loss.mean().item()
+                    #valid_loss = valid_accuracy
                     nb_valid_steps += 1
 
             valid_loss = valid_loss / nb_valid_steps
+            valid_acc = total_correct / total_items
 
-            self.validation_losses.append(valid_loss)
-            print("Validation losses: {}".format(self.validation_losses))
+            self.validation_accuracies.append(valid_acc)
+            print("Validation Accuracy: {}".format(self.validation_accuracies))
 
-            if valid_loss == min(self.validation_losses):
+            if valid_acc == max(self.validation_accuracies):
 
                 try:
                     os.remove(self.config.model_dir / ('temporary' + str(best_model)))
@@ -492,7 +505,9 @@ class FinBert(object):
         with open(output_config_file, 'w') as f:
             f.write(model_to_save.config.to_json_string())
         os.remove(self.config.model_dir / ('temporary' + str(best_model)))
-        return model
+        best_validation_acc = max(self.validation_accuracies)
+        print (f"Best Validation Accuracy: {best_validation_acc}")
+        return model, best_validation_acc
 
     def evaluate(self, model, examples):
         """
@@ -511,9 +526,9 @@ class FinBert(object):
 
         eval_loader = self.get_loader(examples, phase='eval')
 
-        logger.info("***** Running evaluation ***** ")
-        logger.info("  Num examples = %d", len(examples))
-        logger.info("  Batch size = %d", self.config.eval_batch_size)
+        #logger.info("***** Running evaluation ***** ")
+        #logger.info("  Num examples = %d", len(examples))
+        #logger.info("  Batch size = %d", self.config.eval_batch_size)
 
         model.eval()
         eval_loss, eval_accuracy = 0, 0
@@ -524,7 +539,7 @@ class FinBert(object):
         agree_levels = []
         text_ids = []
 
-        for input_ids, attention_mask, token_type_ids, label_ids, agree_ids in tqdm(eval_loader, desc="Testing"):
+        for input_ids, attention_mask, token_type_ids, label_ids, agree_ids in tqdm(eval_loader, desc="Testing", disable=True):
             input_ids = input_ids.to(self.device)
             attention_mask = attention_mask.to(self.device)
             token_type_ids = token_type_ids.to(self.device)

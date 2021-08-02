@@ -185,15 +185,16 @@ def convert_examples_to_features(examples, label_list, max_seq_length, tokenizer
             agree = 0
 
         if ex_index < 1:
-            logger.info("*** Example ***")
-            logger.info("guid: %s" % (example.guid))
-            logger.info("tokens: %s" % " ".join(
-                [str(x) for x in tokens]))
-            logger.info("input_ids: %s" % " ".join([str(x) for x in input_ids]))
-            logger.info("attention_mask: %s" % " ".join([str(x) for x in attention_mask]))
-            logger.info(
-                "token_type_ids: %s" % " ".join([str(x) for x in token_type_ids]))
-            logger.info("label: %s (id = %d)" % (example.label, label_id))
+            #logger.info("*** Example ***")
+            #logger.info("guid: %s" % (example.guid))
+            #logger.info("tokens: %s" % " ".join(
+            #    [str(x) for x in tokens]))
+            #logger.info("input_ids: %s" % " ".join([str(x) for x in input_ids]))
+            #logger.info("attention_mask: %s" % " ".join([str(x) for x in attention_mask]))
+            #logger.info(
+            #    "token_type_ids: %s" % " ".join([str(x) for x in token_type_ids]))
+            #logger.info("label: %s (id = %d)" % (example.label, label_id))
+            pass
 
         features.append(
             InputFeatures(input_ids=input_ids,
