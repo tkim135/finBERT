@@ -153,8 +153,8 @@ seeds = [
 
 #/scratch/varunt/finBERT/models/hfrun_decay0.01_lr5e-5_ss512_bs256_results_finbert_dir/checkpoint_epoch_6_16750.pt
 
-batch_sizes = [32]
-max_seq_lengths = [48]
+batch_sizes = [16]
+max_seq_lengths = [1024]
 learning_rates = [5e-5]
 decays = [0.001]
 num_epochs = [6]
@@ -189,7 +189,7 @@ for current_batch_size in batch_sizes:
                             random.seed(seeds[seed_idx])
                             np.random.seed(seeds[seed_idx])
                             torch.manual_seed(seeds[seed_idx])
-                            bertmodel = AutoModelForSequenceClassification.from_pretrained(lm_path,cache_dir=None, num_labels=3)
+                            bertmodel = AutoModelForSequenceClassification.from_pretrained(lm_path,cache_dir="./cache",num_labels=3)
 
                             print("this is a test")
                             
@@ -219,9 +219,9 @@ for current_batch_size in batch_sizes:
                             np.random.seed(seeds[seed_idx])
                             torch.manual_seed(seeds[seed_idx])
                             finbert = FinBert(config)
-                            finbert.base_model = 'gpt2-xl' #'bert-large-uncased' #'bert-base-uncased'
-                            finbert.config.discriminate=True
-                            finbert.config.gradual_unfreeze=True
+                            finbert.base_model = 'gpt2' #'bert-large-uncased' #'bert-base-uncased'
+                            finbert.config.discriminate=False # True
+                            finbert.config.gradual_unfreeze=False # True
 
                             random.seed(seeds[seed_idx])
                             np.random.seed(seeds[seed_idx])
