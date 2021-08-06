@@ -217,7 +217,7 @@ for current_batch_size in batch_sizes:
                             np.random.seed(seeds[seed_idx])
                             torch.manual_seed(seeds[seed_idx])
                             finbert = FinBert(config)
-                            finbert.base_model = 'bert-large-uncased' #'bert-base-uncased'
+                            finbert.base_model = 'gpt2-xl' #'bert-large-uncased' #'bert-base-uncased'
                             finbert.config.discriminate=True
                             finbert.config.gradual_unfreeze=True
 
