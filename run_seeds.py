@@ -191,6 +191,8 @@ for current_batch_size in batch_sizes:
                             torch.manual_seed(seeds[seed_idx])
                             bertmodel = AutoModelForSequenceClassification.from_pretrained(lm_path,cache_dir=None, num_labels=3)
 
+                            print("this is a test")
+                            
                             print ("> -------------- < ")
                             config = Config(   data_dir=cl_data_path,
                                                bert_model=bertmodel,
