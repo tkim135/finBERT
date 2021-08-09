@@ -12,8 +12,9 @@ from sklearn.metrics import classification_report
 
 from transformers import AutoModelForSequenceClassification
 
-from finbert.finbert import *
-import finbert.utils as tools
+# make this change throughout the file
+from finbert.finbert_gpt import *
+import finbert.utils_gpt as tools
 
 #%load_ext autoreload
 #%autoreload 2

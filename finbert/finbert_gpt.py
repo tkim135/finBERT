@@ -44,7 +44,7 @@ class Config(object):
                  gradual_unfreeze=True,
                  encoder_no=12,
                  decay=0.01,
-                 base_model='bert-base-uncased'):
+                 base_model='gpt2'):
         """
         Parameters
         ----------
@@ -125,6 +125,10 @@ class FinBert(object):
     def __init__(self,
                  config):
         self.config = config
+        self.tokenizer = AutoTokenizer.from_pretrained(self.config.base_model)
+        # change padding to eos
+        self.tokenizer.pad_token = self.tokenizer.eos_token
+        self.config.bert_model.config.pad_token_id = self.config.bert_model.config.eos_token_id
 
     def prepare_model(self, label_list):
         """
@@ -177,11 +181,6 @@ class FinBert(object):
         self.processor = self.processors['finsent']()
         self.num_labels = len(label_list)
         self.label_list = label_list
-
-        self.tokenizer = AutoTokenizer.from_pretrained(self.base_model)
-        # change padding to eos
-        self.tokenizer.pad_token = tokenizer.eos_token
-        self.bert_model.config.pad_token_id = self.bert_model.config.eos_token_id
 
     def get_data(self, phase):
         """
@@ -418,7 +417,7 @@ class FinBert(object):
 
                 input_ids, attention_mask, token_type_ids, label_ids, agree_ids = batch
 
-                logits = model(input_ids, attention_mask, token_type_ids)[0]
+                logits = model(input_ids=input_ids, attention_mask=attention_mask, token_type_ids=token_type_ids)[0]
                 weights = self.class_weights.to(self.device)
 
                 if self.config.output_mode == "classification":

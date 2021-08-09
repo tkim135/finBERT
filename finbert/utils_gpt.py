@@ -146,11 +146,16 @@ def convert_examples_to_features(examples, label_list, max_seq_length, tokenizer
     features = []
     for (ex_index, example) in enumerate(examples):
 
-        inputs = tokenizer(text=example.text, padding=True, truncation=True, max_length=max_seq_length)
+        #print(vars(tokenizer))
+        #print("got here!")
+        inputs = tokenizer(text=example.text, padding='max_length', truncation=False, max_length=max_seq_length)
 
+        #print(inputs)
         input_ids = inputs['input_ids']
         attention_mask = inputs['attention_mask']
         token_type_ids = [0] * len(input_ids)
+
+        #print(len(input_ids), max_seq_length)
 
         assert len(input_ids) == max_seq_length
         assert len(attention_mask) == max_seq_length
