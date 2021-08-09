@@ -154,7 +154,7 @@ seeds = [
 
 #/scratch/varunt/finBERT/models/hfrun_decay0.01_lr5e-5_ss512_bs256_results_finbert_dir/checkpoint_epoch_6_16750.pt
 
-batch_sizes = [16]
+batch_sizes = [4]
 max_seq_lengths = [1024]
 learning_rates = [5e-5]
 decays = [0.001]
