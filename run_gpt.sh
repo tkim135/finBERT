@@ -11,10 +11,9 @@
 # done
 
 start=`date +%s`
-log_file="gpt_downstream/test.txt"
+log_file=/home/ubuntu/finBERT/gpt_downstream/test.txt
 #CUDA_VISIBLE_DEVICES=0 python3 -u run_seeds.py --model_name_or_path "gpt2" 2>&1 --start_seed 0 --end_seed 2 --type public | tee ${log_file}
-CUDA_VISIBLE_DEVICES=0 python3 -u example.py 2>&1 | tee ${log_file}
+CUDA_VISIBLE_DEVICES=0,1,2,3 accelerate launch example.py 2>&1 | tee ${log_file}
 end=`date +%s`
 runtime=$((end-start))
 echo "time taken: ${runtime}"
-rm -rf ~/finbert_clpath/public/

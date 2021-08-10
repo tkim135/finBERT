@@ -1,0 +1,10 @@
+****************************************
+****************************************
+Final Results:
+Current Learning Rate: 5e-05, Current Decay: 0.001
+Validation Accs: [0.7435897435897436]
+Max Validation Acc: 0.7435897435897436
+Stdev Validation Acc: 0.0
+Test Accs: [0.6979166666666666]
+Max Test Acc: 0.6979166666666666
+Stdev Test Acc: 0.0
