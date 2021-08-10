@@ -1,9 +1,12 @@
+import numpy as np
 import io
 import os
 import torch
 from tqdm import tqdm
 from torch.utils.data import Dataset, DataLoader
 from sklearn.metrics import classification_report, accuracy_score
+import csv
+import sys
 from transformers import (set_seed,
                           TrainingArguments,
                           Trainer,
@@ -140,11 +143,169 @@ class FinanceDataset(Dataset):
             guid = "%s-%s" % (set_type, str(i))
             text = line[1]
             label = line[2]
-            texts.append(text)
-            labels.append(label)
+            self.texts.append(text)
+            self.labels.append(label)
 
-def main():
-    """
+def train(model, dataloader, optimizer, scheduler, device):
+    # Tracking variables.
+    predictions_labels = []
+    true_labels = []
+    # Total loss for this epoch.
+    total_loss = 0
+    
+    # Put the model into training mode.
+    model.train()
+    
+    # For each batch of training data...
+    for batch in tqdm(dataloader, total=len(dataloader)):
+        # Add original labels - use later for evaluation.
+        true_labels += batch['labels'].numpy().flatten().tolist()
+        # move batch to device
+        batch = {k:v.type(torch.long).to(device) for k,v in batch.items()}
+        # Always clear any previously calculated gradients before performing a
+        # backward pass.
+        model.zero_grad()
+        
+        # Perform a forward pass (evaluate the model on this training batch).
+        # This will return the loss (rather than the model output) because we
+        # have provided the `labels`.
+        # The documentation for this a bert model function is here: 
+        # https://huggingface.co/transformers/v2.2.0/model_doc/bert.html#transformers.BertForSequenceClassification
+        outputs = model(**batch)
+        
+        # The call to `model` always returns a tuple, so we need to pull the 
+        # loss value out of the tuple along with the logits. We will use logits
+        # later to calculate training accuracy.
+        loss, logits = outputs[:2]
+        
+        # Accumulate the training loss over all of the batches so that we can
+        # calculate the average loss at the end. `loss` is a Tensor containing a
+        # single value; the `.item()` function just returns the Python value 
+        # from the tensor.
+        total_loss += loss.item()
+        
+        # Perform a backward pass to calculate the gradients.
+        loss.backward()
+        
+        # Clip the norm of the gradients to 1.0.
+        # This is to help prevent the "exploding gradients" problem.
+        torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
+        
+        # Update parameters and take a step using the computed gradient.
+        # The optimizer dictates the "update rule"--how the parameters are
+        # modified based on their gradients, the learning rate, etc.
+        optimizer.step()
+        
+        # Update the learning rate.
+        scheduler.step()
+        
+        # Move logits and labels to CPU
+        logits = logits.detach().cpu().numpy()
+        
+        # Convert these logits to list of predicted labels values.
+        predictions_labels += logits.argmax(axis=-1).flatten().tolist()
+        
+        # Calculate the average loss over the training data.
+        avg_epoch_loss = total_loss / len(dataloader)
+        
+        # Return all true labels and prediction for future evaluations.
+    return true_labels, predictions_labels, avg_epoch_loss
+
+
+
+def validation(model, dataloader, device):
+    # Tracking variables
+    predictions_labels = []
+    true_labels = []
+    #total loss for this epoch.
+    total_loss = 0
+    
+    # Put the model in evaluation mode--the dropout layers behave differently
+    # during evaluation.
+    model.eval()
+    
+    # Evaluate data for one epoch
+    for batch in tqdm(dataloader, total=len(dataloader)):
+        
+        # add original labels
+        true_labels += batch['labels'].numpy().flatten().tolist()
+        
+        # move batch to device
+        batch = {k:v.type(torch.long).to(device) for k,v in batch.items()}
+        
+        # Telling the model not to compute or store gradients, saving memory and
+        # speeding up validation
+        with torch.no_grad():
+            # Forward pass, calculate logit predictions.
+            # This will return the logits rather than the loss because we have
+            # not provided labels.
+            # token_type_ids is the same as the "segment ids", which 
+            # differentiates sentence 1 and 2 in 2-sentence tasks.
+            # The documentation for this `model` function is here: 
+            # https://huggingface.co/transformers/v2.2.0/model_doc/bert.html#transformers.BertForSequenceClassification
+            outputs = model(**batch)
+            
+            # The call to `model` always returns a tuple, so we need to pull the 
+            # loss value out of the tuple along with the logits. We will use logits
+            # later to to calculate training accuracy.
+            loss, logits = outputs[:2]
+            
+            # Move logits and labels to CPU
+            logits = logits.detach().cpu().numpy()
+            
+            # Accumulate the training loss over all of the batches so that we can
+            # calculate the average loss at the end. `loss` is a Tensor containing a
+            # single value; the `.item()` function just returns the Python value 
+            # from the tensor.
+            total_loss += loss.item()
+            
+            # get predicitons to list
+            predict_content = logits.argmax(axis=-1).flatten().tolist()
+            
+            # update list
+            predictions_labels += predict_content
+            
+    # Calculate the average loss over the training data.
+    avg_epoch_loss = total_loss / len(dataloader)
+        
+    # Return all true labels and prediciton for future evaluations.
+    return true_labels, predictions_labels, avg_epoch_loss
+
+def main(lr, wd, seed):
+    print(">-*-*-*-*-*-*-<")
+    print(f"LR: {lr}, WD: {wd}, Seed: {seed}")
+    print(">-*-*-*-*-*-*-<")
+    
+    # Set seed for reproducibility.
+    set_seed(seed)
+
+    # Number of training epochs (authors on fine-tuning Bert recommend between 2 and 4).
+    epochs = 6
+
+    # Number of batches - depending on the max sequence length and GPU memory.
+    # For 512 sequence length batch of 10 works without cuda memory issues.
+    # For small sequence length can try batch of 32 or higher.
+    batch_size = 16
+
+    # Pad or truncate text sequences to a specific length
+    # if `None` it will use maximum sequence of word piece tokens allowed by model.
+    max_length = 60
+
+    # Look for gpu to use. Will use `cpu` by default if no gpu found.
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+
+    # Name of transformers model - will use already pretrained model.
+    # Path of transformer model - will load your own model from local disk.
+    model_name_or_path = 'gpt2-xl'
+
+    # Dictionary of labels and their id - this will be used to convert.
+    # String labels to number ids.
+    labels_ids = {'negative': 0, 'neutral': 1, 'positive': 2}
+
+    # How many labels are we using in training.
+    # This is used to decide size of classification head.
+    n_labels = len(labels_ids)
+    
     # Get model configuration.
     print('Loading configuraiton...')
     model_config = GPT2Config.from_pretrained(pretrained_model_name_or_path=model_name_or_path, num_labels=n_labels)
@@ -171,10 +332,123 @@ def main():
     # Load model to defined device.
     model.to(device)
     print('Model loaded to `%s`'%device)
-    """
-    train_dataset = FinanceDataset(data_dir="/home/ubuntu/finBERT/datasets", phase="train")
-    validation_dataset = FinanceDataset(data_dir="/home/ubuntu/finBERT/datasets", phase="validation")
-    test_dataset = FinanceDataset(data_dir="/home/ubuntu/finBERT/datasets", phase="test")
+
+    # Create data collator to encode text and labels into numbers.
+    gpt2_classificaiton_collator = Gpt2ClassificationCollator(use_tokenizer=tokenizer, 
+                                                          labels_encoder=labels_ids, 
+                                                          max_sequence_len=max_length)
+
+    train_dataset = FinanceDataset(data_dir="/scratch/varunt/finBERT/datasets", phase="train")
+    validation_dataset = FinanceDataset(data_dir="/scratch/varunt/finBERT/datasets", phase="validation")
+    test_dataset = FinanceDataset(data_dir="/scratch/varunt/finBERT/datasets", phase="test")
+
+    train_dataloader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, collate_fn=gpt2_classificaiton_collator)
+    valid_dataloader = DataLoader(validation_dataset, batch_size=batch_size, shuffle=False, collate_fn=gpt2_classificaiton_collator)
+    test_dataloader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False, collate_fn=gpt2_classificaiton_collator)
+    
+    optimizer = AdamW(model.parameters(),
+                  lr = lr, # default is 5e-5, our notebook had 2e-5
+                  eps = 1e-8, # default is 1e-8.
+                  weight_decay = wd
+                  )
+    # Total number of training steps is number of batches * number of epochs.
+    # `train_dataloader` contains batched data so `len(train_dataloader)` gives 
+    # us the number of batches.
+    total_steps = len(train_dataloader) * epochs
+    
+    # Create the learning rate scheduler.
+    scheduler = get_linear_schedule_with_warmup(optimizer, 
+                                            num_warmup_steps = 0, # Default value in run_glue.py
+                                            num_training_steps = total_steps)
+    
+    # Store the average loss after each epoch so we can plot them.
+    all_loss = {'train_loss':[], 'val_loss':[]}
+    all_acc = {'train_acc':[], 'val_acc':[]}
+    
+    # Loop through each epoch.
+    print('Epoch')
+    for epoch in tqdm(range(epochs)):
+        print()
+        print('Training on batches...')
+        # Perform one full pass over the training set.
+        train_labels, train_predict, train_loss = train(model, train_dataloader, optimizer, scheduler, device)
+        train_acc = accuracy_score(train_labels, train_predict)
+        
+        # Get prediction form model on validation data. 
+        print('Validation on batches...')
+        valid_labels, valid_predict, val_loss = validation(model, valid_dataloader, device)
+        val_acc = accuracy_score(valid_labels, valid_predict)
+        
+        # Print loss and accuracy values to see how training evolves.
+        #print("  train_loss: %.5f - val_loss: %.5f - train_acc: %.5f - valid_acc: %.5f"%(train_loss, val_loss, train_acc, val_acc))
+        print()
+        print(">-"*10)
+        print(f"train_loss: {train_loss}, train_acc: {train_acc}")
+        print(f"valid_loss: {val_loss}, valid_acc: {val_acc}")
+        print(">-"*10)
+        print()
+        
+        # Store the loss value for plotting the learning curve.
+        all_loss['train_loss'].append(train_loss)
+        all_loss['val_loss'].append(val_loss)
+        all_acc['train_acc'].append(train_acc)
+        all_acc['val_acc'].append(val_acc)
+
+    # Get the prediction from model on test data (just saving it)
+    print('Test on batches...')
+    test_labels, test_predict, test_loss = validation(model, test_dataloader, device)
+    test_acc = accuracy_score(test_labels, test_predict)
+    
+    # return the last validation acc and the corresponding test acc
+    results = {
+        'val_acc': all_acc['val_acc'][-1],
+        'test_acc': test_acc,
+    }
+    print(results)
+    return results
 
 if __name__ == "__main__":
-    main()
+    #seeds = [42,125380,160800,22758,176060,193228]
+    #learning_rates = [5e-5, 5e-4, 5e-6, 1e-7, 5e-7]
+    #decays = [0.001, 0.01, 0.0001, 0.005, 0.0005]
+
+    seeds = [42]
+    learning_rates = [5e-5]
+    decays = [0.001]
+    
+    for lr in learning_rates:
+        for wd in decays:
+            path = f"gpt_downstream/config_gridsearch/log_{lr}_{wd}.txt"
+            # stat tracking
+            max_results = None
+            valid_accs = []
+            test_accs = []
+            for seed in seeds:
+                results = main(lr=lr, wd=wd, seed=seed)
+                valid_accs.append(results['val_acc'])
+                test_accs.append(results['test_acc'])
+                if max_results == None or results['val_acc'] > max_results['val_acc']:
+                    max_results = results
+            # collect stats across seeds
+            avg_valid_acc = np.mean(valid_accs)
+            avg_test_acc = np.mean(test_accs)
+            stdev_valid_acc = np.std(valid_accs)
+            stdev_test_acc = np.std(test_accs)
+            max_valid_acc = max(valid_accs)
+            corresponding_index = valid_accs.index(max_valid_acc)
+            corresponding_test_acc = test_accs[corresponding_index]
+
+            with open(path, 'w') as f:
+                # print results
+                print("*"*40, file=f)
+                print("*"*40, file=f)
+                print("Final Results:", file=f)
+                print(f"Current Learning Rate: {lr}, Current Decay: {wd}", file=f)
+                # valid
+                print(f"Validation Accs: {valid_accs}", file=f)
+                print(f"Max Validation Acc: {max_valid_acc}", file=f)
+                print(f"Stdev Validation Acc: {stdev_valid_acc}", file=f)
+                # test
+                print(f"Test Accs: {test_accs}", file=f)
+                print(f"Max Test Acc: {corresponding_test_acc}", file=f) # corresponding test accuracy to max validation_acc
+                print(f"Stdev Test Acc: {stdev_test_acc}", file=f)
