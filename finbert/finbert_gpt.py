@@ -6,7 +6,7 @@ import pandas as pd
 from torch.nn import MSELoss, CrossEntropyLoss
 from torch.utils.data import (DataLoader, RandomSampler, SequentialSampler,
     TensorDataset)
-from tqdm import tqdm_notebook as tqdm
+from tqdm import tqdm as tqdm
 from tqdm import trange
 from nltk.tokenize import sent_tokenize
 from finbert.utils_gpt import *
@@ -27,11 +27,11 @@ class Config(object):
                  data_dir,
                  bert_model,
                  model_dir,
-                 max_seq_length=64,
-                 train_batch_size=32,
-                 eval_batch_size=32,
+                 max_seq_length=32,
+                 train_batch_size=128,
+                 eval_batch_size=128,
                  learning_rate=5e-5,
-                 num_train_epochs=10.0,
+                 num_train_epochs=6.0,
                  warm_up_proportion=0.1,
                  no_cuda=False,
                  do_lower_case=True,
@@ -389,8 +389,9 @@ class FinBert(object):
 
             tr_loss = 0
             nb_tr_examples, nb_tr_steps = 0, 0
+            past_key_values = None
 
-            for step, batch in enumerate(tqdm(train_dataloader, desc='Iteration', disable=True)):
+            for step, batch in enumerate(tqdm(train_dataloader, desc='Iteration', disable=False)):
 
                 if (self.config.gradual_unfreeze and i == 0):
                     for param in model.bert.parameters():
@@ -417,15 +418,14 @@ class FinBert(object):
 
                 input_ids, attention_mask, token_type_ids, label_ids, agree_ids = batch
 
-                logits = model(input_ids=input_ids, attention_mask=attention_mask, token_type_ids=token_type_ids)[0]
-                weights = self.class_weights.to(self.device)
+                #import pdb; pdb.set_trace()
+                outputs = model(input_ids=input_ids, attention_mask=attention_mask, token_type_ids=token_type_ids, use_cache=True, labels=label_ids, past_key_values=past_key_values)
+                #import pdb; pdb.set_trace()
+                #logits = outputs.logits
+                past_key_values = outputs.past_key_values
+                #weights = self.class_weights.to(self.device)
 
-                if self.config.output_mode == "classification":
-                    loss_fct = CrossEntropyLoss(weight=weights)
-                    loss = loss_fct(logits.view(-1, self.num_labels), label_ids.view(-1))
-                elif self.config.output_mode == "regression":
-                    loss_fct = MSELoss()
-                    loss = loss_fct(logits.view(-1), label_ids.view(-1))
+                loss = outputs.loss
 
                 if self.config.gradient_accumulation_steps > 1:
                     loss = loss / self.config.gradient_accumulation_steps

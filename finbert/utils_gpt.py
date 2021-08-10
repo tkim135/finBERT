@@ -148,7 +148,7 @@ def convert_examples_to_features(examples, label_list, max_seq_length, tokenizer
 
         #print(vars(tokenizer))
         #print("got here!")
-        inputs = tokenizer(text=example.text, padding='max_length', truncation=False, max_length=max_seq_length)
+        inputs = tokenizer(text=example.text, padding='max_length', truncation=True, max_length=max_seq_length)
 
         #print(inputs)
         input_ids = inputs['input_ids']
