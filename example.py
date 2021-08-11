@@ -206,11 +206,15 @@ def train(accelerator, model, dataloader, optimizer, scheduler, device):
         
         # Convert these logits to list of predicted labels values.
         predictions_labels += logits.argmax(axis=-1).flatten().tolist()
+
+        del batch
         
-        # Calculate the average loss over the training data.
-        avg_epoch_loss = total_loss / len(dataloader)
+    # Calculate the average loss over the training data.
+    avg_epoch_loss = total_loss / len(dataloader)
+
+    torch.cuda.empty_cache()
         
-        # Return all true labels and prediction for future evaluations.
+    # Return all true labels and prediction for future evaluations.
     return true_labels, predictions_labels, avg_epoch_loss
 
 
@@ -266,10 +270,12 @@ def validation(accelerator, model, dataloader, device):
             
             # update list
             predictions_labels += predict_content
+
+            del batch
             
     # Calculate the average loss over the training data.
     avg_epoch_loss = total_loss / len(dataloader)
-        
+    torch.cuda.empty_cache()    
     # Return all true labels and prediciton for future evaluations.
     return true_labels, predictions_labels, avg_epoch_loss
 
@@ -296,7 +302,7 @@ def main(lr, wd, seed):
     # Number of batches - depending on the max sequence length and GPU memory.
     # For 512 sequence length batch of 10 works without cuda memory issues.
     # For small sequence length can try batch of 32 or higher.
-    batch_size = 4
+    batch_size = 2
 
     # Pad or truncate text sequences to a specific length
     # if `None` it will use maximum sequence of word piece tokens allowed by model.
@@ -431,6 +437,7 @@ def main(lr, wd, seed):
         }
         accelerator.print(results,file=f)
         accelerator.print(results)
+        torch.cuda.empty_cache()
         return results
 
 if __name__ == "__main__":
