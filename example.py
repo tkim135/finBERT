@@ -16,6 +16,7 @@ from transformers import (set_seed,
                           get_linear_schedule_with_warmup,
                           GPT2ForSequenceClassification)
 from accelerate import Accelerator
+import argparse
 
 # tokenizer = GPT2Tokenizer.from_pretrained('microsoft/DialogRPT-updown')
 # model = GPT2ForSequenceClassification.from_pretrained('microsoft/DialogRPT-updown')
@@ -451,6 +452,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Process some integers.')
     parser.add_argument('--lr', type=str, required=True)
     parser.add_argument('--wd', type=str, required=True)
+    args = parser.parse_args()
 
     lr = float(args.lr)
     wd = float(args.wd)
