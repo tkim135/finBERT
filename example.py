@@ -302,7 +302,7 @@ def main(lr, wd, seed):
     # Number of batches - depending on the max sequence length and GPU memory.
     # For 512 sequence length batch of 10 works without cuda memory issues.
     # For small sequence length can try batch of 32 or higher.
-    batch_size = 2
+    batch_size = 4
 
     # Pad or truncate text sequences to a specific length
     # if `None` it will use maximum sequence of word piece tokens allowed by model.
@@ -441,7 +441,7 @@ def main(lr, wd, seed):
         return results
 
 if __name__ == "__main__":
-    seeds = [42,125380,160800,22758,176060,193228]
+    #seeds = [42,125380,160800,22758,176060,193228]
     #learning_rates = [5e-5, 5e-4, 5e-6, 1e-7, 5e-7]
     #decays = [0.001, 0.01, 0.0001, 0.005, 0.0005]
 
@@ -452,50 +452,58 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Process some integers.')
     parser.add_argument('--lr', type=str, required=True)
     parser.add_argument('--wd', type=str, required=True)
+    parser.add_argument('--seed', type=str, required=True)
     args = parser.parse_args()
 
     lr = float(args.lr)
     wd = float(args.wd)
+    seed = int(args.seed)
 
-    path = f"/home/ubuntu/finBERT/gpt_downstream/config_gridsearch/log_{lr}_{wd}.txt"
-    # stat tracking
-    max_results = None
-    valid_accs = []
-    test_accs = []
-    for seed in seeds:
-        results = main(lr=lr, wd=wd, seed=seed)
-        with open(path, 'w') as f:
-            print(results, file=f)
-        valid_accs.append(results['val_acc'])
-        test_accs.append(results['test_acc'])
-        if max_results == None or results['val_acc'] > max_results['val_acc']:
-            max_results = results
-    # collect stats across seeds
-    avg_valid_acc = sum(valid_accs)/len(valid_accs)
-    avg_test_acc = sum(test_accs)/len(test_accs)
-    
-    stdev_valid_acc = np.std(valid_accs)
-    stdev_test_acc = np.std(test_accs)
-    
-    max_valid_acc = max_results['val_acc']
-    corresponding_test_acc = max_results['test_acc']
-    #max_valid_acc = max(valid_accs)
-    #corresponding_index = valid_accs.index(max_valid_acc)
-    #corresponding_test_acc = test_accs[corresponding_index]
+    results = main(lr=lr, wd=wd, seed=seed)
+    print()
+    print("*"*40)
+    print(results)
+    print("*"*40)
 
-    with open(path, 'w') as f:
-        # print results
-        print("*"*40, file=f)
-        print("*"*40, file=f)
-        print("Final Results:", file=f)
-        print(f"Current Learning Rate: {lr}, Current Decay: {wd}", file=f)
-        # valid
-        print(f"Validation Accs: {valid_accs}", file=f)
-        print(f"Max Validation Acc: {max_valid_acc}", file=f)
-        print(f"Avg Validation Acc: {avg_valid_acc}", file=f)
-        print(f"Stdev Validation Acc: {stdev_valid_acc}", file=f)
-        # test
-        print(f"Test Accs: {test_accs}", file=f)
-        print(f"Max Test Acc: {corresponding_test_acc}", file=f) # corresponding test accuracy to max validation_acc
-        print(f"Avg Test Acc: {avg_test_acc}", file=f)
-        print(f"Stdev Test Acc: {stdev_test_acc}", file=f)
+    # path = f"/home/ubuntu/finBERT/gpt_downstream/config_gridsearch/log_{lr}_{wd}.txt"
+    # # stat tracking
+    # max_results = None
+    # valid_accs = []
+    # test_accs = []
+    # for seed in seeds:
+    #     results = main(lr=lr, wd=wd, seed=seed)
+    #     with open(path, 'w') as f:
+    #         print(results, file=f)
+    #     valid_accs.append(results['val_acc'])
+    #     test_accs.append(results['test_acc'])
+    #     if max_results == None or results['val_acc'] > max_results['val_acc']:
+    #         max_results = results
+    # # collect stats across seeds
+    # avg_valid_acc = sum(valid_accs)/len(valid_accs)
+    # avg_test_acc = sum(test_accs)/len(test_accs)
+    
+    # stdev_valid_acc = np.std(valid_accs)
+    # stdev_test_acc = np.std(test_accs)
+    
+    # max_valid_acc = max_results['val_acc']
+    # corresponding_test_acc = max_results['test_acc']
+    # #max_valid_acc = max(valid_accs)
+    # #corresponding_index = valid_accs.index(max_valid_acc)
+    # #corresponding_test_acc = test_accs[corresponding_index]
+
+    # with open(path, 'w') as f:
+    #     # print results
+    #     print("*"*40, file=f)
+    #     print("*"*40, file=f)
+    #     print("Final Results:", file=f)
+    #     print(f"Current Learning Rate: {lr}, Current Decay: {wd}", file=f)
+    #     # valid
+    #     print(f"Validation Accs: {valid_accs}", file=f)
+    #     print(f"Max Validation Acc: {max_valid_acc}", file=f)
+    #     print(f"Avg Validation Acc: {avg_valid_acc}", file=f)
+    #     print(f"Stdev Validation Acc: {stdev_valid_acc}", file=f)
+    #     # test
+    #     print(f"Test Accs: {test_accs}", file=f)
+    #     print(f"Max Test Acc: {corresponding_test_acc}", file=f) # corresponding test accuracy to max validation_acc
+    #     print(f"Avg Test Acc: {avg_test_acc}", file=f)
+    #     print(f"Stdev Test Acc: {stdev_test_acc}", file=f)
