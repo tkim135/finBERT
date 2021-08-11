@@ -1,0 +1,12 @@
+Epoch
+
+Training on batches...
+Validation on batches...
+
+>->->->->->->->->->-
+train_loss: 0.9534367970093524, train_acc: 0.5648535564853556
+valid_loss: 0.9881608272210146, valid_acc: 0.5064102564102564
+>->->->->->->->->->-
+
+Test on batches...
+{'train_acc_epochs': [0.5648535564853556], 'val_acc_epochs': [0.5064102564102564], 'val_acc': 0.5064102564102564, 'test_acc': 0.5677083333333334}

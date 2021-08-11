@@ -273,19 +273,22 @@ def validation(accelerator, model, dataloader, device):
     # Return all true labels and prediciton for future evaluations.
     return true_labels, predictions_labels, avg_epoch_loss
 
-def main(lr, wd, seed):    
+def main(lr, wd, seed):
+    path = f"/home/ubuntu/finBERT/gpt_downstream/config_gridsearch/log_lr_{lr}_wd_{wd}_seed_{seed}.txt"
+
     # setup accelerator
     accelerator = Accelerator(fp16=True)
     
-    accelerator.print(">-*-*-*-*-*-*-<")
-    accelerator.print(f"LR: {lr}, WD: {wd}, Seed: {seed}")
-    accelerator.print(">-*-*-*-*-*-*-<")
+    with open(path, 'w') as f:
+        accelerator.print(">-*-*-*-*-*-*-<", file=f)
+        accelerator.print(f"LR: {lr}, WD: {wd}, Seed: {seed}", file=f)
+        accelerator.print(">-*-*-*-*-*-*-<", file=f)
     
     # Set seed for reproducibility.
     set_seed(seed)
 
     # Number of training epochs (authors on fine-tuning Bert recommend between 2 and 4).
-    epochs = 2
+    epochs = 6
 
     # Number of batches - depending on the max sequence length and GPU memory.
     # For 512 sequence length batch of 10 works without cuda memory issues.
@@ -312,33 +315,34 @@ def main(lr, wd, seed):
     # This is used to decide size of classification head.
     n_labels = len(labels_ids)
     
-    # Get model configuration.
-    accelerator.print('Loading configuraiton...')
-    model_config = GPT2Config.from_pretrained(pretrained_model_name_or_path=model_name_or_path, num_labels=n_labels)
+    with open(path, 'w') as f:
+        # Get model configuration.
+        accelerator.print('Loading configuraiton...', file=f)
+        model_config = GPT2Config.from_pretrained(pretrained_model_name_or_path=model_name_or_path, num_labels=n_labels)
 
-    # Get model's tokenizer.
-    accelerator.print('Loading tokenizer...')
-    tokenizer = GPT2Tokenizer.from_pretrained(pretrained_model_name_or_path=model_name_or_path)
-    # default to left padding
-    tokenizer.padding_side = "left"
-    # Define PAD Token = EOS Token = 50256
-    tokenizer.pad_token = tokenizer.eos_token
+        # Get model's tokenizer.
+        accelerator.print('Loading tokenizer...', file=f)
+        tokenizer = GPT2Tokenizer.from_pretrained(pretrained_model_name_or_path=model_name_or_path)
+        # default to left padding
+        tokenizer.padding_side = "left"
+        # Define PAD Token = EOS Token = 50256
+        tokenizer.pad_token = tokenizer.eos_token
 
 
-    # Get the actual model.
-    accelerator.print('Loading model...')
-    model = GPT2ForSequenceClassification.from_pretrained(pretrained_model_name_or_path=model_name_or_path, config=model_config)
+        # Get the actual model.
+        accelerator.print('Loading model...', file=f)
+        model = GPT2ForSequenceClassification.from_pretrained(pretrained_model_name_or_path=model_name_or_path, config=model_config)
 
-    # resize model embedding to match new tokenizer
-    model.resize_token_embeddings(len(tokenizer))
+        # resize model embedding to match new tokenizer
+        model.resize_token_embeddings(len(tokenizer))
 
-    # fix model padding token id
-    model.config.pad_token_id = model.config.eos_token_id
+        # fix model padding token id
+        model.config.pad_token_id = model.config.eos_token_id
 
-    # Load model to defined device.
-    #model.to(device)
-    model = model.to(accelerator.device)
-    accelerator.print('Model loaded to `%s`'%device)
+        # Load model to defined device.
+        #model.to(device)
+        model = model.to(accelerator.device)
+        accelerator.print('Model loaded to `%s`'%device, file=f)
 
     # Create data collator to encode text and labels into numbers.
     gpt2_classificaiton_collator = Gpt2ClassificationCollator(use_tokenizer=tokenizer, 
@@ -355,7 +359,7 @@ def main(lr, wd, seed):
     test_dataloader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False, collate_fn=gpt2_classificaiton_collator)
     
     optimizer = AdamW(model.parameters(),
-                  lr = lr, # default is 5e-5, our notebook had 2e-5
+                  lr = lr,
                   eps = 1e-8, # default is 1e-8.
                   weight_decay = wd
                   )
@@ -377,58 +381,63 @@ def main(lr, wd, seed):
     all_loss = {'train_loss':[], 'val_loss':[]}
     all_acc = {'train_acc':[], 'val_acc':[]}
     
-    # Loop through each epoch.
-    accelerator.print('Epoch')
-    for epoch in tqdm(range(epochs)):
-        accelerator.print()
-        accelerator.print('Training on batches...')
-        # Perform one full pass over the training set.
-        train_labels, train_predict, train_loss = train(accelerator, model, train_dataloader, optimizer, scheduler, device)
-        train_acc = accuracy_score(train_labels, train_predict)
-        
-        # Get prediction form model on validation data. 
-        accelerator.print('Validation on batches...')
-        valid_labels, valid_predict, val_loss = validation(accelerator, model, valid_dataloader, device)
-        val_acc = accuracy_score(valid_labels, valid_predict)
-        
-        # Print loss and accuracy values to see how training evolves.
-        #print("  train_loss: %.5f - val_loss: %.5f - train_acc: %.5f - valid_acc: %.5f"%(train_loss, val_loss, train_acc, val_acc))
-        accelerator.print()
-        accelerator.print(">-"*10)
-        accelerator.print(f"train_loss: {train_loss}, train_acc: {train_acc}")
-        accelerator.print(f"valid_loss: {val_loss}, valid_acc: {val_acc}")
-        accelerator.print(">-"*10)
-        accelerator.print()
-        
-        # Store the loss value for plotting the learning curve.
-        all_loss['train_loss'].append(train_loss)
-        all_loss['val_loss'].append(val_loss)
-        all_acc['train_acc'].append(train_acc)
-        all_acc['val_acc'].append(val_acc)
+    with open(path, 'w') as f:
+        # Loop through each epoch.
+        accelerator.print('Epoch', file=f)
+        for epoch in tqdm(range(epochs)):
+            accelerator.print(file=f)
+            accelerator.print('Training on batches...', file=f)
+            accelerator.print('Training on batches...')
+            # Perform one full pass over the training set.
+            train_labels, train_predict, train_loss = train(accelerator, model, train_dataloader, optimizer, scheduler, device)
+            train_acc = accuracy_score(train_labels, train_predict)
+            
+            # Get prediction form model on validation data. 
+            accelerator.print('Validation on batches...', file=f)
+            accelerator.print('Validation on batches...')
+            valid_labels, valid_predict, val_loss = validation(accelerator, model, valid_dataloader, device)
+            val_acc = accuracy_score(valid_labels, valid_predict)
+            
+            # Print loss and accuracy values to see how training evolves.
+            #print("  train_loss: %.5f - val_loss: %.5f - train_acc: %.5f - valid_acc: %.5f"%(train_loss, val_loss, train_acc, val_acc))
+            accelerator.print(file=f)
+            accelerator.print(">-"*10,file=f)
+            accelerator.print(f"train_loss: {train_loss}, train_acc: {train_acc}",file=f)
+            accelerator.print(f"valid_loss: {val_loss}, valid_acc: {val_acc}",file=f)
+            accelerator.print(">-"*10,file=f)
+            accelerator.print(file=f)
+            
+            # Store the loss value for plotting the learning curve.
+            all_loss['train_loss'].append(train_loss)
+            all_loss['val_loss'].append(val_loss)
+            all_acc['train_acc'].append(train_acc)
+            all_acc['val_acc'].append(val_acc)
 
-    # Get the prediction from model on test data (just saving it)
-    accelerator.print('Test on batches...')
-    test_labels, test_predict, test_loss = validation(accelerator, model, test_dataloader, device)
-    test_acc = accuracy_score(test_labels, test_predict)
-    
-    # return the last validation acc and the corresponding test acc
-    results = {
-        'test_acc_epochs': all_acc['train_acc']
-        'val_acc_epochs': all_acc['val_acc'],
-        'val_acc': all_acc['val_acc'][-1],
-        'test_acc': test_acc,
-    }
-    accelerator.print(results)
-    return results
+        # Get the prediction from model on test data (just saving it)
+        accelerator.print('Test on batches...',file=f)
+        accelerator.print('Test on batches...')
+        test_labels, test_predict, test_loss = validation(accelerator, model, test_dataloader, device)
+        test_acc = accuracy_score(test_labels, test_predict)
+        
+        # return the last validation acc and the corresponding test acc
+        results = {
+            'train_acc_epochs': all_acc['train_acc'],
+            'val_acc_epochs': all_acc['val_acc'],
+            'val_acc': all_acc['val_acc'][-1],
+            'test_acc': test_acc,
+        }
+        accelerator.print(results,file=f)
+        accelerator.print(results)
+        return results
 
 if __name__ == "__main__":
-    #seeds = [42,125380,160800,22758,176060,193228]
-    #learning_rates = [5e-5, 5e-4, 5e-6, 1e-7, 5e-7]
-    #decays = [0.001, 0.01, 0.0001, 0.005, 0.0005]
+    seeds = [42,125380,160800,22758,176060,193228]
+    learning_rates = [5e-5, 5e-4, 5e-6, 1e-7, 5e-7]
+    decays = [0.001, 0.01, 0.0001, 0.005, 0.0005]
 
-    seeds = [42]
-    learning_rates = [5e-5]
-    decays = [0.001]
+    #seeds = [42, 125380]
+    #learning_rates = [5e-5]
+    #decays = [0.001]
     
     for lr in learning_rates:
         for wd in decays:
@@ -439,13 +448,15 @@ if __name__ == "__main__":
             test_accs = []
             for seed in seeds:
                 results = main(lr=lr, wd=wd, seed=seed)
+                with open(path, 'w') as f:
+                    print(results, file=f)
                 valid_accs.append(results['val_acc'])
                 test_accs.append(results['test_acc'])
                 if max_results == None or results['val_acc'] > max_results['val_acc']:
                     max_results = results
             # collect stats across seeds
-            avg_valid_acc = np.mean(valid_accs)
-            avg_test_acc = np.mean(test_accs)
+            avg_valid_acc = sum(valid_accs)/len(valid_accs)
+            avg_test_acc = sum(test_accs)/len(test_accs)
             
             stdev_valid_acc = np.std(valid_accs)
             stdev_test_acc = np.std(test_accs)
