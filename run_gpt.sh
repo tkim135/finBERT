@@ -10,10 +10,16 @@
 #     rm -rf /scratch/varunt/finbert_clpath/pile/
 # done
 
-start=`date +%s`
-log_file=/home/ubuntu/finBERT/gpt_downstream/test.txt
-#CUDA_VISIBLE_DEVICES=0 python3 -u run_seeds.py --model_name_or_path "gpt2" 2>&1 --start_seed 0 --end_seed 2 --type public | tee ${log_file}
-CUDA_VISIBLE_DEVICES=0,1,2,3 accelerate launch example.py 2>&1 | tee ${log_file}
-end=`date +%s`
-runtime=$((end-start))
-echo "time taken: ${runtime}"
+learning_rates=(5e-5 5e-4 5e-6 1e-7 5e-7)
+weight_decays=(0.001 0.01 0.0001 0.005 0.0005)
+for lr in ${learning_rates[@]}; do
+    for wd in ${weight_decays[@]}; do
+        start=`date +%s`
+        log_file=/home/ubuntu/finBERT/gpt_downstream/test_${lr}_${wd}.txt
+        #CUDA_VISIBLE_DEVICES=0 python3 -u run_seeds.py --model_name_or_path "gpt2" 2>&1 --start_seed 0 --end_seed 2 --type public | tee ${log_file}
+        CUDA_VISIBLE_DEVICES=0,1,2,3 accelerate launch example.py --lr ${lr} --wd ${wd} 2>&1 | tee ${log_file}
+        end=`date +%s`
+        runtime=$((end-start))
+        echo "time taken: ${runtime}"
+    done
+done
