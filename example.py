@@ -279,6 +279,9 @@ def main(lr, wd, seed):
     # setup accelerator
     accelerator = Accelerator(fp16=True)
     
+    accelerator.print(">-*-*-*-*-*-*-<")
+    accelerator.print(f"LR: {lr}, WD: {wd}, Seed: {seed}")
+    accelerator.print(">-*-*-*-*-*-*-<")
     with open(path, 'w') as f:
         accelerator.print(">-*-*-*-*-*-*-<", file=f)
         accelerator.print(f"LR: {lr}, WD: {wd}, Seed: {seed}", file=f)
