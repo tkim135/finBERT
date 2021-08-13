@@ -1,0 +1,28 @@
+$ docker run --gpus "device=1,2" ...
+
+docker run --gpus all --rm nvcr.io/nvidia/<repository>:<container version>
+
+REPOSITORY               TAG         IMAGE ID       CREATED        SIZE
+nvcr.io/nvidia/pytorch   20.12-py3   ad0f29ddeb63   8 months ago   14.2GB
+
+docker run --gpus all -d --name test-digits \
+  -u $(id -u):$(id -g) -e HOME=$HOME -e USER=$USER -v $HOME:$HOME \
+  nvcr.io/nvidia/digits:17.05
+
+docker run --gpus '"device=4,5,6,7"' --rm nvcr.io/nvidia/pytorch:20.12-py3
+docker run --gpus all --rm nvcr.io/nvidia/pytorch:20.12-py3
+
+docker: Error response from daemon: could not select device driver "" with capabilities: [[gpu]].
+
+sudo docker run --rm --gpus all nvidia/cuda:11.0-base nvidia-smi
+
+sudo docker run --gpus all --rm nvcr.io/nvidia/pytorch:20.12-py3
+
+docker run --gpus all -it --rm -v nvcr.io/nvidia/pytorch:20.12-py3
+
+sudo docker run --gpus all -it --rm nvcr.io/nvidia/pytorch:20.12-py3
+
+docker run -it --mount src="$(pwd)",target=/test_container,type=bind k3_s3
+
+sudo docker run --gpus all -it --rm -v /home/ubuntu/Megatron/Megatron-LM:/workspace nvcr.io/nvidia/pytorch:20.12-py3
+
