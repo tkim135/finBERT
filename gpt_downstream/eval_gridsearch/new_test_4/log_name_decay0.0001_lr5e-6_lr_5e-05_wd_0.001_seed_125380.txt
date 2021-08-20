@@ -1,0 +1,12 @@
+Epoch
+
+Training on batches...
+Validation on batches...
+
+>->->->->->->->->->-
+train_loss: 1.0639126223338224, train_acc: 0.5127196433254655
+valid_loss: 1.0630332653234207, valid_acc: 0.5155993431855501
+>->->->->->->->->->-
+
+
+Training on batches...

@@ -1,0 +1,24 @@
+Some weights of the model checkpoint at None were not used when initializing GPT2ForSequenceClassification: ['lm_head.weight']
+- This IS expected if you are initializing GPT2ForSequenceClassification from the checkpoint of a model trained on another task or with another architecture (e.g. initializing a BertForSequenceClassification model from a BertForPreTraining model).
+- This IS NOT expected if you are initializing GPT2ForSequenceClassification from the checkpoint of a model that you expect to be exactly identical (initializing a BertForSequenceClassification model from a BertForSequenceClassification model).
+Some weights of GPT2ForSequenceClassification were not initialized from the model checkpoint at None and are newly initialized: ['score.weight']
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+>-*-*-*-*-*-*-<
+LR: 5e-05, WD: 0.001, Seed: 176060
+>-*-*-*-*-*-*-<
+Traceback (most recent call last):
+  File "example.py", line 552, in <module>
+    results = main(lr=lr, wd=wd, seed=seed, name=args.name, weight=args.weight)
+  File "example.py", line 391, in main
+    if discriminate:
+NameError: name 'discriminate' is not defined
+Traceback (most recent call last):
+  File "/home/ubuntu/finBERT/venv/bin/accelerate", line 8, in <module>
+    sys.exit(main())
+  File "/home/ubuntu/finBERT/venv/lib/python3.7/site-packages/accelerate/commands/accelerate_cli.py", line 41, in main
+    args.func(args)
+  File "/home/ubuntu/finBERT/venv/lib/python3.7/site-packages/accelerate/commands/launch.py", line 384, in launch_command
+    simple_launcher(args)
+  File "/home/ubuntu/finBERT/venv/lib/python3.7/site-packages/accelerate/commands/launch.py", line 142, in simple_launcher
+    raise subprocess.CalledProcessError(returncode=process.returncode, cmd=cmd)
+subprocess.CalledProcessError: Command '['/home/ubuntu/finBERT/venv/bin/python3.7', 'example.py', '--name', 'decay0.001_lr5e-6', '--weight', '/home/ubuntu/finBERT/weights/decay0.001_lr5e-6_ss1024_bs16_results_finbert/pytorch_model.bin', '--lr', '5e-5', '--wd', '0.001', '--seed', '176060']' returned non-zero exit status 1.
