@@ -148,10 +148,12 @@ class FinanceDataset(Dataset):
             self.texts.append(text)
             self.labels.append(label)
 
-def train(accelerator, model, dataloader, optimizer, scheduler, device):
+def train(accelerator, model, dataloader, optimizer, scheduler, device, i, gradual_unfreeze):
     # Tracking variables.
     predictions_labels = []
     true_labels = []
+    step_number = len(dataloader)
+    layer_no = 24
     # Total loss for this epoch.
     total_loss = 0
     
@@ -159,7 +161,24 @@ def train(accelerator, model, dataloader, optimizer, scheduler, device):
     model.train()
     
     # For each batch of training data...
-    for batch in tqdm(dataloader, total=len(dataloader)):
+    for step, batch in enumerate(tqdm(dataloader, total=len(dataloader))):
+        # gradual unfreezing
+        if gradual_unfreeze:
+            for param in model.transformer.parameters():
+                param.requires_grad=False
+            if ((step % (step_number // 6)) == 0):
+                i += 1
+            if (i > 1 and i < layer_no):
+                for k in range(i-1):
+                    try:
+                        for param in model.transformer.h[layer_no-1-k].parameters():
+                            param.requires_grad = True
+                    except:
+                        pass
+            if (i > layer_no+1):
+                for param in model.transformer.wte.parameters():
+                    param.requires_grad = True
+        
         # Add original labels - use later for evaluation.
         true_labels += batch['labels'].cpu().numpy().flatten().tolist()
         # move batch to device
@@ -178,7 +197,10 @@ def train(accelerator, model, dataloader, optimizer, scheduler, device):
         # The call to `model` always returns a tuple, so we need to pull the 
         # loss value out of the tuple along with the logits. We will use logits
         # later to calculate training accuracy.
-        loss, logits = outputs[:2]
+        #loss, logits = outputs[:2]
+        outputs_loss = outputs.loss
+        logits = outputs_loss['logits']
+        loss = outputs_loss['loss']
         
         # Accumulate the training loss over all of the batches so that we can
         # calculate the average loss at the end. `loss` is a Tensor containing a
@@ -254,7 +276,9 @@ def validation(accelerator, model, dataloader, device):
             # The call to `model` always returns a tuple, so we need to pull the 
             # loss value out of the tuple along with the logits. We will use logits
             # later to to calculate training accuracy.
-            loss, logits = outputs[:2]
+            outputs_loss = outputs.loss
+            logits = outputs_loss['logits']
+            loss = outputs_loss['loss']
             
             # Move logits and labels to CPU
             logits = logits.detach().cpu().numpy()
@@ -279,8 +303,8 @@ def validation(accelerator, model, dataloader, device):
     # Return all true labels and prediciton for future evaluations.
     return true_labels, predictions_labels, avg_epoch_loss
 
-def main(lr, wd, seed):
-    path = f"/home/ubuntu/finBERT/gpt_downstream/config_gridsearch/log_lr_{lr}_wd_{wd}_seed_{seed}.txt"
+def main(lr, wd, seed, name, weight):
+    path = f"/home/ubuntu/finBERT/gpt_downstream/eval_gridsearch/log_name_{name}_lr_{lr}_wd_{wd}_seed_{seed}.txt"
 
     # setup accelerator
     accelerator = Accelerator(fp16=True)
@@ -297,7 +321,7 @@ def main(lr, wd, seed):
     set_seed(seed)
 
     # Number of training epochs (authors on fine-tuning Bert recommend between 2 and 4).
-    epochs = 6
+    epochs = 12
 
     # Number of batches - depending on the max sequence length and GPU memory.
     # For 512 sequence length batch of 10 works without cuda memory issues.
@@ -323,11 +347,18 @@ def main(lr, wd, seed):
     # How many labels are we using in training.
     # This is used to decide size of classification head.
     n_labels = len(labels_ids)
+
+    discriminate = False
+
+    layer_no = 48
     
     with open(path, 'w') as f:
         # Get model configuration.
         accelerator.print('Loading configuraiton...', file=f)
         model_config = GPT2Config.from_pretrained(pretrained_model_name_or_path=model_name_or_path, num_labels=n_labels)
+
+        # modify model_config
+        model_config.vocab_size = 50260
 
         # Get model's tokenizer.
         accelerator.print('Loading tokenizer...', file=f)
@@ -337,17 +368,75 @@ def main(lr, wd, seed):
         # Define PAD Token = EOS Token = 50256
         tokenizer.pad_token = tokenizer.eos_token
 
-
         # Get the actual model.
         accelerator.print('Loading model...', file=f)
-        model = GPT2ForSequenceClassification.from_pretrained(pretrained_model_name_or_path=model_name_or_path, config=model_config)
+        # tranpose some of the tensors
+        checkpoint = torch.load(weight)
+        tensor_names = ["attn.c_attn.weight", "mlp.c_fc.weight", "mlp.c_proj.weight"]
+        for i in range(layer_no):
+            for tensor_name in tensor_names:
+                full_tensor_name = f"transformer.h.{i}.{tensor_name}"
+                checkpoint[full_tensor_name] = torch.transpose(checkpoint[full_tensor_name], 0, 1)
+        #model = GPT2ForSequenceClassification.from_pretrained(pretrained_model_name_or_path=weight, config=model_config)
+        model = GPT2ForSequenceClassification.from_pretrained(pretrained_model_name_or_path=None, state_dict=checkpoint, config=model_config)
 
         # resize model embedding to match new tokenizer
-        model.resize_token_embeddings(len(tokenizer))
+        #model.resize_token_embeddings(len(tokenizer))
+        model.resize_token_embeddings(50260)
 
         # fix model padding token id
         model.config.pad_token_id = model.config.eos_token_id
 
+        
+        # apply the discriminative fine-tuning. discrimination rate is governed by dft_rate.
+        optimizer_grouped_parameters = []
+        if discriminate:
+            dft_rate = 1.2
+
+            no_decay = ['bias', 'LayerNorm.bias', 'LayerNorm.weight']
+            
+            layer_params = []
+            for i in range(layer_no):
+                encoder_decay = {
+                    'params': [p for n, p in list(model.transformer.h[i].named_parameters()) if
+                                not any(nd in n for nd in no_decay)],
+                    'weight_decay': wd,
+                    'lr': lr / (dft_rate ** (layer_no - i))}
+                encoder_nodecay = {
+                    'params': [p for n, p in list(model.transformer.h[i].named_parameters()) if
+                                any(nd in n for nd in no_decay)],
+                    'weight_decay': 0.0,
+                    'lr': lr / (dft_rate ** (layer_no - i))}
+                layer_params.append(encoder_decay)
+                layer_params.append(encoder_nodecay)
+
+            optimizer_grouped_parameters = [
+                {'params': [p for n, p in list(model.transformer.wte.named_parameters()) if
+                            not any(nd in n for nd in no_decay)],
+                    'weight_decay': wd,
+                    'lr': lr / (dft_rate ** 13)},
+                {'params': [p for n, p in list(model.transformer.wte.named_parameters()) if
+                            any(nd in n for nd in no_decay)],
+                    'weight_decay': 0.0,
+                    'lr': lr / (dft_rate ** 13)},
+                # {'params': [p for n, p in list(model.transformer.wpe.named_parameters()) if
+                #             not any(nd in n for nd in no_decay)],
+                #     'weight_decay': wd,
+                #     'lr': lr / (dft_rate ** 13)},
+                # {'params': [p for n, p in list(model.transformer.wpe.named_parameters()) if
+                #             any(nd in n for nd in no_decay)],
+                #     'weight_decay': 0.0,
+                #     'lr': lr / (dft_rate ** 13)},
+                {'params': [p for n, p in list(model.score.named_parameters()) if
+                            not any(nd in n for nd in no_decay)],
+                    'weight_decay': wd,
+                    'lr': lr},
+                {'params': [p for n, p in list(model.score.named_parameters()) if any(nd in n for nd in no_decay)],
+                    'weight_decay': 0.0,
+                    'lr': lr}]
+
+            optimizer_grouped_parameters.extend(layer_params)
+        
         # Load model to defined device.
         #model.to(device)
         model = model.to(accelerator.device)
@@ -367,7 +456,7 @@ def main(lr, wd, seed):
     valid_dataloader = DataLoader(validation_dataset, batch_size=batch_size, shuffle=False, collate_fn=gpt2_classificaiton_collator)
     test_dataloader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False, collate_fn=gpt2_classificaiton_collator)
     
-    optimizer = AdamW(model.parameters(),
+    optimizer = AdamW(optimizer_grouped_parameters if discriminate else model.parameters(),
                   lr = lr,
                   eps = 1e-8, # default is 1e-8.
                   weight_decay = wd
@@ -393,12 +482,13 @@ def main(lr, wd, seed):
     with open(path, 'w') as f:
         # Loop through each epoch.
         accelerator.print('Epoch', file=f)
+        i = 0
         for epoch in tqdm(range(epochs)):
             accelerator.print(file=f)
             accelerator.print('Training on batches...', file=f)
             accelerator.print('Training on batches...')
             # Perform one full pass over the training set.
-            train_labels, train_predict, train_loss = train(accelerator, model, train_dataloader, optimizer, scheduler, device)
+            train_labels, train_predict, train_loss = train(accelerator, model, train_dataloader, optimizer, scheduler, device, i, False)
             train_acc = accuracy_score(train_labels, train_predict)
             
             # Get prediction form model on validation data. 
@@ -453,13 +543,15 @@ if __name__ == "__main__":
     parser.add_argument('--lr', type=str, required=True)
     parser.add_argument('--wd', type=str, required=True)
     parser.add_argument('--seed', type=str, required=True)
+    parser.add_argument('--name', type=str, required=True)
+    parser.add_argument('--weight', type=str, required=True)
     args = parser.parse_args()
 
     lr = float(args.lr)
     wd = float(args.wd)
     seed = int(args.seed)
 
-    results = main(lr=lr, wd=wd, seed=seed)
+    results = main(lr=lr, wd=wd, seed=seed, name=args.name, weight=args.weight)
     print()
     print("*"*40)
     print(results)
