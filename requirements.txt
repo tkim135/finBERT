@@ -64,8 +64,7 @@ tokenizers==0.9.4
 tqdm==4.61.1
 transformers==4.1.1
 Twisted==17.9.0
-typing-extensions==3.10.0.0
-ufw==0.36
+typing-extensions==3.10.0
 unattended-upgrades==0.1
 urllib3==1.22
 virtualenv==15.1.0

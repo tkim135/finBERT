@@ -17,6 +17,7 @@ from transformers import (set_seed,
                           GPT2ForSequenceClassification)
 from accelerate import Accelerator
 import argparse
+from datasets import load_dataset, load_metric
 
 # tokenizer = GPT2Tokenizer.from_pretrained('microsoft/DialogRPT-updown')
 # model = GPT2ForSequenceClassification.from_pretrained('microsoft/DialogRPT-updown')
@@ -231,6 +232,7 @@ def train(accelerator, model, dataloader, optimizer, scheduler, device, i, gradu
         predictions_labels += logits.argmax(axis=-1).flatten().tolist()
 
         del batch
+        del logits
         
     # Calculate the average loss over the training data.
     avg_epoch_loss = total_loss / len(dataloader)
@@ -241,7 +243,7 @@ def train(accelerator, model, dataloader, optimizer, scheduler, device, i, gradu
     return true_labels, predictions_labels, avg_epoch_loss
 
 
-def validation(accelerator, model, dataloader, device):
+def validation(accelerator, model, dataloader, device, metric):
     # Tracking variables
     predictions_labels = []
     true_labels = []
@@ -279,6 +281,12 @@ def validation(accelerator, model, dataloader, device):
             outputs_loss = outputs.loss
             logits = outputs_loss['logits']
             loss = outputs_loss['loss']
+
+            predictions = logits.argmax(dim=-1)
+            metric.add_batch(
+                predictions=accelerator.gather(predictions),
+                references=accelerator.gather(batch["labels"]),
+            )
             
             # Move logits and labels to CPU
             logits = logits.detach().cpu().numpy()
@@ -296,6 +304,7 @@ def validation(accelerator, model, dataloader, device):
             predictions_labels += predict_content
 
             del batch
+            del logits
             
     # Calculate the average loss over the training data.
     avg_epoch_loss = total_loss / len(dataloader)
@@ -303,18 +312,18 @@ def validation(accelerator, model, dataloader, device):
     # Return all true labels and prediciton for future evaluations.
     return true_labels, predictions_labels, avg_epoch_loss
 
-def main(lr, wd, seed, name, weight):
-    path = f"/home/ubuntu/finBERT/gpt_downstream/eval_gridsearch/log_name_{name}_lr_{lr}_wd_{wd}_seed_{seed}.txt"
+def main(lr, wd, seed, name, weight, bs, max_length):
+    path = f"/home/ubuntu/finBERT/gpt_downstream/tadp_eval_gridsearch/log_name_{name}_lr_{lr}_wd_{wd}_seed_{seed}_bs_{bs}_max_length_{max_length}.txt"
 
     # setup accelerator
     accelerator = Accelerator(fp16=True)
     
     accelerator.print(">-*-*-*-*-*-*-<")
-    accelerator.print(f"LR: {lr}, WD: {wd}, Seed: {seed}")
+    accelerator.print(f"LR: {lr}, WD: {wd}, Seed: {seed}, BS: {bs}, Max Length: {max_length}")
     accelerator.print(">-*-*-*-*-*-*-<")
     with open(path, 'w') as f:
         accelerator.print(">-*-*-*-*-*-*-<", file=f)
-        accelerator.print(f"LR: {lr}, WD: {wd}, Seed: {seed}", file=f)
+        accelerator.print(f"LR: {lr}, WD: {wd}, Seed: {seed}, BS: {bs}, Max Length: {max_length}", file=f)
         accelerator.print(">-*-*-*-*-*-*-<", file=f)
     
     # Set seed for reproducibility.
@@ -326,11 +335,11 @@ def main(lr, wd, seed, name, weight):
     # Number of batches - depending on the max sequence length and GPU memory.
     # For 512 sequence length batch of 10 works without cuda memory issues.
     # For small sequence length can try batch of 32 or higher.
-    batch_size = 4
+    batch_size = bs
 
     # Pad or truncate text sequences to a specific length
     # if `None` it will use maximum sequence of word piece tokens allowed by model.
-    max_length = 60
+    max_length = max_length
 
     # Look for gpu to use. Will use `cpu` by default if no gpu found.
     # device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -368,7 +377,7 @@ def main(lr, wd, seed, name, weight):
         # Define PAD Token = EOS Token = 50256
         # getting rid of this 
         tokenizer.pad_token = tokenizer.eos_token
-        tokenizer.pad_token_id = tokenizer.eos_token_id
+        #tokenizer.pad_token_id = tokenizer.eos_token_id
 
         # Get the actual model.
         accelerator.print('Loading model...', file=f)
@@ -382,7 +391,7 @@ def main(lr, wd, seed, name, weight):
         #model = GPT2ForSequenceClassification.from_pretrained(pretrained_model_name_or_path=weight, config=model_config)
         model = GPT2ForSequenceClassification.from_pretrained(pretrained_model_name_or_path=None, state_dict=checkpoint, config=model_config)
 
-        import pdb; pdb.set_trace()
+        #import pdb; pdb.set_trace()
         # for all weight tensors
         # float().abs().sum() --> checkpoint
         # do the same in the model --> model
@@ -393,6 +402,7 @@ def main(lr, wd, seed, name, weight):
 
         # fix model padding token id
         #model.config.pad_token_id = 50258
+        model.config.pad_token_id = model.config.eos_token_id
         #print(model.config.pad_token)
         
         # apply the discriminative fine-tuning. discrimination rate is governed by dft_rate.
@@ -482,9 +492,12 @@ def main(lr, wd, seed, name, weight):
                                             num_warmup_steps = 0, # Default value in run_glue.py
                                             num_training_steps = total_steps)
     
+    # metrics
+    metric = load_metric("accuracy")
+    
     # Store the average loss after each epoch so we can plot them.
     all_loss = {'train_loss':[], 'val_loss':[]}
-    all_acc = {'train_acc':[], 'val_acc':[]}
+    all_acc = {'train_acc':[], 'val_acc':[], 'val_metric':[]}
     
     with open(path, 'w') as f:
         # Loop through each epoch.
@@ -501,8 +514,9 @@ def main(lr, wd, seed, name, weight):
             # Get prediction form model on validation data. 
             accelerator.print('Validation on batches...', file=f)
             accelerator.print('Validation on batches...')
-            valid_labels, valid_predict, val_loss = validation(accelerator, model, valid_dataloader, device)
+            valid_labels, valid_predict, val_loss = validation(accelerator, model, valid_dataloader, device, metric)
             val_acc = accuracy_score(valid_labels, valid_predict)
+            val_metric = metric.compute()
             
             # Print loss and accuracy values to see how training evolves.
             #print("  train_loss: %.5f - val_loss: %.5f - train_acc: %.5f - valid_acc: %.5f"%(train_loss, val_loss, train_acc, val_acc))
@@ -518,19 +532,24 @@ def main(lr, wd, seed, name, weight):
             all_loss['val_loss'].append(val_loss)
             all_acc['train_acc'].append(train_acc)
             all_acc['val_acc'].append(val_acc)
+            all_acc['val_metric'].append(val_metric)
 
         # Get the prediction from model on test data (just saving it)
         accelerator.print('Test on batches...',file=f)
         accelerator.print('Test on batches...')
-        test_labels, test_predict, test_loss = validation(accelerator, model, test_dataloader, device)
+        test_labels, test_predict, test_loss = validation(accelerator, model, test_dataloader, device, metric)
         test_acc = accuracy_score(test_labels, test_predict)
+        test_metric = metric.compute()
         
         # return the last validation acc and the corresponding test acc
         results = {
             'train_acc_epochs': all_acc['train_acc'],
             'val_acc_epochs': all_acc['val_acc'],
             'val_acc': all_acc['val_acc'][-1],
+            'val_metric_epochs': all_acc['val_metric'],
+            'val_metric': all_acc['val_metric'][-1],
             'test_acc': test_acc,
+            'test_metric': test_metric,
         }
         accelerator.print(results,file=f)
         accelerator.print(results)
@@ -552,17 +571,22 @@ if __name__ == "__main__":
     parser.add_argument('--seed', type=str, required=True)
     parser.add_argument('--name', type=str, required=True)
     parser.add_argument('--weight', type=str, required=True)
+    parser.add_argument('--bs', type=str, required=True)
+    parser.add_argument('--max_length', type=str, required=True)
     args = parser.parse_args()
 
     lr = float(args.lr)
     wd = float(args.wd)
     seed = int(args.seed)
+    bs = int(args.bs)
+    max_length = int(args.max_length)
 
-    results = main(lr=lr, wd=wd, seed=seed, name=args.name, weight=args.weight)
+    results = main(lr=lr, wd=wd, seed=seed, name=args.name, weight=args.weight, bs=bs, max_length=max_length)
     print()
     print("*"*40)
     print(results)
     print("*"*40)
+    torch.cuda.empty_cache()
 
     # path = f"/home/ubuntu/finBERT/gpt_downstream/config_gridsearch/log_{lr}_{wd}.txt"
     # # stat tracking
