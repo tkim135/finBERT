@@ -321,7 +321,7 @@ def main(lr, wd, seed, name, weight):
     set_seed(seed)
 
     # Number of training epochs (authors on fine-tuning Bert recommend between 2 and 4).
-    epochs = 12
+    epochs = 6
 
     # Number of batches - depending on the max sequence length and GPU memory.
     # For 512 sequence length batch of 10 works without cuda memory issues.
@@ -366,7 +366,9 @@ def main(lr, wd, seed, name, weight):
         # default to left padding
         tokenizer.padding_side = "left"
         # Define PAD Token = EOS Token = 50256
+        # getting rid of this 
         tokenizer.pad_token = tokenizer.eos_token
+        tokenizer.pad_token_id = tokenizer.eos_token_id
 
         # Get the actual model.
         accelerator.print('Loading model...', file=f)
@@ -380,13 +382,18 @@ def main(lr, wd, seed, name, weight):
         #model = GPT2ForSequenceClassification.from_pretrained(pretrained_model_name_or_path=weight, config=model_config)
         model = GPT2ForSequenceClassification.from_pretrained(pretrained_model_name_or_path=None, state_dict=checkpoint, config=model_config)
 
+        import pdb; pdb.set_trace()
+        # for all weight tensors
+        # float().abs().sum() --> checkpoint
+        # do the same in the model --> model
+        
         # resize model embedding to match new tokenizer
         #model.resize_token_embeddings(len(tokenizer))
         model.resize_token_embeddings(50260)
 
         # fix model padding token id
-        model.config.pad_token_id = model.config.eos_token_id
-
+        #model.config.pad_token_id = 50258
+        #print(model.config.pad_token)
         
         # apply the discriminative fine-tuning. discrimination rate is governed by dft_rate.
         optimizer_grouped_parameters = []
