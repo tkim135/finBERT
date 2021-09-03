@@ -1,0 +1,472 @@
+/home/ubuntu/finBERT/tutorial-env/lib/python3.7/site-packages/torch/distributed/launch.py:164: DeprecationWarning: The 'warn' method is deprecated, use 'warning' instead
+  "The module torch.distributed.launch is deprecated "
+The module torch.distributed.launch is deprecated and going to be removed in future.Migrate to torch.distributed.run
+INFO:torch.distributed.launcher.api:Starting elastic_operator with launch configs:
+  entrypoint       : example.py
+  min_nodes        : 1
+  max_nodes        : 1
+  nproc_per_node   : 8
+  run_id           : none
+  rdzv_backend     : static
+  rdzv_endpoint    : 127.0.0.1:29500
+  rdzv_configs     : {'rank': 0, 'timeout': 900}
+  max_restarts     : 3
+  monitor_interval : 5
+  log_dir          : None
+  metrics_cfg      : {}
+
+INFO:torch.distributed.elastic.agent.server.local_elastic_agent:log directory set to: /tmp/torchelastic_p09l4r3o/none_fgdllyqu
+INFO:torch.distributed.elastic.agent.server.api:[default] starting workers for entrypoint: python3
+INFO:torch.distributed.elastic.agent.server.api:[default] Rendezvous'ing worker group
+/home/ubuntu/finBERT/tutorial-env/lib/python3.7/site-packages/torch/distributed/elastic/utils/store.py:53: FutureWarning: This is an experimental API and will be changed in future.
+  "This is an experimental API and will be changed in future.", FutureWarning
+INFO:torch.distributed.elastic.agent.server.api:[default] Rendezvous complete for workers. Result:
+  restart_count=0
+  master_addr=127.0.0.1
+  master_port=29500
+  group_rank=0
+  group_world_size=1
+  local_ranks=[0, 1, 2, 3, 4, 5, 6, 7]
+  role_ranks=[0, 1, 2, 3, 4, 5, 6, 7]
+  global_ranks=[0, 1, 2, 3, 4, 5, 6, 7]
+  role_world_sizes=[8, 8, 8, 8, 8, 8, 8, 8]
+  global_world_sizes=[8, 8, 8, 8, 8, 8, 8, 8]
+
+INFO:torch.distributed.elastic.agent.server.api:[default] Starting worker group
+INFO:torch.distributed.elastic.multiprocessing:Setting worker0 reply file to: /tmp/torchelastic_p09l4r3o/none_fgdllyqu/attempt_0/0/error.json
+INFO:torch.distributed.elastic.multiprocessing:Setting worker1 reply file to: /tmp/torchelastic_p09l4r3o/none_fgdllyqu/attempt_0/1/error.json
+INFO:torch.distributed.elastic.multiprocessing:Setting worker2 reply file to: /tmp/torchelastic_p09l4r3o/none_fgdllyqu/attempt_0/2/error.json
+INFO:torch.distributed.elastic.multiprocessing:Setting worker3 reply file to: /tmp/torchelastic_p09l4r3o/none_fgdllyqu/attempt_0/3/error.json
+INFO:torch.distributed.elastic.multiprocessing:Setting worker4 reply file to: /tmp/torchelastic_p09l4r3o/none_fgdllyqu/attempt_0/4/error.json
+INFO:torch.distributed.elastic.multiprocessing:Setting worker5 reply file to: /tmp/torchelastic_p09l4r3o/none_fgdllyqu/attempt_0/5/error.json
+INFO:torch.distributed.elastic.multiprocessing:Setting worker6 reply file to: /tmp/torchelastic_p09l4r3o/none_fgdllyqu/attempt_0/6/error.json
+INFO:torch.distributed.elastic.multiprocessing:Setting worker7 reply file to: /tmp/torchelastic_p09l4r3o/none_fgdllyqu/attempt_0/7/error.json
+>-*-*-*-*-*-*-<
+LR: 5e-05, WD: 0.01, Seed: 176060, BS: 4, Max Length: 60
+>-*-*-*-*-*-*-<
+Some weights of the model checkpoint at None were not used when initializing GPT2ForSequenceClassification: ['lm_head.weight']
+- This IS expected if you are initializing GPT2ForSequenceClassification from the checkpoint of a model trained on another task or with another architecture (e.g. initializing a BertForSequenceClassification model from a BertForPreTraining model).
+- This IS NOT expected if you are initializing GPT2ForSequenceClassification from the checkpoint of a model that you expect to be exactly identical (initializing a BertForSequenceClassification model from a BertForSequenceClassification model).
+Some weights of GPT2ForSequenceClassification were not initialized from the model checkpoint at None and are newly initialized: ['score.weight']
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+Some weights of the model checkpoint at None were not used when initializing GPT2ForSequenceClassification: ['lm_head.weight']
+- This IS expected if you are initializing GPT2ForSequenceClassification from the checkpoint of a model trained on another task or with another architecture (e.g. initializing a BertForSequenceClassification model from a BertForPreTraining model).
+- This IS NOT expected if you are initializing GPT2ForSequenceClassification from the checkpoint of a model that you expect to be exactly identical (initializing a BertForSequenceClassification model from a BertForSequenceClassification model).
+Some weights of GPT2ForSequenceClassification were not initialized from the model checkpoint at None and are newly initialized: ['score.weight']
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+Some weights of the model checkpoint at None were not used when initializing GPT2ForSequenceClassification: ['lm_head.weight']
+- This IS expected if you are initializing GPT2ForSequenceClassification from the checkpoint of a model trained on another task or with another architecture (e.g. initializing a BertForSequenceClassification model from a BertForPreTraining model).
+- This IS NOT expected if you are initializing GPT2ForSequenceClassification from the checkpoint of a model that you expect to be exactly identical (initializing a BertForSequenceClassification model from a BertForSequenceClassification model).
+Some weights of GPT2ForSequenceClassification were not initialized from the model checkpoint at None and are newly initialized: ['score.weight']
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+Some weights of the model checkpoint at None were not used when initializing GPT2ForSequenceClassification: ['lm_head.weight']
+- This IS expected if you are initializing GPT2ForSequenceClassification from the checkpoint of a model trained on another task or with another architecture (e.g. initializing a BertForSequenceClassification model from a BertForPreTraining model).
+- This IS NOT expected if you are initializing GPT2ForSequenceClassification from the checkpoint of a model that you expect to be exactly identical (initializing a BertForSequenceClassification model from a BertForSequenceClassification model).
+Some weights of GPT2ForSequenceClassification were not initialized from the model checkpoint at None and are newly initialized: ['score.weight']
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+Some weights of the model checkpoint at None were not used when initializing GPT2ForSequenceClassification: ['lm_head.weight']
+- This IS expected if you are initializing GPT2ForSequenceClassification from the checkpoint of a model trained on another task or with another architecture (e.g. initializing a BertForSequenceClassification model from a BertForPreTraining model).
+- This IS NOT expected if you are initializing GPT2ForSequenceClassification from the checkpoint of a model that you expect to be exactly identical (initializing a BertForSequenceClassification model from a BertForSequenceClassification model).
+Some weights of GPT2ForSequenceClassification were not initialized from the model checkpoint at None and are newly initialized: ['score.weight']
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+Some weights of the model checkpoint at None were not used when initializing GPT2ForSequenceClassification: ['lm_head.weight']
+- This IS expected if you are initializing GPT2ForSequenceClassification from the checkpoint of a model trained on another task or with another architecture (e.g. initializing a BertForSequenceClassification model from a BertForPreTraining model).
+- This IS NOT expected if you are initializing GPT2ForSequenceClassification from the checkpoint of a model that you expect to be exactly identical (initializing a BertForSequenceClassification model from a BertForSequenceClassification model).
+Some weights of GPT2ForSequenceClassification were not initialized from the model checkpoint at None and are newly initialized: ['score.weight']
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+Some weights of the model checkpoint at None were not used when initializing GPT2ForSequenceClassification: ['lm_head.weight']
+- This IS expected if you are initializing GPT2ForSequenceClassification from the checkpoint of a model trained on another task or with another architecture (e.g. initializing a BertForSequenceClassification model from a BertForPreTraining model).
+- This IS NOT expected if you are initializing GPT2ForSequenceClassification from the checkpoint of a model that you expect to be exactly identical (initializing a BertForSequenceClassification model from a BertForSequenceClassification model).
+Some weights of GPT2ForSequenceClassification were not initialized from the model checkpoint at None and are newly initialized: ['score.weight']
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+Some weights of the model checkpoint at None were not used when initializing GPT2ForSequenceClassification: ['lm_head.weight']
+- This IS expected if you are initializing GPT2ForSequenceClassification from the checkpoint of a model trained on another task or with another architecture (e.g. initializing a BertForSequenceClassification model from a BertForPreTraining model).
+- This IS NOT expected if you are initializing GPT2ForSequenceClassification from the checkpoint of a model that you expect to be exactly identical (initializing a BertForSequenceClassification model from a BertForSequenceClassification model).
+Some weights of GPT2ForSequenceClassification were not initialized from the model checkpoint at None and are newly initialized: ['score.weight']
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+  0%|          | 0/6 [00:00<?, ?it/s]
+  0%|          | 0/120 [00:00<?, ?it/s][A  0%|          | 0/6 [00:00<?, ?it/s]  0%|          | 0/6 [00:00<?, ?it/s]  0%|          | 0/6 [00:00<?, ?it/s]  0%|          | 0/6 [00:00<?, ?it/s]
+  0%|          | 0/120 [00:00<?, ?it/s][A
+
+  0%|          | 0/6 [00:00<?, ?it/s]  0%|          | 0/120 [00:00<?, ?it/s][ATraining on batches...
+  0%|          | 0/120 [00:00<?, ?it/s][A
+  0%|          | 0/120 [00:00<?, ?it/s][A
+  0%|          | 0/120 [00:00<?, ?it/s][A  0%|          | 0/6 [00:00<?, ?it/s]
+  0%|          | 0/120 [00:00<?, ?it/s][A  0%|          | 0/6 [00:00<?, ?it/s]
+  0%|          | 0/120 [00:00<?, ?it/s][Aexample.py:218: FutureWarning: Non-finite norm encountered in torch.nn.utils.clip_grad_norm_; continuing anyway. Note that the default behavior will change in a future release to error out if a non-finite total norm is encountered. At that point, setting error_if_nonfinite=false will be required to retain the old behavior.
+  torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
+example.py:218: FutureWarning: Non-finite norm encountered in torch.nn.utils.clip_grad_norm_; continuing anyway. Note that the default behavior will change in a future release to error out if a non-finite total norm is encountered. At that point, setting error_if_nonfinite=false will be required to retain the old behavior.
+  torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
+example.py:218: FutureWarning: Non-finite norm encountered in torch.nn.utils.clip_grad_norm_; continuing anyway. Note that the default behavior will change in a future release to error out if a non-finite total norm is encountered. At that point, setting error_if_nonfinite=false will be required to retain the old behavior.
+  torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
+example.py:218: FutureWarning: Non-finite norm encountered in torch.nn.utils.clip_grad_norm_; continuing anyway. Note that the default behavior will change in a future release to error out if a non-finite total norm is encountered. At that point, setting error_if_nonfinite=false will be required to retain the old behavior.
+  torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
+example.py:218: FutureWarning: Non-finite norm encountered in torch.nn.utils.clip_grad_norm_; continuing anyway. Note that the default behavior will change in a future release to error out if a non-finite total norm is encountered. At that point, setting error_if_nonfinite=false will be required to retain the old behavior.
+  torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
+example.py:218: FutureWarning: Non-finite norm encountered in torch.nn.utils.clip_grad_norm_; continuing anyway. Note that the default behavior will change in a future release to error out if a non-finite total norm is encountered. At that point, setting error_if_nonfinite=false will be required to retain the old behavior.
+  torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
+example.py:218: FutureWarning: Non-finite norm encountered in torch.nn.utils.clip_grad_norm_; continuing anyway. Note that the default behavior will change in a future release to error out if a non-finite total norm is encountered. At that point, setting error_if_nonfinite=false will be required to retain the old behavior.
+  torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
+example.py:218: FutureWarning: Non-finite norm encountered in torch.nn.utils.clip_grad_norm_; continuing anyway. Note that the default behavior will change in a future release to error out if a non-finite total norm is encountered. At that point, setting error_if_nonfinite=false will be required to retain the old behavior.
+  torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
+
+
+  1%|          | 1/120 [00:02<05:44,  2.90s/it]  1%|          | 1/120 [00:02<05:50,  2.95s/it]
+[A[A  1%|          | 1/120 [00:02<05:51,  2.95s/it][A
+  1%|          | 1/120 [00:02<05:50,  2.95s/it][A
+  1%|          | 1/120 [00:02<05:42,  2.88s/it][A
+  1%|          | 1/120 [00:02<05:50,  2.95s/it][A
+  1%|          | 1/120 [00:02<05:51,  2.96s/it][A
+  1%|          | 1/120 [00:02<05:52,  2.96s/it][A
+
+  2%|▏         | 2/120 [00:03<02:55,  1.49s/it][A  2%|▏         | 2/120 [00:03<02:57,  1.51s/it][A
+
+
+  2%|▏         | 2/120 [00:03<02:57,  1.51s/it][A
+  2%|▏         | 2/120 [00:03<02:54,  1.48s/it][A  2%|▏         | 2/120 [00:03<02:58,  1.51s/it][A  2%|▏         | 2/120 [00:03<02:57,  1.51s/it][A
+  2%|▏         | 2/120 [00:03<02:58,  1.51s/it][A
+  2%|▏         | 2/120 [00:03<02:58,  1.51s/it][A
+
+  2%|▎         | 3/120 [00:03<01:52,  1.04it/s][A  2%|▎         | 3/120 [00:03<01:51,  1.04it/s][A
+
+  2%|▎         | 3/120 [00:03<01:52,  1.04it/s][A  2%|▎         | 3/120 [00:03<01:52,  1.04it/s][A
+  2%|▎         | 3/120 [00:03<01:52,  1.04it/s][A
+  2%|▎         | 3/120 [00:03<01:52,  1.04it/s][A
+  2%|▎         | 3/120 [00:03<01:50,  1.06it/s][A
+  2%|▎         | 3/120 [00:03<01:51,  1.05it/s][A
+  3%|▎         | 4/120 [00:05<02:23,  1.24s/it][A
+  3%|▎         | 4/120 [00:05<02:23,  1.24s/it][A
+  3%|▎         | 4/120 [00:05<02:23,  1.23s/it][A
+  3%|▎         | 4/120 [00:05<02:24,  1.25s/it][A
+  3%|▎         | 4/120 [00:05<02:24,  1.25s/it][A
+  3%|▎         | 4/120 [00:05<02:24,  1.24s/it][A
+  3%|▎         | 4/120 [00:05<02:25,  1.25s/it][A
+  3%|▎         | 4/120 [00:05<02:25,  1.25s/it][A
+  4%|▍         | 5/120 [00:05<01:45,  1.09it/s][A
+
+
+
+  4%|▍         | 5/120 [00:05<01:45,  1.09it/s][A  4%|▍         | 5/120 [00:05<01:45,  1.09it/s]  4%|▍         | 5/120 [00:05<01:45,  1.09it/s][A[A  4%|▍         | 5/120 [00:05<01:45,  1.09it/s][A
+  4%|▍         | 5/120 [00:05<01:45,  1.09it/s][A
+  4%|▍         | 5/120 [00:05<01:45,  1.09it/s][A
+  4%|▍         | 5/120 [00:05<01:45,  1.09it/s][A
+
+
+  5%|▌         | 6/120 [00:06<01:23,  1.37it/s][A  5%|▌         | 6/120 [00:06<01:24,  1.35it/s][A  5%|▌         | 6/120 [00:06<01:23,  1.36it/s][A
+
+  5%|▌         | 6/120 [00:06<01:23,  1.36it/s][A  5%|▌         | 6/120 [00:06<01:23,  1.36it/s][A
+
+  5%|▌         | 6/120 [00:06<01:24,  1.35it/s][A  5%|▌         | 6/120 [00:06<01:24,  1.36it/s][A
+  5%|▌         | 6/120 [00:06<01:24,  1.35it/s][A
+
+  6%|▌         | 7/120 [00:06<01:08,  1.65it/s][A  6%|▌         | 7/120 [00:06<01:08,  1.64it/s][A
+
+  6%|▌         | 7/120 [00:06<01:08,  1.65it/s]  6%|▌         | 7/120 [00:06<01:08,  1.65it/s][A[A
+  6%|▌         | 7/120 [00:06<01:08,  1.64it/s][A
+  6%|▌         | 7/120 [00:06<01:08,  1.65it/s][A
+  6%|▌         | 7/120 [00:06<01:08,  1.64it/s][A
+  6%|▌         | 7/120 [00:06<01:09,  1.63it/s][A
+
+  7%|▋         | 8/120 [00:06<00:58,  1.91it/s][A  7%|▋         | 8/120 [00:06<00:58,  1.90it/s][A
+  7%|▋         | 8/120 [00:06<00:58,  1.90it/s][A
+  7%|▋         | 8/120 [00:06<00:59,  1.90it/s][A
+  7%|▋         | 8/120 [00:06<00:59,  1.89it/s][A
+  7%|▋         | 8/120 [00:06<00:59,  1.90it/s][A
+  7%|▋         | 8/120 [00:06<00:58,  1.90it/s][A
+  7%|▋         | 8/120 [00:06<00:59,  1.89it/s][A
+  8%|▊         | 9/120 [00:07<00:52,  2.13it/s][A
+  8%|▊         | 9/120 [00:07<00:52,  2.13it/s][A
+  8%|▊         | 9/120 [00:07<00:52,  2.13it/s][A
+  8%|▊         | 9/120 [00:07<00:52,  2.13it/s][A
+  8%|▊         | 9/120 [00:07<00:52,  2.12it/s][A
+  8%|▊         | 9/120 [00:07<00:52,  2.12it/s][A
+  8%|▊         | 9/120 [00:07<00:52,  2.12it/s][A
+  8%|▊         | 9/120 [00:07<00:52,  2.12it/s][A
+
+  8%|▊         | 10/120 [00:07<00:47,  2.32it/s][A  8%|▊         | 10/120 [00:07<00:47,  2.31it/s][A
+  8%|▊         | 10/120 [00:07<00:47,  2.32it/s][A
+  8%|▊         | 10/120 [00:07<00:47,  2.31it/s][A
+  8%|▊         | 10/120 [00:07<00:47,  2.32it/s][A
+  8%|▊         | 10/120 [00:07<00:47,  2.31it/s][A
+  8%|▊         | 10/120 [00:07<00:47,  2.31it/s][A
+  8%|▊         | 10/120 [00:07<00:47,  2.31it/s][A
+
+  9%|▉         | 11/120 [00:07<00:44,  2.48it/s][A  9%|▉         | 11/120 [00:07<00:44,  2.47it/s][A
+
+  9%|▉         | 11/120 [00:07<00:44,  2.48it/s][A
+  9%|▉         | 11/120 [00:07<00:44,  2.47it/s][A  9%|▉         | 11/120 [00:07<00:44,  2.47it/s][A
+  9%|▉         | 11/120 [00:07<00:44,  2.47it/s][A
+  9%|▉         | 11/120 [00:07<00:44,  2.45it/s][A
+  9%|▉         | 11/120 [00:07<00:44,  2.47it/s][A
+
+ 10%|█         | 12/120 [00:08<00:41,  2.59it/s][A 10%|█         | 12/120 [00:08<00:41,  2.59it/s][A
+
+ 10%|█         | 12/120 [00:08<00:41,  2.59it/s][A 10%|█         | 12/120 [00:08<00:41,  2.59it/s]
+[A
+ 10%|█         | 12/120 [00:08<00:41,  2.59it/s][A 10%|█         | 12/120 [00:08<00:41,  2.58it/s][A
+ 10%|█         | 12/120 [00:08<00:41,  2.58it/s][A
+ 10%|█         | 12/120 [00:08<00:41,  2.58it/s][A
+
+ 11%|█         | 13/120 [00:08<00:40,  2.67it/s][A
+
+ 11%|█         | 13/120 [00:08<00:40,  2.67it/s][A 11%|█         | 13/120 [00:08<00:39,  2.68it/s][A 11%|█         | 13/120 [00:08<00:40,  2.67it/s][A
+
+ 11%|█         | 13/120 [00:08<00:40,  2.67it/s][A 11%|█         | 13/120 [00:08<00:40,  2.67it/s][A
+ 11%|█         | 13/120 [00:08<00:39,  2.69it/s][A
+ 11%|█         | 13/120 [00:08<00:40,  2.65it/s][A
+ 12%|█▏        | 14/120 [00:08<00:38,  2.75it/s][A
+ 12%|█▏        | 14/120 [00:08<00:38,  2.75it/s][A
+ 12%|█▏        | 14/120 [00:08<00:38,  2.75it/s][A
+ 12%|█▏        | 14/120 [00:08<00:38,  2.74it/s][A
+ 12%|█▏        | 14/120 [00:08<00:38,  2.75it/s][A
+ 12%|█▏        | 14/120 [00:08<00:38,  2.74it/s][A
+ 12%|█▏        | 14/120 [00:08<00:38,  2.74it/s][A
+ 12%|█▏        | 14/120 [00:08<00:38,  2.73it/s][A
+
+ 12%|█▎        | 15/120 [00:09<00:37,  2.81it/s] 12%|█▎        | 15/120 [00:09<00:37,  2.80it/s][A[A
+ 12%|█▎        | 15/120 [00:09<00:37,  2.80it/s][A
+
+ 12%|█▎        | 15/120 [00:09<00:37,  2.80it/s][A 12%|█▎        | 15/120 [00:09<00:37,  2.81it/s][A
+ 12%|█▎        | 15/120 [00:09<00:37,  2.79it/s][A
+ 12%|█▎        | 15/120 [00:09<00:37,  2.80it/s][A
+ 12%|█▎        | 15/120 [00:09<00:37,  2.79it/s][A
+
+ 13%|█▎        | 16/120 [00:09<00:36,  2.83it/s][A
+
+ 13%|█▎        | 16/120 [00:09<00:36,  2.83it/s][A
+ 13%|█▎        | 16/120 [00:09<00:36,  2.83it/s][A 13%|█▎        | 16/120 [00:09<00:36,  2.83it/s][A 13%|█▎        | 16/120 [00:09<00:36,  2.84it/s][A
+ 13%|█▎        | 16/120 [00:09<00:36,  2.83it/s][A
+ 13%|█▎        | 16/120 [00:09<00:36,  2.83it/s][A
+ 13%|█▎        | 16/120 [00:09<00:37,  2.81it/s][A
+ 14%|█▍        | 17/120 [00:09<00:35,  2.86it/s][A
+ 14%|█▍        | 17/120 [00:09<00:36,  2.86it/s][A
+ 14%|█▍        | 17/120 [00:09<00:36,  2.86it/s][A
+ 14%|█▍        | 17/120 [00:09<00:35,  2.86it/s][A
+ 14%|█▍        | 17/120 [00:09<00:36,  2.85it/s][A
+ 14%|█▍        | 17/120 [00:09<00:36,  2.85it/s][A
+ 14%|█▍        | 17/120 [00:09<00:36,  2.86it/s][A
+ 14%|█▍        | 17/120 [00:09<00:36,  2.85it/s][A
+ 15%|█▌        | 18/120 [00:10<00:32,  3.16it/s][A
+
+
+
+ 15%|█▌        | 18/120 [00:10<00:32,  3.15it/s][A 15%|█▌        | 18/120 [00:10<00:32,  3.15it/s][A 15%|█▌        | 18/120 [00:10<00:32,  3.15it/s][A 15%|█▌        | 18/120 [00:10<00:32,  3.16it/s][A
+ 15%|█▌        | 18/120 [00:10<00:32,  3.16it/s][A
+ 15%|█▌        | 18/120 [00:10<00:32,  3.15it/s][A
+ 15%|█▌        | 18/120 [00:10<00:32,  3.14it/s][A
+
+ 16%|█▌        | 19/120 [00:10<00:33,  3.03it/s][A
+
+ 16%|█▌        | 19/120 [00:10<00:33,  3.03it/s][A 16%|█▌        | 19/120 [00:10<00:33,  3.04it/s][A
+ 16%|█▌        | 19/120 [00:10<00:33,  3.04it/s][A 16%|█▌        | 19/120 [00:10<00:33,  3.05it/s][A
+ 16%|█▌        | 19/120 [00:10<00:33,  3.04it/s][A
+ 16%|█▌        | 19/120 [00:10<00:33,  3.02it/s][A
+ 16%|█▌        | 19/120 [00:10<00:33,  3.01it/s][A
+
+
+
+ 17%|█▋        | 20/120 [00:10<00:33,  3.00it/s][A 17%|█▋        | 20/120 [00:10<00:33,  3.00it/s] 17%|█▋        | 20/120 [00:10<00:33,  3.00it/s][A[A 17%|█▋        | 20/120 [00:10<00:33,  3.00it/s][A
+ 17%|█▋        | 20/120 [00:10<00:33,  3.01it/s][A
+ 17%|█▋        | 20/120 [00:10<00:33,  2.99it/s][A
+ 17%|█▋        | 20/120 [00:10<00:33,  2.99it/s][A
+ 17%|█▋        | 20/120 [00:10<00:33,  2.98it/s][A
+
+ 18%|█▊        | 21/120 [00:11<00:33,  2.99it/s][A 18%|█▊        | 21/120 [00:11<00:33,  2.98it/s][A
+
+ 18%|█▊        | 21/120 [00:11<00:33,  2.97it/s][A 18%|█▊        | 21/120 [00:11<00:33,  2.97it/s][A
+ 18%|█▊        | 21/120 [00:11<00:33,  2.97it/s][A
+ 18%|█▊        | 21/120 [00:11<00:33,  2.97it/s][A
+ 18%|█▊        | 21/120 [00:11<00:33,  2.97it/s][A
+ 18%|█▊        | 21/120 [00:11<00:33,  2.97it/s][A
+ 18%|█▊        | 22/120 [00:11<00:33,  2.96it/s][A
+ 18%|█▊        | 22/120 [00:11<00:32,  2.97it/s][A
+ 18%|█▊        | 22/120 [00:11<00:33,  2.96it/s][A
+ 18%|█▊        | 22/120 [00:11<00:33,  2.96it/s][A
+ 18%|█▊        | 22/120 [00:11<00:33,  2.96it/s][A
+
+ 18%|█▊        | 22/120 [00:11<00:33,  2.95it/s][A
+ 18%|█▊        | 22/120 [00:11<00:33,  2.95it/s][A 18%|█▊        | 22/120 [00:11<00:33,  2.95it/s][A
+
+ 19%|█▉        | 23/120 [00:11<00:32,  2.95it/s][A 19%|█▉        | 23/120 [00:11<00:32,  2.96it/s][A
+ 19%|█▉        | 23/120 [00:11<00:32,  2.96it/s][A
+ 19%|█▉        | 23/120 [00:11<00:32,  2.95it/s][A
+ 19%|█▉        | 23/120 [00:11<00:32,  2.94it/s][A
+
+ 19%|█▉        | 23/120 [00:11<00:32,  2.94it/s][A 19%|█▉        | 23/120 [00:11<00:32,  2.94it/s][A
+ 19%|█▉        | 23/120 [00:11<00:33,  2.94it/s][A
+ 20%|██        | 24/120 [00:12<00:32,  2.94it/s][A
+ 20%|██        | 24/120 [00:12<00:32,  2.95it/s][A
+ 20%|██        | 24/120 [00:12<00:32,  2.95it/s][A
+ 20%|██        | 24/120 [00:12<00:32,  2.94it/s][A
+
+ 20%|██        | 24/120 [00:12<00:32,  2.94it/s][A 20%|██        | 24/120 [00:12<00:32,  2.94it/s][A
+ 20%|██        | 24/120 [00:12<00:32,  2.93it/s][A
+ 20%|██        | 24/120 [00:12<00:32,  2.91it/s][A
+ 21%|██        | 25/120 [00:12<00:32,  2.94it/s][A
+
+ 21%|██        | 25/120 [00:12<00:32,  2.93it/s] 21%|██        | 25/120 [00:12<00:32,  2.94it/s][A[A
+
+ 21%|██        | 25/120 [00:12<00:32,  2.94it/s][A 21%|██        | 25/120 [00:12<00:32,  2.93it/s][A
+ 21%|██        | 25/120 [00:12<00:32,  2.94it/s][A
+ 21%|██        | 25/120 [00:12<00:32,  2.92it/s][A
+ 21%|██        | 25/120 [00:12<00:32,  2.93it/s][A
+
+
+
+ 22%|██▏       | 26/120 [00:12<00:31,  2.94it/s][A
+ 22%|██▏       | 26/120 [00:12<00:31,  2.94it/s][A 22%|██▏       | 26/120 [00:12<00:31,  2.94it/s][A 22%|██▏       | 26/120 [00:12<00:31,  2.94it/s][A 22%|██▏       | 26/120 [00:12<00:31,  2.94it/s][A
+ 22%|██▏       | 26/120 [00:12<00:32,  2.93it/s][A
+ 22%|██▏       | 26/120 [00:12<00:32,  2.93it/s][A
+ 22%|██▏       | 26/120 [00:12<00:32,  2.92it/s][A
+
+
+
+ 22%|██▎       | 27/120 [00:13<00:31,  2.91it/s] 22%|██▎       | 27/120 [00:13<00:31,  2.92it/s][A[A 22%|██▎       | 27/120 [00:13<00:32,  2.91it/s][A 22%|██▎       | 27/120 [00:13<00:31,  2.91it/s][A
+
+ 22%|██▎       | 27/120 [00:13<00:31,  2.91it/s][A 22%|██▎       | 27/120 [00:13<00:31,  2.91it/s][A
+ 22%|██▎       | 27/120 [00:13<00:32,  2.88it/s][A
+ 22%|██▎       | 27/120 [00:13<00:32,  2.89it/s][A
+ 23%|██▎       | 28/120 [00:13<00:31,  2.92it/s][A
+ 23%|██▎       | 28/120 [00:13<00:31,  2.92it/s][A
+ 23%|██▎       | 28/120 [00:13<00:31,  2.92it/s][A
+ 23%|██▎       | 28/120 [00:13<00:31,  2.91it/s][A
+ 23%|██▎       | 28/120 [00:13<00:31,  2.92it/s][A
+
+ 23%|██▎       | 28/120 [00:13<00:31,  2.92it/s][A 23%|██▎       | 28/120 [00:13<00:31,  2.90it/s][A
+ 23%|██▎       | 28/120 [00:13<00:31,  2.90it/s][A
+
+ 24%|██▍       | 29/120 [00:13<00:31,  2.90it/s][A
+ 24%|██▍       | 29/120 [00:13<00:31,  2.91it/s][A
+ 24%|██▍       | 29/120 [00:13<00:31,  2.90it/s][A 24%|██▍       | 29/120 [00:13<00:31,  2.90it/s][A
+
+ 24%|██▍       | 29/120 [00:13<00:31,  2.91it/s][A 24%|██▍       | 29/120 [00:13<00:31,  2.90it/s][A
+ 24%|██▍       | 29/120 [00:13<00:31,  2.90it/s][A
+ 24%|██▍       | 29/120 [00:14<00:31,  2.90it/s][A
+
+ 25%|██▌       | 30/120 [00:14<00:30,  2.91it/s][A 25%|██▌       | 30/120 [00:14<00:30,  2.91it/s][A
+ 25%|██▌       | 30/120 [00:14<00:30,  2.91it/s][A
+ 25%|██▌       | 30/120 [00:14<00:30,  2.91it/s][A
+ 25%|██▌       | 30/120 [00:14<00:30,  2.92it/s][A
+ 25%|██▌       | 30/120 [00:14<00:30,  2.91it/s][A
+ 25%|██▌       | 30/120 [00:14<00:31,  2.90it/s][A
+ 25%|██▌       | 30/120 [00:14<00:31,  2.90it/s][A
+
+
+
+ 26%|██▌       | 31/120 [00:14<00:27,  3.19it/s][A 26%|██▌       | 31/120 [00:14<00:27,  3.19it/s][A
+ 26%|██▌       | 31/120 [00:14<00:27,  3.19it/s] 26%|██▌       | 31/120 [00:14<00:27,  3.19it/s][A[A 26%|██▌       | 31/120 [00:14<00:27,  3.20it/s][A
+ 26%|██▌       | 31/120 [00:14<00:27,  3.19it/s][A
+ 26%|██▌       | 31/120 [00:14<00:27,  3.19it/s][A
+ 26%|██▌       | 31/120 [00:14<00:27,  3.19it/s][A
+
+ 27%|██▋       | 32/120 [00:14<00:28,  3.11it/s][A 27%|██▋       | 32/120 [00:14<00:28,  3.11it/s][A
+
+ 27%|██▋       | 32/120 [00:14<00:28,  3.12it/s][A
+ 27%|██▋       | 32/120 [00:14<00:28,  3.11it/s][A 27%|██▋       | 32/120 [00:14<00:28,  3.11it/s][A
+ 27%|██▋       | 32/120 [00:14<00:28,  3.10it/s][A
+ 27%|██▋       | 32/120 [00:14<00:28,  3.11it/s][A
+ 27%|██▋       | 32/120 [00:14<00:28,  3.11it/s][A
+
+ 28%|██▊       | 33/120 [00:15<00:28,  3.05it/s][A 28%|██▊       | 33/120 [00:15<00:28,  3.05it/s][A
+
+ 28%|██▊       | 33/120 [00:15<00:28,  3.05it/s][A 28%|██▊       | 33/120 [00:15<00:28,  3.06it/s][A
+ 28%|██▊       | 33/120 [00:15<00:28,  3.05it/s][A
+ 28%|██▊       | 33/120 [00:15<00:28,  3.05it/s][A
+ 28%|██▊       | 33/120 [00:15<00:28,  3.03it/s][A
+ 28%|██▊       | 33/120 [00:15<00:28,  3.05it/s][A
+
+ 28%|██▊       | 34/120 [00:15<00:28,  3.01it/s][A 28%|██▊       | 34/120 [00:15<00:28,  3.01it/s][A
+
+ 28%|██▊       | 34/120 [00:15<00:28,  3.01it/s][A
+ 28%|██▊       | 34/120 [00:15<00:28,  3.01it/s][A 28%|██▊       | 34/120 [00:15<00:28,  3.01it/s][A
+ 28%|██▊       | 34/120 [00:15<00:28,  3.00it/s][A
+ 28%|██▊       | 34/120 [00:15<00:28,  3.01it/s][A
+ 28%|██▊       | 34/120 [00:15<00:28,  2.99it/s][A
+
+ 29%|██▉       | 35/120 [00:15<00:28,  2.99it/s][A 29%|██▉       | 35/120 [00:15<00:28,  2.99it/s][A
+ 29%|██▉       | 35/120 [00:15<00:28,  2.98it/s][A
+ 29%|██▉       | 35/120 [00:15<00:28,  2.98it/s][A
+
+ 29%|██▉       | 35/120 [00:15<00:28,  2.99it/s][A 29%|██▉       | 35/120 [00:15<00:28,  2.98it/s][A
+
+ 29%|██▉       | 35/120 [00:15<00:28,  2.99it/s][A 29%|██▉       | 35/120 [00:15<00:28,  2.97it/s][A
+ 30%|███       | 36/120 [00:16<00:28,  2.97it/s][A
+ 30%|███       | 36/120 [00:16<00:28,  2.97it/s][A
+ 30%|███       | 36/120 [00:16<00:28,  2.96it/s][A
+ 30%|███       | 36/120 [00:16<00:28,  2.97it/s][A
+ 30%|███       | 36/120 [00:16<00:28,  2.96it/s][A
+ 30%|███       | 36/120 [00:16<00:28,  2.98it/s][A
+ 30%|███       | 36/120 [00:16<00:28,  2.96it/s][A
+ 30%|███       | 36/120 [00:16<00:28,  2.96it/s][A
+ 31%|███       | 37/120 [00:16<00:27,  2.97it/s][A
+ 31%|███       | 37/120 [00:16<00:28,  2.96it/s][A
+ 31%|███       | 37/120 [00:16<00:27,  2.97it/s][A
+ 31%|███       | 37/120 [00:16<00:28,  2.96it/s][A
+ 31%|███       | 37/120 [00:16<00:28,  2.95it/s][A
+ 31%|███       | 37/120 [00:16<00:27,  2.96it/s][A
+ 31%|███       | 37/120 [00:16<00:28,  2.96it/s][A
+ 31%|███       | 37/120 [00:16<00:28,  2.95it/s][A
+
+ 32%|███▏      | 38/120 [00:16<00:25,  3.25it/s][A 32%|███▏      | 38/120 [00:16<00:25,  3.25it/s][A
+ 32%|███▏      | 38/120 [00:16<00:25,  3.24it/s][A
+ 32%|███▏      | 38/120 [00:16<00:25,  3.25it/s][A
+ 32%|███▏      | 38/120 [00:16<00:25,  3.25it/s][A
+ 32%|███▏      | 38/120 [00:16<00:25,  3.24it/s][A
+ 32%|███▏      | 38/120 [00:16<00:25,  3.25it/s][A
+ 32%|███▏      | 38/120 [00:16<00:25,  3.24it/s][A
+ 32%|███▎      | 39/120 [00:17<00:25,  3.15it/s][A
+ 32%|███▎      | 39/120 [00:17<00:25,  3.15it/s][A
+ 32%|███▎      | 39/120 [00:17<00:25,  3.15it/s][A
+ 32%|███▎      | 39/120 [00:17<00:25,  3.15it/s][A
+ 32%|███▎      | 39/120 [00:17<00:25,  3.13it/s][A
+ 32%|███▎      | 39/120 [00:17<00:25,  3.14it/s][A
+
+ 32%|███▎      | 39/120 [00:17<00:25,  3.15it/s][A 32%|███▎      | 39/120 [00:17<00:25,  3.15it/s][A
+ 33%|███▎      | 40/120 [00:17<00:25,  3.08it/s][A
+ 33%|███▎      | 40/120 [00:17<00:25,  3.08it/s][A
+
+ 33%|███▎      | 40/120 [00:17<00:26,  3.07it/s][A 33%|███▎      | 40/120 [00:17<00:25,  3.09it/s][A
+
+ 33%|███▎      | 40/120 [00:17<00:26,  3.07it/s] 33%|███▎      | 40/120 [00:17<00:26,  3.08it/s][A[A
+ 33%|███▎      | 40/120 [00:17<00:25,  3.09it/s][A
+ 33%|███▎      | 40/120 [00:17<00:26,  3.07it/s][A
+ 34%|███▍      | 41/120 [00:17<00:25,  3.04it/s][A
+ 34%|███▍      | 41/120 [00:17<00:25,  3.04it/s][A
+ 34%|███▍      | 41/120 [00:17<00:26,  3.03it/s][A
+ 34%|███▍      | 41/120 [00:17<00:26,  3.04it/s][A
+
+ 34%|███▍      | 41/120 [00:17<00:25,  3.04it/s][A 34%|███▍      | 41/120 [00:17<00:26,  3.04it/s][A
+ 34%|███▍      | 41/120 [00:17<00:25,  3.04it/s]
+[A 34%|███▍      | 41/120 [00:17<00:26,  3.03it/s][A
+ 35%|███▌      | 42/120 [00:18<00:25,  3.01it/s][A
+
+ 35%|███▌      | 42/120 [00:18<00:25,  3.02it/s] 35%|███▌      | 42/120 [00:18<00:25,  3.01it/s][A[A
+ 35%|███▌      | 42/120 [00:18<00:25,  3.02it/s][A
+ 35%|███▌      | 42/120 [00:18<00:25,  3.01it/s][A
+ 35%|███▌      | 42/120 [00:18<00:25,  3.00it/s][A
+
+ 35%|███▌      | 42/120 [00:18<00:25,  3.01it/s][A 35%|███▌      | 42/120 [00:18<00:25,  3.01it/s][A
+ 36%|███▌      | 43/120 [00:18<00:25,  3.00it/s][A
+ 36%|███▌      | 43/120 [00:18<00:25,  2.98it/s][A
+ 36%|███▌      | 43/120 [00:18<00:25,  2.99it/s][A
+ 36%|███▌      | 43/120 [00:18<00:25,  2.98it/s][A
+ 36%|███▌      | 43/120 [00:18<00:25,  2.99it/s][A
+ 36%|███▌      | 43/120 [00:18<00:25,  2.99it/s][A
+ 36%|███▌      | 43/120 [00:18<00:25,  2.99it/s][A
+ 36%|███▌      | 43/120 [00:18<00:25,  2.99it/s][A
+
+ 37%|███▋      | 44/120 [00:18<00:25,  2.97it/s][A 37%|███▋      | 44/120 [00:18<00:25,  2.98it/s][A
+ 37%|███▋      | 44/120 [00:18<00:25,  2.98it/s][A
+ 37%|███▋      | 44/120 [00:18<00:25,  2.97it/s][A
+ 37%|███▋      | 44/120 [00:18<00:25,  2.97it/s][A
+ 37%|███▋      | 44/120 [00:18<00:25,  2.97it/s][A
+ 37%|███▋      | 44/120 [00:18<00:25,  2.97it/s]
+[A 37%|███▋      | 44/120 [00:18<00:25,  2.97it/s][A
+ 38%|███▊      | 45/120 [00:19<00:25,  2.98it/s][A
+ 38%|███▊      | 45/120 [00:19<00:25,  2.97it/s][A
+ 38%|███▊      | 45/120 [00:19<00:25,  2.97it/s][A
+ 38%|███▊      | 45/120 [00:19<00:25,  2.97it/s][A
+ 38%|███▊      | 45/120 [00:19<00:25,  2.97it/s][A
+ 38%|███▊      | 45/120 [00:19<00:25,  2.97it/s][A
+ 38%|███▊      | 45/120 [00:19<00:25,  2.97it/s][A
+ 38%|███▊      | 45/120 [00:19<00:25,  2.97it/s][A
