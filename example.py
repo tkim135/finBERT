@@ -313,20 +313,20 @@ def validation(accelerator, model, dataloader, device, metric):
     return true_labels, predictions_labels, avg_epoch_loss
 
 def main(lr, wd, seed, name, weight=None, bs=4, max_length=60, gradual_unfreeze=False, discriminate=False):
-    path = f"/home/ubuntu/finBERT/gpt_downstream/public_gridsearch/log_name_{name}_lr_{lr}_wd_{wd}_seed_{seed}_bs_{bs}_max_length_{max_length}_gradualunfreeze_{gradual_unfreeze}_discriminate_{discriminate}.txt"
     if not weight is None:
         path = f"/home/ubuntu/finBERT/gpt_downstream/tadp_eval_gridsearch/log_name_{name}_lr_{lr}_wd_{wd}_seed_{seed}_bs_{bs}_max_length_{max_length}_gradualunfreeze_{gradual_unfreeze}_discriminate_{discriminate}.txt"
-
+    else:
+        path = f"/home/ubuntu/finBERT/gpt_downstream/public_gridsearch/log_name_{name}_lr_{lr}_wd_{wd}_seed_{seed}_bs_{bs}_max_length_{max_length}_gradualunfreeze_{gradual_unfreeze}_discriminate_{discriminate}.txt"
 
     # setup accelerator
     accelerator = Accelerator(fp16=True)
     
     accelerator.print(">-*-*-*-*-*-*-<")
-    accelerator.print(f"LR: {lr}, WD: {wd}, Seed: {seed}, BS: {bs}, Max Length: {max_length}, Gradual Unfreeze: {gradual_unfreeze}, Discriminative Finetuning: {discriminate}")
+    accelerator.print(f"LR: {lr}, WD: {wd}, Seed: {seed}, BS: {bs}, Max Length: {max_length}, Gradual Unfreeze: {gradual_unfreeze}, Discriminative Finetuning: {discriminate}, Weight: {weight}")
     accelerator.print(">-*-*-*-*-*-*-<")
     with open(path, 'w') as f:
         accelerator.print(">-*-*-*-*-*-*-<", file=f)
-        accelerator.print(f"LR: {lr}, WD: {wd}, Seed: {seed}, BS: {bs}, Max Length: {max_length}, Gradual Unfreeze: {gradual_unfreeze}, Discriminative Finetuning: {discriminate}", file=f)
+        accelerator.print(f"LR: {lr}, WD: {wd}, Seed: {seed}, BS: {bs}, Max Length: {max_length}, Gradual Unfreeze: {gradual_unfreeze}, Discriminative Finetuning: {discriminate}, Weight: {weight}", file=f)
         accelerator.print(">-*-*-*-*-*-*-<", file=f)
     
     # Set seed for reproducibility.
@@ -373,6 +373,8 @@ def main(lr, wd, seed, name, weight=None, bs=4, max_length=60, gradual_unfreeze=
         # modify model_config
         if not weight is None:
             model_config.vocab_size = 50260
+        else:
+            model_config.vocab_size = 50257
 
         # Get model's tokenizer.
         accelerator.print('Loading tokenizer...', file=f)
@@ -386,7 +388,6 @@ def main(lr, wd, seed, name, weight=None, bs=4, max_length=60, gradual_unfreeze=
 
         # Get the actual model.
         accelerator.print('Loading model...', file=f)
-        model = GPT2ForSequenceClassification.from_pretrained(pretrained_model_name_or_path=model_name_or_path, config=model_config)
         if not weight is None:
             # tranpose some of the tensors
             checkpoint = torch.load(weight)
@@ -397,6 +398,8 @@ def main(lr, wd, seed, name, weight=None, bs=4, max_length=60, gradual_unfreeze=
                     checkpoint[full_tensor_name] = torch.transpose(checkpoint[full_tensor_name], 0, 1)
             #model = GPT2ForSequenceClassification.from_pretrained(pretrained_model_name_or_path=weight, config=model_config)
             model = GPT2ForSequenceClassification.from_pretrained(pretrained_model_name_or_path=None, state_dict=checkpoint, config=model_config)
+        else:
+            model = GPT2ForSequenceClassification.from_pretrained(pretrained_model_name_or_path=model_name_or_path, config=model_config)
 
         #import pdb; pdb.set_trace()
         # for all weight tensors
@@ -590,9 +593,11 @@ if __name__ == "__main__":
     seed = int(args.seed)
     bs = int(args.bs)
     max_length = int(args.max_length)
-    weight = None if args.weight is "public_ckpt" else args.weight
-    gradual_unfreeze = bool(args.gradual_unfreeze)
-    discriminate = bool(args.discriminate)
+    #import pdb; pdb.set_trace()
+    weight = None if args.weight == 'public_ckpt' else args.weight
+    #print(weight)
+    gradual_unfreeze = True if args.gradual_unfreeze == "True" else False
+    discriminate = True if args.discriminate == "True" else False
 
     results = main(lr=lr, wd=wd, seed=seed, name=args.name, weight=weight, bs=bs, max_length=max_length, gradual_unfreeze=gradual_unfreeze, discriminate=discriminate)
     print()

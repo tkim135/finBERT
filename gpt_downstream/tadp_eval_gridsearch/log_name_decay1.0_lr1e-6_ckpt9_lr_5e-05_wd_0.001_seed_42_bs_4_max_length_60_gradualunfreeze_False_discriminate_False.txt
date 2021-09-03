@@ -1,0 +1,57 @@
+Epoch
+
+Training on batches...
+Validation on batches...
+
+>->->->->->->->->->-
+train_loss: 0.9093740211342866, train_acc: 0.5990566037735849
+valid_loss: 0.9456740159254807, valid_acc: 0.5480769230769231
+>->->->->->->->->->-
+
+
+Training on batches...
+Validation on batches...
+
+>->->->->->->->->->-
+train_loss: 0.7142119977459218, train_acc: 0.6839622641509434
+valid_loss: 0.7131840265714205, valid_acc: 0.7019230769230769
+>->->->->->->->->->-
+
+
+Training on batches...
+Validation on batches...
+
+>->->->->->->->->->-
+train_loss: 0.4538044539637536, train_acc: 0.8317610062893082
+valid_loss: 0.7208521549518292, valid_acc: 0.7211538461538461
+>->->->->->->->->->-
+
+
+Training on batches...
+Validation on batches...
+
+>->->->->->->->->->-
+train_loss: 0.3268494137428092, train_acc: 0.8663522012578616
+valid_loss: 0.725112999861057, valid_acc: 0.7307692307692307
+>->->->->->->->->->-
+
+
+Training on batches...
+Validation on batches...
+
+>->->->->->->->->->-
+train_loss: 0.23060243684540754, train_acc: 0.9213836477987422
+valid_loss: 0.8362605159099286, valid_acc: 0.7019230769230769
+>->->->->->->->->->-
+
+
+Training on batches...
+Validation on batches...
+
+>->->->->->->->->->-
+train_loss: 0.11952557972392196, train_acc: 0.9638364779874213
+valid_loss: 0.8692149840868436, valid_acc: 0.7019230769230769
+>->->->->->->->->->-
+
+Test on batches...
+{'train_acc_epochs': [0.5990566037735849, 0.6839622641509434, 0.8317610062893082, 0.8663522012578616, 0.9213836477987422, 0.9638364779874213], 'val_acc_epochs': [0.5480769230769231, 0.7019230769230769, 0.7211538461538461, 0.7307692307692307, 0.7019230769230769, 0.7019230769230769], 'val_acc': 0.7019230769230769, 'val_metric_epochs': [{'accuracy': 0.5913461538461539}, {'accuracy': 0.7083333333333334}, {'accuracy': 0.7532051282051282}, {'accuracy': 0.7339743589743589}, {'accuracy': 0.7339743589743589}, {'accuracy': 0.7355769230769231}], 'val_metric': {'accuracy': 0.7355769230769231}, 'test_acc': 0.734375, 'test_metric': {'accuracy': 0.732421875}}

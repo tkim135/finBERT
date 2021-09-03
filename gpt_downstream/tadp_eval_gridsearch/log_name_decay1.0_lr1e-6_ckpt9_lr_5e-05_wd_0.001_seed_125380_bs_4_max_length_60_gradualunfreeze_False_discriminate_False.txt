@@ -1,0 +1,57 @@
+Epoch
+
+Training on batches...
+Validation on batches...
+
+>->->->->->->->->->-
+train_loss: 0.8940612505067069, train_acc: 0.5660377358490566
+valid_loss: 1.0249610314002404, valid_acc: 0.4807692307692308
+>->->->->->->->->->-
+
+
+Training on batches...
+Validation on batches...
+
+>->->->->->->->->->-
+train_loss: 0.6869363274964146, train_acc: 0.7122641509433962
+valid_loss: 0.7928661566514236, valid_acc: 0.6057692307692307
+>->->->->->->->->->-
+
+
+Training on batches...
+Validation on batches...
+
+>->->->->->->->->->-
+train_loss: 0.4749378355793983, train_acc: 0.8128930817610063
+valid_loss: 0.7808899420958298, valid_acc: 0.7019230769230769
+>->->->->->->->->->-
+
+
+Training on batches...
+Validation on batches...
+
+>->->->->->->->->->-
+train_loss: 0.343036987496622, train_acc: 0.8632075471698113
+valid_loss: 0.6885763590152447, valid_acc: 0.6923076923076923
+>->->->->->->->->->-
+
+
+Training on batches...
+Validation on batches...
+
+>->->->->->->->->->-
+train_loss: 0.25001473453059886, train_acc: 0.9025157232704403
+valid_loss: 0.8040604728918809, valid_acc: 0.7211538461538461
+>->->->->->->->->->-
+
+
+Training on batches...
+Validation on batches...
+
+>->->->->->->->->->-
+train_loss: 0.1398983862040178, train_acc: 0.9528301886792453
+valid_loss: 0.7758478763011786, valid_acc: 0.7692307692307693
+>->->->->->->->->->-
+
+Test on batches...
+{'train_acc_epochs': [0.5660377358490566, 0.7122641509433962, 0.8128930817610063, 0.8632075471698113, 0.9025157232704403, 0.9528301886792453], 'val_acc_epochs': [0.4807692307692308, 0.6057692307692307, 0.7019230769230769, 0.6923076923076923, 0.7211538461538461, 0.7692307692307693], 'val_acc': 0.7692307692307693, 'val_metric_epochs': [{'accuracy': 0.5480769230769231}, {'accuracy': 0.6842948717948718}, {'accuracy': 0.7227564102564102}, {'accuracy': 0.719551282051282}, {'accuracy': 0.7387820512820513}, {'accuracy': 0.7387820512820513}], 'val_metric': {'accuracy': 0.7387820512820513}, 'test_acc': 0.71484375, 'test_metric': {'accuracy': 0.7311197916666666}}
