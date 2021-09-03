@@ -36,47 +36,45 @@ max_lengths=(60 1024)
 bs=4
 #max_length=1024
 
-lrwdconfigs=(1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16)
+lrwdconfigs=(a1 a2 a3 a4 a5 b1 b2 b3 b4 b5 c1 c2 c3 c4 c5)
 declare -A lrs=(
-    [1]=1e-4
-    [2]=1e-4
-    [3]=1e-4
-    [4]=1e-4
-    [5]=1e-5
-    [6]=1e-5
-    [7]=1e-5
-    [8]=1e-5
-    [9]=5e-5
-    [10]=5e-5
-    [11]=5e-5
-    [12]=5e-5
-    [13]=1e-6
-    [14]=1e-6
-    [15]=1e-6
-    [16]=1e-6
+    [a1]=1e-5
+    [a2]=1e-5
+    [a3]=1e-5
+    [a4]=1e-5
+    [a5]=1e-5
+    [b1]=5e-5
+    [b2]=5e-5
+    [b3]=5e-5
+    [b4]=5e-5
+    [b5]=5e-5
+    [c1]=1e-6
+    [c2]=1e-6
+    [c3]=1e-6
+    [c4]=1e-6
+    [c5]=1e-6
 )
 declare -A wds=(
-    [1]=0.01
-    [2]=0.1
-    [3]=0.5
-    [4]=1.0
-    [5]=0.01
-    [6]=0.1
-    [7]=0.5
-    [8]=1.0
-    [9]=0.01
-    [10]=0.1
-    [11]=0.5
-    [12]=1.0
-    [13]=0.01
-    [14]=0.1
-    [15]=0.5
-    [16]=1.0
+    [a1]=0.001
+    [a2]=0.01
+    [a3]=0.1
+    [a4]=0.5
+    [a5]=1.0
+    [b1]=0.001
+    [b2]=0.01
+    [b3]=0.1
+    [b4]=0.5
+    [b5]=1.0
+    [c1]=0.001
+    [c2]=0.01
+    [c3]=0.1
+    [c4]=0.5
+    [c5]=1.0
 )
-for i in ${!weights[@]}; do
-    for seed in ${seeds[@]}; do
-        for max_length in ${max_lengths[@]}; do
-            for lrwdconfig in ${lrwdconfigs[@]}; do
+for max_length in ${max_lengths[@]}; do
+    for lrwdconfig in ${lrwdconfigs[@]}; do
+        for i in ${!weights[@]}; do
+            for seed in ${seeds[@]}; do
                 lr=${lrs[$lrwdconfig]}
                 wd=${wds[$lrwdconfig]}
                 start=`date +%s`
@@ -85,7 +83,7 @@ for i in ${!weights[@]}; do
                 echo "name: ${name}, weight: ${weight}"
                 out_folder=/home/ubuntu/finBERT/gpt_downstream/tadp_eval_gridsearch/${name}
                 [ -d ${out_folder} ] || mkdir -p ${out_folder}
-                log_file=/home/ubuntu/finBERT/gpt_downstream/tadp_eval_gridsearch/${name}/full_name_${name}_seed_${seed}_bs_${bs}_ss_${max_length}.txt
+                log_file=/home/ubuntu/finBERT/gpt_downstream/tadp_eval_gridsearch/${name}/full_name_${name}_seed_${seed}_bs_${bs}_ss_${max_length}_ftlr_${lr}_ftwd_${wd}.txt
                 # CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 accelerate launch
                 CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 accelerate launch example.py --name ${name} --weight ${weight} --lr ${lr} --wd ${wd} --seed ${seed} --bs ${bs} --max_length ${max_length} 2>&1 | tee ${log_file}
                 end=`date +%s`
