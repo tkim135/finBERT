@@ -4,8 +4,8 @@ Training on batches...
 Validation on batches...
 
 >->->->->->->->->->-
-train_loss: 1.0560719845068716, train_acc: 0.5164233576642335
-valid_loss: 1.0319331776012073, valid_acc: 0.5454545454545454
+train_loss: 1.098768981297811, train_acc: 0.5229166666666667
+valid_loss: 0.905755615234375, valid_acc: 0.5625
 >->->->->->->->->->-
 
 
@@ -13,8 +13,8 @@ Training on batches...
 Validation on batches...
 
 >->->->->->->->->->-
-train_loss: 0.8417673737463289, train_acc: 0.6240875912408759
-valid_loss: 0.9169405156915839, valid_acc: 0.6136363636363636
+train_loss: 0.8808624267578125, train_acc: 0.61875
+valid_loss: 0.73880615234375, valid_acc: 0.7
 >->->->->->->->->->-
 
 
@@ -22,8 +22,8 @@ Training on batches...
 Validation on batches...
 
 >->->->->->->->->->-
-train_loss: 0.5902815787461553, train_acc: 0.7572992700729927
-valid_loss: 0.8450606953014027, valid_acc: 0.6704545454545454
+train_loss: 0.6645801524321239, train_acc: 0.7395833333333334
+valid_loss: 0.6877271652221679, valid_acc: 0.775
 >->->->->->->->->->-
 
 
@@ -31,8 +31,8 @@ Training on batches...
 Validation on batches...
 
 >->->->->->->->->->-
-train_loss: 0.5135494266113225, train_acc: 0.8065693430656934
-valid_loss: 0.8164124597202648, valid_acc: 0.6477272727272727
+train_loss: 0.5555940926074981, train_acc: 0.775
+valid_loss: 0.7474853873252869, valid_acc: 0.6875
 >->->->->->->->->->-
 
 
@@ -40,8 +40,8 @@ Training on batches...
 Validation on batches...
 
 >->->->->->->->->->-
-train_loss: 0.46365710244561636, train_acc: 0.8248175182481752
-valid_loss: 0.9043703025037592, valid_acc: 0.6477272727272727
+train_loss: 0.43510533769925436, train_acc: 0.8166666666666667
+valid_loss: 0.7204017221927643, valid_acc: 0.675
 >->->->->->->->->->-
 
 
@@ -49,9 +49,9 @@ Training on batches...
 Validation on batches...
 
 >->->->->->->->->->-
-train_loss: 0.3486059599549231, train_acc: 0.8576642335766423
-valid_loss: 0.9667778529904105, valid_acc: 0.6931818181818182
+train_loss: 0.4223245898882548, train_acc: 0.84375
+valid_loss: 0.7855145156383514, valid_acc: 0.7125
 >->->->->->->->->->-
 
 Test on batches...
-{'train_acc_epochs': [0.5164233576642335, 0.6240875912408759, 0.7572992700729927, 0.8065693430656934, 0.8248175182481752, 0.8576642335766423], 'val_acc_epochs': [0.5454545454545454, 0.6136363636363636, 0.6704545454545454, 0.6477272727272727, 0.6477272727272727, 0.6931818181818182], 'val_acc': 0.6931818181818182, 'val_metric_epochs': [{'accuracy': 0.5746753246753247}, {'accuracy': 0.6493506493506493}, {'accuracy': 0.7045454545454546}, {'accuracy': 0.6883116883116883}, {'accuracy': 0.6785714285714286}, {'accuracy': 0.689935064935065}], 'val_metric': {'accuracy': 0.689935064935065}, 'test_acc': 0.7636363636363637, 'test_metric': {'accuracy': 0.7006493506493506}}
+{'train_acc_epochs': [0.5229166666666667, 0.61875, 0.7395833333333334, 0.775, 0.8166666666666667, 0.84375], 'val_acc_epochs': [0.5625, 0.7, 0.775, 0.6875, 0.675, 0.7125], 'val_acc': 0.7125, 'val_metric_epochs': [{'accuracy': 0.503125}, {'accuracy': 0.6140625}, {'accuracy': 0.6828125}, {'accuracy': 0.6984375}, {'accuracy': 0.678125}, {'accuracy': 0.69375}], 'val_metric': {'accuracy': 0.69375}, 'test_acc': 0.7135416666666666, 'test_metric': {'accuracy': 0.6979166666666666}}

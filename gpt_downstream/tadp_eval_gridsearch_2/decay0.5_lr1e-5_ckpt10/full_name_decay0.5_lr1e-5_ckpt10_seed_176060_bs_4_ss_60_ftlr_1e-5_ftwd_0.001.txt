@@ -1,0 +1,46 @@
+/home/ubuntu/finBERT/tutorial-env/lib/python3.7/site-packages/torch/distributed/launch.py:164: DeprecationWarning: The 'warn' method is deprecated, use 'warning' instead
+  "The module torch.distributed.launch is deprecated "
+The module torch.distributed.launch is deprecated and going to be removed in future.Migrate to torch.distributed.run
+INFO:torch.distributed.launcher.api:Starting elastic_operator with launch configs:
+  entrypoint       : example.py
+  min_nodes        : 1
+  max_nodes        : 1
+  nproc_per_node   : 8
+  run_id           : none
+  rdzv_backend     : static
+  rdzv_endpoint    : 127.0.0.1:29500
+  rdzv_configs     : {'rank': 0, 'timeout': 900}
+  max_restarts     : 3
+  monitor_interval : 5
+  log_dir          : None
+  metrics_cfg      : {}
+
+INFO:torch.distributed.elastic.agent.server.local_elastic_agent:log directory set to: /tmp/torchelastic_k1o987q0/none_5ite2n1n
+INFO:torch.distributed.elastic.agent.server.api:[default] starting workers for entrypoint: python3
+INFO:torch.distributed.elastic.agent.server.api:[default] Rendezvous'ing worker group
+/home/ubuntu/finBERT/tutorial-env/lib/python3.7/site-packages/torch/distributed/elastic/utils/store.py:53: FutureWarning: This is an experimental API and will be changed in future.
+  "This is an experimental API and will be changed in future.", FutureWarning
+INFO:torch.distributed.elastic.agent.server.api:[default] Rendezvous complete for workers. Result:
+  restart_count=0
+  master_addr=127.0.0.1
+  master_port=29500
+  group_rank=0
+  group_world_size=1
+  local_ranks=[0, 1, 2, 3, 4, 5, 6, 7]
+  role_ranks=[0, 1, 2, 3, 4, 5, 6, 7]
+  global_ranks=[0, 1, 2, 3, 4, 5, 6, 7]
+  role_world_sizes=[8, 8, 8, 8, 8, 8, 8, 8]
+  global_world_sizes=[8, 8, 8, 8, 8, 8, 8, 8]
+
+INFO:torch.distributed.elastic.agent.server.api:[default] Starting worker group
+INFO:torch.distributed.elastic.multiprocessing:Setting worker0 reply file to: /tmp/torchelastic_k1o987q0/none_5ite2n1n/attempt_0/0/error.json
+INFO:torch.distributed.elastic.multiprocessing:Setting worker1 reply file to: /tmp/torchelastic_k1o987q0/none_5ite2n1n/attempt_0/1/error.json
+INFO:torch.distributed.elastic.multiprocessing:Setting worker2 reply file to: /tmp/torchelastic_k1o987q0/none_5ite2n1n/attempt_0/2/error.json
+INFO:torch.distributed.elastic.multiprocessing:Setting worker3 reply file to: /tmp/torchelastic_k1o987q0/none_5ite2n1n/attempt_0/3/error.json
+INFO:torch.distributed.elastic.multiprocessing:Setting worker4 reply file to: /tmp/torchelastic_k1o987q0/none_5ite2n1n/attempt_0/4/error.json
+INFO:torch.distributed.elastic.multiprocessing:Setting worker5 reply file to: /tmp/torchelastic_k1o987q0/none_5ite2n1n/attempt_0/5/error.json
+INFO:torch.distributed.elastic.multiprocessing:Setting worker6 reply file to: /tmp/torchelastic_k1o987q0/none_5ite2n1n/attempt_0/6/error.json
+INFO:torch.distributed.elastic.multiprocessing:Setting worker7 reply file to: /tmp/torchelastic_k1o987q0/none_5ite2n1n/attempt_0/7/error.json
+>-*-*-*-*-*-*-<
+LR: 1e-05, WD: 0.001, Seed: 176060, BS: 4, Max Length: 60
+>-*-*-*-*-*-*-<

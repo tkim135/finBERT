@@ -1,0 +1,57 @@
+Epoch
+
+Training on batches...
+Validation on batches...
+
+>->->->->->->->->->-
+train_loss: 1.0386550903320313, train_acc: 0.5375
+valid_loss: 1.0666389465332031, valid_acc: 0.5125
+>->->->->->->->->->-
+
+
+Training on batches...
+Validation on batches...
+
+>->->->->->->->->->-
+train_loss: 0.9776802062988281, train_acc: 0.5541666666666667
+valid_loss: 0.8977325439453125, valid_acc: 0.525
+>->->->->->->->->->-
+
+
+Training on batches...
+Validation on batches...
+
+>->->->->->->->->->-
+train_loss: 0.8471997578938802, train_acc: 0.6041666666666666
+valid_loss: 0.8371635437011719, valid_acc: 0.625
+>->->->->->->->->->-
+
+
+Training on batches...
+Validation on batches...
+
+>->->->->->->->->->-
+train_loss: 0.7854869524637859, train_acc: 0.6604166666666667
+valid_loss: 0.8158226013183594, valid_acc: 0.675
+>->->->->->->->->->-
+
+
+Training on batches...
+Validation on batches...
+
+>->->->->->->->->->-
+train_loss: 0.7556495030721029, train_acc: 0.6708333333333333
+valid_loss: 0.797950553894043, valid_acc: 0.725
+>->->->->->->->->->-
+
+
+Training on batches...
+Validation on batches...
+
+>->->->->->->->->->-
+train_loss: 0.6990018844604492, train_acc: 0.675
+valid_loss: 0.7716251373291015, valid_acc: 0.725
+>->->->->->->->->->-
+
+Test on batches...
+{'train_acc_epochs': [0.5375, 0.5541666666666667, 0.6041666666666666, 0.6604166666666667, 0.6708333333333333, 0.675], 'val_acc_epochs': [0.5125, 0.525, 0.625, 0.675, 0.725, 0.725], 'val_acc': 0.725, 'val_metric_epochs': [{'accuracy': 0.5046875}, {'accuracy': 0.540625}, {'accuracy': 0.60625}, {'accuracy': 0.6125}, {'accuracy': 0.640625}, {'accuracy': 0.65}], 'val_metric': {'accuracy': 0.65}, 'test_acc': 0.5572916666666666, 'test_metric': {'accuracy': 0.5872395833333334}}

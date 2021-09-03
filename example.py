@@ -312,18 +312,21 @@ def validation(accelerator, model, dataloader, device, metric):
     # Return all true labels and prediciton for future evaluations.
     return true_labels, predictions_labels, avg_epoch_loss
 
-def main(lr, wd, seed, name, weight, bs, max_length):
-    path = f"/home/ubuntu/finBERT/gpt_downstream/tadp_eval_gridsearch/log_name_{name}_lr_{lr}_wd_{wd}_seed_{seed}_bs_{bs}_max_length_{max_length}.txt"
+def main(lr, wd, seed, name, weight=None, bs=4, max_length=60, gradual_unfreeze=False, discriminate=False):
+    path = f"/home/ubuntu/finBERT/gpt_downstream/public_gridsearch/log_name_{name}_lr_{lr}_wd_{wd}_seed_{seed}_bs_{bs}_max_length_{max_length}_gradualunfreeze_{gradual_unfreeze}_discriminate_{discriminate}.txt"
+    if not weight is None:
+        path = f"/home/ubuntu/finBERT/gpt_downstream/tadp_eval_gridsearch/log_name_{name}_lr_{lr}_wd_{wd}_seed_{seed}_bs_{bs}_max_length_{max_length}_gradualunfreeze_{gradual_unfreeze}_discriminate_{discriminate}.txt"
+
 
     # setup accelerator
     accelerator = Accelerator(fp16=True)
     
     accelerator.print(">-*-*-*-*-*-*-<")
-    accelerator.print(f"LR: {lr}, WD: {wd}, Seed: {seed}, BS: {bs}, Max Length: {max_length}")
+    accelerator.print(f"LR: {lr}, WD: {wd}, Seed: {seed}, BS: {bs}, Max Length: {max_length}, Gradual Unfreeze: {gradual_unfreeze}, Discriminative Finetuning: {discriminate}")
     accelerator.print(">-*-*-*-*-*-*-<")
     with open(path, 'w') as f:
         accelerator.print(">-*-*-*-*-*-*-<", file=f)
-        accelerator.print(f"LR: {lr}, WD: {wd}, Seed: {seed}, BS: {bs}, Max Length: {max_length}", file=f)
+        accelerator.print(f"LR: {lr}, WD: {wd}, Seed: {seed}, BS: {bs}, Max Length: {max_length}, Gradual Unfreeze: {gradual_unfreeze}, Discriminative Finetuning: {discriminate}", file=f)
         accelerator.print(">-*-*-*-*-*-*-<", file=f)
     
     # Set seed for reproducibility.
@@ -357,7 +360,8 @@ def main(lr, wd, seed, name, weight, bs, max_length):
     # This is used to decide size of classification head.
     n_labels = len(labels_ids)
 
-    discriminate = False
+    #discriminate = False
+    #gradual_unfreeze = False
 
     layer_no = 48
     
@@ -367,13 +371,14 @@ def main(lr, wd, seed, name, weight, bs, max_length):
         model_config = GPT2Config.from_pretrained(pretrained_model_name_or_path=model_name_or_path, num_labels=n_labels)
 
         # modify model_config
-        model_config.vocab_size = 50260
+        if not weight is None:
+            model_config.vocab_size = 50260
 
         # Get model's tokenizer.
         accelerator.print('Loading tokenizer...', file=f)
         tokenizer = GPT2Tokenizer.from_pretrained(pretrained_model_name_or_path=model_name_or_path)
         # default to left padding
-        tokenizer.padding_side = "left"
+        # tokenizer.padding_side = "left"
         # Define PAD Token = EOS Token = 50256
         # getting rid of this 
         tokenizer.pad_token = tokenizer.eos_token
@@ -381,15 +386,17 @@ def main(lr, wd, seed, name, weight, bs, max_length):
 
         # Get the actual model.
         accelerator.print('Loading model...', file=f)
-        # tranpose some of the tensors
-        checkpoint = torch.load(weight)
-        tensor_names = ["attn.c_attn.weight", "mlp.c_fc.weight", "mlp.c_proj.weight"]
-        for i in range(layer_no):
-            for tensor_name in tensor_names:
-                full_tensor_name = f"transformer.h.{i}.{tensor_name}"
-                checkpoint[full_tensor_name] = torch.transpose(checkpoint[full_tensor_name], 0, 1)
-        #model = GPT2ForSequenceClassification.from_pretrained(pretrained_model_name_or_path=weight, config=model_config)
-        model = GPT2ForSequenceClassification.from_pretrained(pretrained_model_name_or_path=None, state_dict=checkpoint, config=model_config)
+        model = GPT2ForSequenceClassification.from_pretrained(pretrained_model_name_or_path=model_name_or_path, config=model_config)
+        if not weight is None:
+            # tranpose some of the tensors
+            checkpoint = torch.load(weight)
+            tensor_names = ["attn.c_attn.weight", "mlp.c_fc.weight", "mlp.c_proj.weight"]
+            for i in range(layer_no):
+                for tensor_name in tensor_names:
+                    full_tensor_name = f"transformer.h.{i}.{tensor_name}"
+                    checkpoint[full_tensor_name] = torch.transpose(checkpoint[full_tensor_name], 0, 1)
+            #model = GPT2ForSequenceClassification.from_pretrained(pretrained_model_name_or_path=weight, config=model_config)
+            model = GPT2ForSequenceClassification.from_pretrained(pretrained_model_name_or_path=None, state_dict=checkpoint, config=model_config)
 
         #import pdb; pdb.set_trace()
         # for all weight tensors
@@ -398,7 +405,8 @@ def main(lr, wd, seed, name, weight, bs, max_length):
         
         # resize model embedding to match new tokenizer
         #model.resize_token_embeddings(len(tokenizer))
-        model.resize_token_embeddings(50260)
+        if not weight is None:
+            model.resize_token_embeddings(50260)
 
         # fix model padding token id
         #model.config.pad_token_id = 50258
@@ -507,8 +515,8 @@ def main(lr, wd, seed, name, weight, bs, max_length):
             accelerator.print(file=f)
             accelerator.print('Training on batches...', file=f)
             accelerator.print('Training on batches...')
-            # Perform one full pass over the training set.
-            train_labels, train_predict, train_loss = train(accelerator, model, train_dataloader, optimizer, scheduler, device, i, False)
+            # Perform one full pass over the training set.2
+            train_labels, train_predict, train_loss = train(accelerator, model, train_dataloader, optimizer, scheduler, device, i, gradual_unfreeze)
             train_acc = accuracy_score(train_labels, train_predict)
             
             # Get prediction form model on validation data. 
@@ -573,6 +581,8 @@ if __name__ == "__main__":
     parser.add_argument('--weight', type=str, required=True)
     parser.add_argument('--bs', type=str, required=True)
     parser.add_argument('--max_length', type=str, required=True)
+    parser.add_argument('--gradual_unfreeze', type=str, required=True)
+    parser.add_argument('--discriminate', type=str, required=True)
     args = parser.parse_args()
 
     lr = float(args.lr)
@@ -580,8 +590,11 @@ if __name__ == "__main__":
     seed = int(args.seed)
     bs = int(args.bs)
     max_length = int(args.max_length)
+    weight = None if args.weight is "public_ckpt" else args.weight
+    gradual_unfreeze = bool(args.gradual_unfreeze)
+    discriminate = bool(args.discriminate)
 
-    results = main(lr=lr, wd=wd, seed=seed, name=args.name, weight=args.weight, bs=bs, max_length=max_length)
+    results = main(lr=lr, wd=wd, seed=seed, name=args.name, weight=weight, bs=bs, max_length=max_length, gradual_unfreeze=gradual_unfreeze, discriminate=discriminate)
     print()
     print("*"*40)
     print(results)
