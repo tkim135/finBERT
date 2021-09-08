@@ -198,10 +198,10 @@ def train(accelerator, model, dataloader, optimizer, scheduler, device, i, gradu
         # The call to `model` always returns a tuple, so we need to pull the 
         # loss value out of the tuple along with the logits. We will use logits
         # later to calculate training accuracy.
-        #loss, logits = outputs[:2]
-        outputs_loss = outputs.loss
-        logits = outputs_loss['logits']
-        loss = outputs_loss['loss']
+        loss, logits = outputs[:2]
+        # old hf version
+        #logits = outputs_loss['logits']
+        #loss = outputs_loss['loss']
         
         # Accumulate the training loss over all of the batches so that we can
         # calculate the average loss at the end. `loss` is a Tensor containing a
@@ -278,9 +278,15 @@ def validation(accelerator, model, dataloader, device, metric):
             # The call to `model` always returns a tuple, so we need to pull the 
             # loss value out of the tuple along with the logits. We will use logits
             # later to to calculate training accuracy.
-            outputs_loss = outputs.loss
-            logits = outputs_loss['logits']
-            loss = outputs_loss['loss']
+            
+            #outputs_loss = outputs.loss
+            #logits = outputs_loss['logits']
+            #loss = outputs_loss['loss']
+
+            loss, logits = outputs[:2]
+            # old hf version
+            #logits = outputs_loss['logits']
+            #loss = outputs_loss['loss']
 
             predictions = logits.argmax(dim=-1)
             metric.add_batch(
