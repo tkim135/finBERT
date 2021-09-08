@@ -1,0 +1,57 @@
+Epoch
+
+Training on batches...
+Validation on batches...
+
+>->->->->->->->->->-
+train_loss: 0.8762005437243434, train_acc: 0.5868200836820083
+valid_loss: 0.783325889123938, valid_acc: 0.6538461538461539
+>->->->->->->->->->-
+
+
+Training on batches...
+Validation on batches...
+
+>->->->->->->->->->-
+train_loss: 0.49908541054094685, train_acc: 0.8023012552301255
+valid_loss: 0.5951475254618205, valid_acc: 0.717948717948718
+>->->->->->->->->->-
+
+
+Training on batches...
+Validation on batches...
+
+>->->->->->->->->->-
+train_loss: 0.3500058346176637, train_acc: 0.8556485355648535
+valid_loss: 0.681408320661061, valid_acc: 0.7307692307692307
+>->->->->->->->->->-
+
+
+Training on batches...
+Validation on batches...
+
+>->->->->->->->->->-
+train_loss: 0.14399064082434843, train_acc: 0.9497907949790795
+valid_loss: 0.8433061045101194, valid_acc: 0.7628205128205128
+>->->->->->->->->->-
+
+
+Training on batches...
+Validation on batches...
+
+>->->->->->->->->->-
+train_loss: 0.0866595225010444, train_acc: 0.9738493723849372
+valid_loss: 0.9942031761701844, valid_acc: 0.7692307692307693
+>->->->->->->->->->-
+
+
+Training on batches...
+Validation on batches...
+
+>->->->->->->->->->-
+train_loss: 0.034989179118931894, train_acc: 0.9884937238493724
+valid_loss: 1.2500853991844452, valid_acc: 0.7628205128205128
+>->->->->->->->->->-
+
+Test on batches...
+{'train_acc_epochs': [0.5868200836820083, 0.8023012552301255, 0.8556485355648535, 0.9497907949790795, 0.9738493723849372, 0.9884937238493724], 'val_acc_epochs': [0.6538461538461539, 0.717948717948718, 0.7307692307692307, 0.7628205128205128, 0.7692307692307693, 0.7628205128205128], 'val_acc': 0.7628205128205128, 'val_metric_epochs': [{'accuracy': 0.6474358974358975}, {'accuracy': 0.7275641025641025}, {'accuracy': 0.7115384615384616}, {'accuracy': 0.7419871794871795}, {'accuracy': 0.7371794871794872}, {'accuracy': 0.7323717948717948}], 'val_metric': {'accuracy': 0.7323717948717948}, 'test_acc': 0.7421875, 'test_metric': {'accuracy': 0.740234375}}

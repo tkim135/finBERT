@@ -1,0 +1,57 @@
+Epoch
+
+Training on batches...
+Validation on batches...
+
+>->->->->->->->->->-
+train_loss: 0.9293529072067229, train_acc: 0.5910041841004184
+valid_loss: 0.9624519527722628, valid_acc: 0.5641025641025641
+>->->->->->->->->->-
+
+
+Training on batches...
+Validation on batches...
+
+>->->->->->->->->->-
+train_loss: 0.6042746368982678, train_acc: 0.75418410041841
+valid_loss: 0.6826016201506345, valid_acc: 0.717948717948718
+>->->->->->->->->->-
+
+
+Training on batches...
+Validation on batches...
+
+>->->->->->->->->->-
+train_loss: 0.3866701628233474, train_acc: 0.8472803347280334
+valid_loss: 0.7344822637462176, valid_acc: 0.7051282051282052
+>->->->->->->->->->-
+
+
+Training on batches...
+Validation on batches...
+
+>->->->->->->->->->-
+train_loss: 0.224304280155163, train_acc: 0.9027196652719666
+valid_loss: 0.6855490157016529, valid_acc: 0.7307692307692307
+>->->->->->->->->->-
+
+
+Training on batches...
+Validation on batches...
+
+>->->->->->->->->->-
+train_loss: 0.1109583430936186, train_acc: 0.9623430962343096
+valid_loss: 0.8117965011107839, valid_acc: 0.7115384615384616
+>->->->->->->->->->-
+
+
+Training on batches...
+Validation on batches...
+
+>->->->->->->->->->-
+train_loss: 0.0665860453750059, train_acc: 0.9769874476987448
+valid_loss: 0.9579017947632028, valid_acc: 0.7243589743589743
+>->->->->->->->->->-
+
+Test on batches...
+{'train_acc_epochs': [0.5910041841004184, 0.75418410041841, 0.8472803347280334, 0.9027196652719666, 0.9623430962343096, 0.9769874476987448], 'val_acc_epochs': [0.5641025641025641, 0.717948717948718, 0.7051282051282052, 0.7307692307692307, 0.7115384615384616, 0.7243589743589743], 'val_acc': 0.7243589743589743, 'val_metric_epochs': [{'accuracy': 0.6025641025641025}, {'accuracy': 0.7067307692307693}, {'accuracy': 0.7019230769230769}, {'accuracy': 0.7099358974358975}, {'accuracy': 0.7243589743589743}, {'accuracy': 0.719551282051282}], 'val_metric': {'accuracy': 0.719551282051282}, 'test_acc': 0.7395833333333334, 'test_metric': {'accuracy': 0.73828125}}
