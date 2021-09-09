@@ -1,0 +1,57 @@
+Epoch
+
+Training on batches...
+Validation on batches...
+
+>->->->->->->->->->-
+train_loss: 0.6641744213747679, train_acc: 0.6976987447698745
+valid_loss: 0.5498710219652798, valid_acc: 0.7243589743589743
+>->->->->->->->->->-
+
+
+Training on batches...
+Validation on batches...
+
+>->->->->->->->->->-
+train_loss: 0.31544637240110956, train_acc: 0.8755230125523012
+valid_loss: 0.5994959876705439, valid_acc: 0.7371794871794872
+>->->->->->->->->->-
+
+
+Training on batches...
+Validation on batches...
+
+>->->->->->->->->->-
+train_loss: 0.15718379542245564, train_acc: 0.950836820083682
+valid_loss: 0.7331851946595961, valid_acc: 0.7564102564102564
+>->->->->->->->->->-
+
+
+Training on batches...
+Validation on batches...
+
+>->->->->->->->->->-
+train_loss: 0.11434539831544302, train_acc: 0.9665271966527197
+valid_loss: 0.6358679760588611, valid_acc: 0.8333333333333334
+>->->->->->->->->->-
+
+
+Training on batches...
+Validation on batches...
+
+>->->->->->->->->->-
+train_loss: 0.0632972080306084, train_acc: 0.9811715481171548
+valid_loss: 1.6322890816922886, valid_acc: 0.8076923076923077
+>->->->->->->->->->-
+
+
+Training on batches...
+Validation on batches...
+
+>->->->->->->->->->-
+train_loss: 0.061173590818375916, train_acc: 0.9947698744769874
+valid_loss: 1.6151024106416232, valid_acc: 0.8461538461538461
+>->->->->->->->->->-
+
+Test on batches...
+{'train_acc_epochs': [0.6976987447698745, 0.8755230125523012, 0.950836820083682, 0.9665271966527197, 0.9811715481171548, 0.9947698744769874], 'val_acc_epochs': [0.7243589743589743, 0.7371794871794872, 0.7564102564102564, 0.8333333333333334, 0.8076923076923077, 0.8461538461538461], 'val_acc': 0.8461538461538461, 'val_metric_epochs': [{'accuracy': 0.7612179487179487}, {'accuracy': 0.7483974358974359}, {'accuracy': 0.7740384615384616}, {'accuracy': 0.8028846153846154}, {'accuracy': 0.7932692307692307}, {'accuracy': 0.8253205128205128}], 'val_metric': {'accuracy': 0.8253205128205128}, 'test_acc': 0.8072916666666666, 'test_metric': {'accuracy': 0.7994791666666666}}

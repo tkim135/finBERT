@@ -318,21 +318,21 @@ def validation(accelerator, model, dataloader, device, metric):
     # Return all true labels and prediciton for future evaluations.
     return true_labels, predictions_labels, avg_epoch_loss
 
-def main(lr, wd, seed, name, weight=None, bs=4, max_length=60, gradual_unfreeze=False, discriminate=False):
+def main(lr, wd, seed, name, weight=None, bs=4, max_length=60, gradual_unfreeze=False, discriminate=False, use_smaller_vocab=False):
     if not weight is None:
-        path = f"/home/ubuntu/finBERT/gpt_downstream/tadp_eval_gridsearch/log_name_{name}_lr_{lr}_wd_{wd}_seed_{seed}_bs_{bs}_max_length_{max_length}_gradualunfreeze_{gradual_unfreeze}_discriminate_{discriminate}.txt"
+        path = f"/home/ubuntu/finBERT/gpt_downstream/tadp_eval_gridsearch/log_name_{name}_lr_{lr}_wd_{wd}_seed_{seed}_bs_{bs}_max_length_{max_length}_gradualunfreeze_{gradual_unfreeze}_discriminate_{discriminate}_usesmallervocab_{use_smaller_vocab}.txt"
     else:
-        path = f"/home/ubuntu/finBERT/gpt_downstream/public_gridsearch/log_name_{name}_lr_{lr}_wd_{wd}_seed_{seed}_bs_{bs}_max_length_{max_length}_gradualunfreeze_{gradual_unfreeze}_discriminate_{discriminate}.txt"
+        path = f"/home/ubuntu/finBERT/gpt_downstream/tadp_eval_gridsearch/log_name_{name}_lr_{lr}_wd_{wd}_seed_{seed}_bs_{bs}_max_length_{max_length}_gradualunfreeze_{gradual_unfreeze}_discriminate_{discriminate}_usesmallervocab_{use_smaller_vocab}.txt"
 
     # setup accelerator
     accelerator = Accelerator(fp16=True)
     
     accelerator.print(">-*-*-*-*-*-*-<")
-    accelerator.print(f"LR: {lr}, WD: {wd}, Seed: {seed}, BS: {bs}, Max Length: {max_length}, Gradual Unfreeze: {gradual_unfreeze}, Discriminative Finetuning: {discriminate}, Weight: {weight}")
+    accelerator.print(f"LR: {lr}, WD: {wd}, Seed: {seed}, BS: {bs}, Max Length: {max_length}, Gradual Unfreeze: {gradual_unfreeze}, Discriminative Finetuning: {discriminate}, Weight: {weight}, Use Smaller Vocab: {use_smaller_vocab}")
     accelerator.print(">-*-*-*-*-*-*-<")
     with open(path, 'w') as f:
         accelerator.print(">-*-*-*-*-*-*-<", file=f)
-        accelerator.print(f"LR: {lr}, WD: {wd}, Seed: {seed}, BS: {bs}, Max Length: {max_length}, Gradual Unfreeze: {gradual_unfreeze}, Discriminative Finetuning: {discriminate}, Weight: {weight}", file=f)
+        accelerator.print(f"LR: {lr}, WD: {wd}, Seed: {seed}, BS: {bs}, Max Length: {max_length}, Gradual Unfreeze: {gradual_unfreeze}, Discriminative Finetuning: {discriminate}, Weight: {weight}, Use Smaller Vocab: {use_smaller_vocab}", file=f)
         accelerator.print(">-*-*-*-*-*-*-<", file=f)
     
     # Set seed for reproducibility.
@@ -377,10 +377,12 @@ def main(lr, wd, seed, name, weight=None, bs=4, max_length=60, gradual_unfreeze=
         model_config = GPT2Config.from_pretrained(pretrained_model_name_or_path=model_name_or_path, num_labels=n_labels)
 
         # modify model_config
-        if not weight is None:
+        if not weight is None or not use_smaller_vocab:
             model_config.vocab_size = 50260
         else:
             model_config.vocab_size = 50257
+
+        accelerator.print('model_config.vocab_size: {model_config.vocab_size}', file=f)
 
         # Get model's tokenizer.
         accelerator.print('Loading tokenizer...', file=f)
@@ -403,6 +405,10 @@ def main(lr, wd, seed, name, weight=None, bs=4, max_length=60, gradual_unfreeze=
                     full_tensor_name = f"transformer.h.{i}.{tensor_name}"
                     checkpoint[full_tensor_name] = torch.transpose(checkpoint[full_tensor_name], 0, 1)
             #model = GPT2ForSequenceClassification.from_pretrained(pretrained_model_name_or_path=weight, config=model_config)
+
+            # if we want to use vocab size of 50257
+            checkpoint['transformer.wte.weight'] = checkpoint['transformer.wte.weight'][:50257,:]
+
             model = GPT2ForSequenceClassification.from_pretrained(pretrained_model_name_or_path=None, state_dict=checkpoint, config=model_config)
         else:
             model = GPT2ForSequenceClassification.from_pretrained(pretrained_model_name_or_path=model_name_or_path, config=model_config)
@@ -414,7 +420,7 @@ def main(lr, wd, seed, name, weight=None, bs=4, max_length=60, gradual_unfreeze=
         
         # resize model embedding to match new tokenizer
         #model.resize_token_embeddings(len(tokenizer))
-        if not weight is None:
+        if not weight is None or not use_smaller_vocab:
             model.resize_token_embeddings(50260)
 
         # fix model padding token id
@@ -592,6 +598,7 @@ if __name__ == "__main__":
     parser.add_argument('--max_length', type=str, required=True)
     parser.add_argument('--gradual_unfreeze', type=str, required=True)
     parser.add_argument('--discriminate', type=str, required=True)
+    parser.add_argument('--use_smaller_vocab', type=str, required=True)
     args = parser.parse_args()
 
     lr = float(args.lr)
@@ -604,8 +611,9 @@ if __name__ == "__main__":
     #print(weight)
     gradual_unfreeze = True if args.gradual_unfreeze == "True" else False
     discriminate = True if args.discriminate == "True" else False
+    use_smaller_vocab = True if args.use_smaller_vocab == "True" else False
 
-    results = main(lr=lr, wd=wd, seed=seed, name=args.name, weight=weight, bs=bs, max_length=max_length, gradual_unfreeze=gradual_unfreeze, discriminate=discriminate)
+    results = main(lr=lr, wd=wd, seed=seed, name=args.name, weight=weight, bs=bs, max_length=max_length, gradual_unfreeze=gradual_unfreeze, discriminate=discriminate, use_smaller_vocab=use_smaller_vocab)
     print()
     print("*"*40)
     print(results)
