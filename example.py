@@ -377,10 +377,14 @@ def main(lr, wd, seed, name, weight=None, bs=4, max_length=60, gradual_unfreeze=
         model_config = GPT2Config.from_pretrained(pretrained_model_name_or_path=model_name_or_path, num_labels=n_labels)
 
         # modify model_config
-        if not weight is None or not use_smaller_vocab:
-            model_config.vocab_size = 50260
-        else:
+        # if not weight is None or not use_smaller_vocab:
+        #     model_config.vocab_size = 50260
+        # else:
+        #     model_config.vocab_size = 50257
+        if use_smaller_vocab:
             model_config.vocab_size = 50257
+        elif not weight is None:
+            model_config.vocab_size = 50260
 
         accelerator.print('model_config.vocab_size: {model_config.vocab_size}', file=f)
 
@@ -407,7 +411,8 @@ def main(lr, wd, seed, name, weight=None, bs=4, max_length=60, gradual_unfreeze=
             #model = GPT2ForSequenceClassification.from_pretrained(pretrained_model_name_or_path=weight, config=model_config)
 
             # if we want to use vocab size of 50257
-            checkpoint['transformer.wte.weight'] = checkpoint['transformer.wte.weight'][:50257,:]
+            if use_smaller_vocab:
+                checkpoint['transformer.wte.weight'] = checkpoint['transformer.wte.weight'][:50257,:]
 
             model = GPT2ForSequenceClassification.from_pretrained(pretrained_model_name_or_path=None, state_dict=checkpoint, config=model_config)
         else:
@@ -420,7 +425,7 @@ def main(lr, wd, seed, name, weight=None, bs=4, max_length=60, gradual_unfreeze=
         
         # resize model embedding to match new tokenizer
         #model.resize_token_embeddings(len(tokenizer))
-        if not weight is None or not use_smaller_vocab:
+        if not weight is None and not use_smaller_vocab:
             model.resize_token_embeddings(50260)
 
         # fix model padding token id

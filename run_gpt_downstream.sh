@@ -29,9 +29,9 @@
 # weights=(public_ckpt /home/ubuntu/finBERT/weights/hf_ckpt_decay0.5_lr1.e-4_ss1024_bs16_results_finbert/pytorch_model_lr1.e-4_wd0.5_ckpt6.bin /home/ubuntu/finBERT/weights/hf_ckpt_decay0.5_lr1.e-4_ss1024_bs16_results_finbert/pytorch_model_lr1.e-4_wd0.5_ckpt6.bin)
 # names=(hf_public_ckpt decay0.5_lr1e-4_ckpt6 decay0.5_lr1e-4_ckpt6)
 # small_vocab=("True" "False" "True")
-weights=(/home/ubuntu/finBERT/weights/hf_ckpt_decay0.5_lr1.e-4_ss1024_bs16_results_finbert/pytorch_model_lr1.e-4_wd0.5_ckpt6.bin /home/ubuntu/finBERT/weights/hf_ckpt_decay0.5_lr1.e-4_ss1024_bs16_results_finbert/pytorch_model_lr1.e-4_wd0.5_ckpt6.bin)
-names=(decay0.5_lr1e-4_ckpt6 decay0.5_lr1e-4_ckpt6)
-small_vocab=("False" "True")
+weights=(/home/ubuntu/finBERT/weights/hf_ckpt_decay0.5_lr1.e-4_ss1024_bs16_results_finbert/pytorch_model_lr1.e-4_wd0.5_ckpt6.bin)
+names=(decay0.5_lr1e-4_ckpt6)
+small_vocab=("True")
 
 seeds=(42 125380 160800 22758 176060 193228)
 
