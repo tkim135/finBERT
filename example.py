@@ -403,7 +403,7 @@ def main(lr, wd, seed, name, weight=None, bs=4, max_length=60, gradual_unfreeze=
         if not weight is None:
             # tranpose some of the tensors
             checkpoint = torch.load(weight)
-            tensor_names = ["attn.c_attn.weight", "mlp.c_fc.weight", "mlp.c_proj.weight"]
+            tensor_names = ["attn.c_attn.weight", "attn.c_proj.weight", "mlp.c_fc.weight", "mlp.c_proj.weight"]
             for i in range(layer_no):
                 for tensor_name in tensor_names:
                     full_tensor_name = f"transformer.h.{i}.{tensor_name}"
