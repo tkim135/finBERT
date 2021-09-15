@@ -26,19 +26,21 @@
 #names=(decay0.5_lr1e-6_ckpt10 decay1.0_lr1e-4_ckpt1 decay1.0_lr1e-4_ckpt2 decay1.0_lr1e-5_ckpt10 decay1.0_lr1e-5_ckpt2 decay1.0_lr1e-5_ckpt3 hf_public_ckpt)
 
 # public
-# weights=(public_ckpt /home/ubuntu/finBERT/weights/hf_ckpt_decay0.5_lr1.e-4_ss1024_bs16_results_finbert/pytorch_model_lr1.e-4_wd0.5_ckpt6.bin /home/ubuntu/finBERT/weights/hf_ckpt_decay0.5_lr1.e-4_ss1024_bs16_results_finbert/pytorch_model_lr1.e-4_wd0.5_ckpt6.bin)
-# names=(hf_public_ckpt decay0.5_lr1e-4_ckpt6 decay0.5_lr1e-4_ckpt6)
-# small_vocab=("True" "False" "True")
+weights=(/home/ubuntu/finBERT/weights/hf_ckpt_decay1.0_lr1.e-6_ss1024_bs16_results_finbert/pytorch_model_lr1.e-6_wd1.0_ckpt9.bin /home/ubuntu/finBERT/weights/hf_ckpt_decay1.0_lr1.e-6_ss1024_bs16_results_finbert/pytorch_model_lr1.e-6_wd1.0_ckpt9.bin /home/ubuntu/finBERT/weights/hf_ckpt_decay0.5_lr1.e-6_ss1024_bs16_results_finbert/pytorch_model_lr1.e-6_wd0.5_ckpt10.bin /home/ubuntu/finBERT/weights/hf_ckpt_decay0.5_lr1.e-6_ss1024_bs16_results_finbert/pytorch_model_lr1.e-6_wd0.5_ckpt10.bin /home/ubuntu/finBERT/weights/hf_ckpt_decay0.5_lr1.e-6_ss1024_bs16_results_finbert/pytorch_model_lr1.e-6_wd0.5_ckpt10.bin)
+names=(decay1.0_lr1.e-6_ckpt9_50260 decay1.0_lr1.e-6_ckpt9_50257 decay0.5_lr1.e-6_ckpt9_50260 decay0.5_lr1.e-6_ckpt9_50257)
+small_vocab=("False" "True" "False" "True")
+gradual_unfreeze=("False" "False" "False" "False")
+discriminate=("False" "False" "False" "False")
 # weights=(/home/ubuntu/finBERT/weights/hf_ckpt_decay0.5_lr1.e-4_ss1024_bs16_results_finbert/pytorch_model_lr1.e-4_wd0.5_ckpt6.bin)
 # names=(decay0.5_lr1e-4_ckpt6)
 # small_vocab=("False")
 
 # test
-weights=(public_ckpt public_ckpt public_ckpt public_ckpt)
-names=(hf_public_ckpt hf_public_ckpt hf_public_ckpt hf_public_ckpt)
-small_vocab=("True" "True" "True" "True")
-gradual_unfreeze=("False" "True" "False" "True")
-discriminate=("False" "False" "True" "True")
+#weights=(public_ckpt public_ckpt public_ckpt public_ckpt)
+#names=(hf_public_ckpt hf_public_ckpt hf_public_ckpt hf_public_ckpt)
+#small_vocab=("True" "True" "True" "True")
+#gradual_unfreeze=("False" "True" "False" "True")
+#discriminate=("False" "False" "True" "True")
 
 seeds=(42 125380 160800 22758 176060 193228)
 
@@ -47,7 +49,7 @@ seeds=(42 125380 160800 22758 176060 193228)
 #     [x]=4
 # )
 #batch_sizes=(4 )
-max_lengths=(60)
+max_lengths=(60 1024)
 
 #lr=5e-5
 #wd=0.001
@@ -112,13 +114,13 @@ for max_length in ${max_lengths[@]}; do
                 use_gradual_unfreeze=${gradual_unfreeze[i]}
                 use_discriminate=${discriminate[i]}
                 echo "name: ${name}, weight: ${weight}"
-                out_folder=/home/ubuntu/finBERT/gpt_downstream/feature_test/${name}
+                out_folder=/home/ubuntu/finBERT/gpt_downstream/tadp_eval_gridsearch/${name}
                 #out_folder=/home/ubuntu/finBERT/public_gridsearch/tadp_eval_gridsearch/${name}
                 [ -d ${out_folder} ] || mkdir -p ${out_folder}
-                log_file=/home/ubuntu/finBERT/gpt_downstream/feature_test/${name}/full_name_${name}_seed_${seed}_bs_${bs}_ss_${max_length}_ftlr_${lr}_ftwd_${wd}.txt
+                log_file=/home/ubuntu/finBERT/gpt_downstream/tadp_eval_gridsearch/${name}/full_name_${name}_seed_${seed}_bs_${bs}_ss_${max_length}_ftlr_${lr}_ftwd_${wd}_discriminate_${use_discriminate}_unfreeze_${gradual_unfreeze}_smallervocab_${use_smaller_vocab}.txt
                 #log_file=/home/ubuntu/finBERT/gpt_downstream/public_gridsearch/${name}/full_name_${name}_seed_${seed}_bs_${bs}_ss_${max_length}_ftlr_${lr}_ftwd_${wd}_gradual_unfreeze_${gradual_unfreeze}_discriminate_${discriminate}.txt
                 # CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 accelerate launch
-                CUDA_VISIBLE_DEVICES=0 accelerate launch example.py --name ${name} --weight ${weight} --lr ${lr} --wd ${wd} --seed ${seed} --bs ${bs} --max_length ${max_length} --gradual_unfreeze ${use_gradual_unfreeze} --discriminate ${use_discriminate} --use_smaller_vocab ${use_smaller_vocab} 2>&1 | tee ${log_file}
+                CUDA_VISIBLE_DEVICES=4,5,6,7 accelerate launch example.py --name ${name} --weight ${weight} --lr ${lr} --wd ${wd} --seed ${seed} --bs ${bs} --max_length ${max_length} --gradual_unfreeze ${use_gradual_unfreeze} --discriminate ${use_discriminate} --use_smaller_vocab ${use_smaller_vocab} 2>&1 | tee ${log_file}
                 end=`date +%s`
                 runtime=$((end-start))
                 echo "time taken: ${runtime}"
