@@ -1,0 +1,53 @@
+The module torch.distributed.launch is deprecated and going to be removed in future.Migrate to torch.distributed.run
+INFO:torch.distributed.launcher.api:Starting elastic_operator with launch configs:
+  entrypoint       : example.py
+  min_nodes        : 1
+  max_nodes        : 1
+  nproc_per_node   : 4
+  run_id           : none
+  rdzv_backend     : static
+  rdzv_endpoint    : 127.0.0.1:29500
+  rdzv_configs     : {'rank': 0, 'timeout': 900}
+  max_restarts     : 3
+  monitor_interval : 5
+  log_dir          : None
+  metrics_cfg      : {}
+
+INFO:torch.distributed.elastic.agent.server.local_elastic_agent:log directory set to: /tmp/torchelastic_lxnnxwb_/none_33ynhcm7
+INFO:torch.distributed.elastic.agent.server.api:[default] starting workers for entrypoint: python3.6
+INFO:torch.distributed.elastic.agent.server.api:[default] Rendezvous'ing worker group
+/home/ubuntu/finBERT/venv/lib/python3.6/site-packages/torch/distributed/elastic/utils/store.py:53: FutureWarning: This is an experimental API and will be changed in future.
+  "This is an experimental API and will be changed in future.", FutureWarning
+INFO:torch.distributed.elastic.agent.server.api:[default] Rendezvous complete for workers. Result:
+  restart_count=0
+  master_addr=127.0.0.1
+  master_port=29500
+  group_rank=0
+  group_world_size=1
+  local_ranks=[0, 1, 2, 3]
+  role_ranks=[0, 1, 2, 3]
+  global_ranks=[0, 1, 2, 3]
+  role_world_sizes=[4, 4, 4, 4]
+  global_world_sizes=[4, 4, 4, 4]
+
+INFO:torch.distributed.elastic.agent.server.api:[default] Starting worker group
+INFO:torch.distributed.elastic.multiprocessing:Setting worker0 reply file to: /tmp/torchelastic_lxnnxwb_/none_33ynhcm7/attempt_0/0/error.json
+INFO:torch.distributed.elastic.multiprocessing:Setting worker1 reply file to: /tmp/torchelastic_lxnnxwb_/none_33ynhcm7/attempt_0/1/error.json
+INFO:torch.distributed.elastic.multiprocessing:Setting worker2 reply file to: /tmp/torchelastic_lxnnxwb_/none_33ynhcm7/attempt_0/2/error.json
+INFO:torch.distributed.elastic.multiprocessing:Setting worker3 reply file to: /tmp/torchelastic_lxnnxwb_/none_33ynhcm7/attempt_0/3/error.json
+Traceback (most recent call last):
+  File "example.py", line 613, in <module>
+    max_length = int(args.max_length)
+ValueError: invalid literal for int() with base 10: '60,'
+Traceback (most recent call last):
+  File "example.py", line 613, in <module>
+    max_length = int(args.max_length)
+ValueError: invalid literal for int() with base 10: '60,'
+Traceback (most recent call last):
+  File "example.py", line 613, in <module>
+    max_length = int(args.max_length)
+ValueError: invalid literal for int() with base 10: '60,'
+Traceback (most recent call last):
+  File "example.py", line 613, in <module>
+    max_length = int(args.max_length)
+ValueError: invalid literal for int() with base 10: '60,'
