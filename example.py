@@ -318,11 +318,11 @@ def validation(accelerator, model, dataloader, device, metric):
     # Return all true labels and prediciton for future evaluations.
     return true_labels, predictions_labels, avg_epoch_loss
 
-def main(lr, wd, seed, name, weight=None, bs=4, max_length=60, gradual_unfreeze=False, discriminate=False, use_smaller_vocab=False):
+def main(lr, wd, seed, name, experiment_name, weight=None, bs=4, max_length=60, gradual_unfreeze=False, discriminate=False, use_smaller_vocab=False):
     if not weight is None:
-        path = f"/home/ubuntu/finBERT/gpt_downstream/tadp_eval_gridsearch/log_name_{name}_lr_{lr}_wd_{wd}_seed_{seed}_bs_{bs}_max_length_{max_length}_gradualunfreeze_{gradual_unfreeze}_discriminate_{discriminate}_usesmallervocab_{use_smaller_vocab}.txt"
+        path = f"/home/ubuntu/finBERT/gpt_downstream/tadp_eval_gridsearch_{experiment_name}/log_name_{name}_lr_{lr}_wd_{wd}_seed_{seed}_bs_{bs}_max_length_{max_length}_gradualunfreeze_{gradual_unfreeze}_discriminate_{discriminate}_usesmallervocab_{use_smaller_vocab}.txt"
     else:
-        path = f"/home/ubuntu/finBERT/gpt_downstream/tadp_eval_gridsearch/log_name_{name}_lr_{lr}_wd_{wd}_seed_{seed}_bs_{bs}_max_length_{max_length}_gradualunfreeze_{gradual_unfreeze}_discriminate_{discriminate}_usesmallervocab_{use_smaller_vocab}.txt"
+        path = f"/home/ubuntu/finBERT/gpt_downstream/tadp_eval_gridsearch_{experiment_name}/log_name_{name}_lr_{lr}_wd_{wd}_seed_{seed}_bs_{bs}_max_length_{max_length}_gradualunfreeze_{gradual_unfreeze}_discriminate_{discriminate}_usesmallervocab_{use_smaller_vocab}.txt"
 
     # setup accelerator
     accelerator = Accelerator(fp16=True)
@@ -604,6 +604,7 @@ if __name__ == "__main__":
     parser.add_argument('--gradual_unfreeze', type=str, required=True)
     parser.add_argument('--discriminate', type=str, required=True)
     parser.add_argument('--use_smaller_vocab', type=str, required=True)
+    parser.add_argument('--experiment_name', type=str, required=True)
     args = parser.parse_args()
 
     lr = float(args.lr)
@@ -618,7 +619,7 @@ if __name__ == "__main__":
     discriminate = True if args.discriminate == "True" else False
     use_smaller_vocab = True if args.use_smaller_vocab == "True" else False
 
-    results = main(lr=lr, wd=wd, seed=seed, name=args.name, weight=weight, bs=bs, max_length=max_length, gradual_unfreeze=gradual_unfreeze, discriminate=discriminate, use_smaller_vocab=use_smaller_vocab)
+    results = main(lr=lr, wd=wd, seed=seed, name=args.name, weight=weight, bs=bs, max_length=max_length, gradual_unfreeze=gradual_unfreeze, discriminate=discriminate, use_smaller_vocab=use_smaller_vocab, experiment_name=args.experiment_name)
     print()
     print("*"*40)
     print(results)

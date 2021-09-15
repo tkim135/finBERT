@@ -1,0 +1,57 @@
+Epoch
+
+Training on batches...
+Validation on batches...
+
+>->->->->->->->->->-
+train_loss: 0.6639920761146306, train_acc: 0.702928870292887
+valid_loss: 0.5668913890153934, valid_acc: 0.7435897435897436
+>->->->->->->->->->-
+
+
+Training on batches...
+Validation on batches...
+
+>->->->->->->->->->-
+train_loss: 0.31438454698817997, train_acc: 0.8797071129707112
+valid_loss: 0.45029528935750324, valid_acc: 0.8012820512820513
+>->->->->->->->->->-
+
+
+Training on batches...
+Validation on batches...
+
+>->->->->->->->->->-
+train_loss: 0.1736533245282193, train_acc: 0.9393305439330544
+valid_loss: 0.5233657161394755, valid_acc: 0.8141025641025641
+>->->->->->->->->->-
+
+
+Training on batches...
+Validation on batches...
+
+>->->->->->->->->->-
+train_loss: 0.07966095707905342, train_acc: 0.9780334728033473
+valid_loss: 0.9706536997587253, valid_acc: 0.8397435897435898
+>->->->->->->->->->-
+
+
+Training on batches...
+Validation on batches...
+
+>->->->->->->->->->-
+train_loss: 0.04445743548321425, train_acc: 0.9895397489539749
+valid_loss: 1.3814603617558112, valid_acc: 0.8397435897435898
+>->->->->->->->->->-
+
+
+Training on batches...
+Validation on batches...
+
+>->->->->->->->->->-
+train_loss: 0.044495629965012044, train_acc: 0.9937238493723849
+valid_loss: 2.17166155958787, valid_acc: 0.8205128205128205
+>->->->->->->->->->-
+
+Test on batches...
+{'train_acc_epochs': [0.702928870292887, 0.8797071129707112, 0.9393305439330544, 0.9780334728033473, 0.9895397489539749, 0.9937238493723849], 'val_acc_epochs': [0.7435897435897436, 0.8012820512820513, 0.8141025641025641, 0.8397435897435898, 0.8397435897435898, 0.8205128205128205], 'val_acc': 0.8205128205128205, 'val_metric_epochs': [{'accuracy': 0.7772435897435898}, {'accuracy': 0.8076923076923077}, {'accuracy': 0.8028846153846154}, {'accuracy': 0.8221153846153846}, {'accuracy': 0.8092948717948718}, {'accuracy': 0.8028846153846154}], 'val_metric': {'accuracy': 0.8028846153846154}, 'test_acc': 0.8151041666666666, 'test_metric': {'accuracy': 0.814453125}}

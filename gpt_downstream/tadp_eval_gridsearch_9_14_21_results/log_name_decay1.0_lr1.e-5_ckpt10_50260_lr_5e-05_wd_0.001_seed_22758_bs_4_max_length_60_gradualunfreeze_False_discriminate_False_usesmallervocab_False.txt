@@ -1,0 +1,57 @@
+Epoch
+
+Training on batches...
+Validation on batches...
+
+>->->->->->->->->->-
+train_loss: 0.6980173203735671, train_acc: 0.7018828451882845
+valid_loss: 0.5835596659244635, valid_acc: 0.7307692307692307
+>->->->->->->->->->-
+
+
+Training on batches...
+Validation on batches...
+
+>->->->->->->->->->-
+train_loss: 0.2904612266119554, train_acc: 0.8943514644351465
+valid_loss: 0.5732365189454495, valid_acc: 0.7628205128205128
+>->->->->->->->->->-
+
+
+Training on batches...
+Validation on batches...
+
+>->->->->->->->->->-
+train_loss: 0.12659341682948827, train_acc: 0.9644351464435147
+valid_loss: 0.7261567818812835, valid_acc: 0.782051282051282
+>->->->->->->->->->-
+
+
+Training on batches...
+Validation on batches...
+
+>->->->->->->->->->-
+train_loss: 0.0776942039384004, train_acc: 0.9790794979079498
+valid_loss: 1.1513520020705004, valid_acc: 0.782051282051282
+>->->->->->->->->->-
+
+
+Training on batches...
+Validation on batches...
+
+>->->->->->->->->->-
+train_loss: 0.06914039997376159, train_acc: 0.9843096234309623
+valid_loss: 1.7685782917034931, valid_acc: 0.7884615384615384
+>->->->->->->->->->-
+
+
+Training on batches...
+Validation on batches...
+
+>->->->->->->->->->-
+train_loss: 0.05806940843869453, train_acc: 0.9916317991631799
+valid_loss: 2.3423472062135353, valid_acc: 0.8141025641025641
+>->->->->->->->->->-
+
+Test on batches...
+{'train_acc_epochs': [0.7018828451882845, 0.8943514644351465, 0.9644351464435147, 0.9790794979079498, 0.9843096234309623, 0.9916317991631799], 'val_acc_epochs': [0.7307692307692307, 0.7628205128205128, 0.782051282051282, 0.782051282051282, 0.7884615384615384, 0.8141025641025641], 'val_acc': 0.8141025641025641, 'val_metric_epochs': [{'accuracy': 0.7788461538461539}, {'accuracy': 0.780448717948718}, {'accuracy': 0.7884615384615384}, {'accuracy': 0.782051282051282}, {'accuracy': 0.7964743589743589}, {'accuracy': 0.8044871794871795}], 'val_metric': {'accuracy': 0.8044871794871795}, 'test_acc': 0.8151041666666666, 'test_metric': {'accuracy': 0.7994791666666666}}
