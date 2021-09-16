@@ -149,7 +149,7 @@ class FinanceDataset(Dataset):
             self.texts.append(text)
             self.labels.append(label)
 
-def train(accelerator, model, dataloader, optimizer, scheduler, device, i, gradual_unfreeze):
+def train(accelerator, model, dataloader, optimizer, scheduler, device, i, gradual_unfreeze, accumulation_steps):
     # Tracking variables.
     predictions_labels = []
     true_labels = []
@@ -184,9 +184,6 @@ def train(accelerator, model, dataloader, optimizer, scheduler, device, i, gradu
         true_labels += batch['labels'].cpu().numpy().flatten().tolist()
         # move batch to device
         batch = {k:v.type(torch.long).to(device) for k,v in batch.items()}
-        # Always clear any previously calculated gradients before performing a
-        # backward pass.
-        model.zero_grad()
         
         # Perform a forward pass (evaluate the model on this training batch).
         # This will return the loss (rather than the model output) because we
@@ -207,29 +204,34 @@ def train(accelerator, model, dataloader, optimizer, scheduler, device, i, gradu
         # calculate the average loss at the end. `loss` is a Tensor containing a
         # single value; the `.item()` function just returns the Python value 
         # from the tensor.
-        total_loss += loss.item()
+        total_loss += loss.item() / accumulation_steps
         
         # Perform a backward pass to calculate the gradients.
         #loss.backward()
         accelerator.backward(loss)
-        
-        # Clip the norm of the gradients to 1.0.
-        # This is to help prevent the "exploding gradients" problem.
-        torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
-        
-        # Update parameters and take a step using the computed gradient.
-        # The optimizer dictates the "update rule"--how the parameters are
-        # modified based on their gradients, the learning rate, etc.
-        optimizer.step()
-        
-        # Update the learning rate.
-        scheduler.step()
-        
+
         # Move logits and labels to CPU
         logits = logits.detach().cpu().numpy()
         
         # Convert these logits to list of predicted labels values.
         predictions_labels += logits.argmax(axis=-1).flatten().tolist()
+
+        if (step+1) % accumulation_steps == 0:
+            # Clip the norm of the gradients to 1.0.
+            # This is to help prevent the "exploding gradients" problem.
+            torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
+            
+            # Update parameters and take a step using the computed gradient.
+            # The optimizer dictates the "update rule"--how the parameters are
+            # modified based on their gradients, the learning rate, etc.
+            optimizer.step()
+            
+            # Update the learning rate.
+            scheduler.step()
+
+            # Always clear any previously calculated gradients before performing a
+            # backward pass.
+            model.zero_grad()
 
         del batch
         del logits
@@ -318,21 +320,21 @@ def validation(accelerator, model, dataloader, device, metric):
     # Return all true labels and prediciton for future evaluations.
     return true_labels, predictions_labels, avg_epoch_loss
 
-def main(lr, wd, seed, name, experiment_name, weight=None, bs=4, max_length=60, gradual_unfreeze=False, discriminate=False, use_smaller_vocab=False):
+def main(lr, wd, seed, name, experiment_name, weight=None, bs=4, max_length=60, gradual_unfreeze=False, discriminate=False, use_smaller_vocab=False, accumulation_steps=8):
     if not weight is None:
-        path = f"/home/ubuntu/finBERT/gpt_downstream/tadp_eval_gridsearch_{experiment_name}/log_name_{name}_lr_{lr}_wd_{wd}_seed_{seed}_bs_{bs}_max_length_{max_length}_gradualunfreeze_{gradual_unfreeze}_discriminate_{discriminate}_usesmallervocab_{use_smaller_vocab}.txt"
+        path = f"/home/ubuntu/finBERT/gpt_downstream/tadp_eval_gridsearch_{experiment_name}/log_name_{name}_lr_{lr}_wd_{wd}_seed_{seed}_bs_{bs}_max_length_{max_length}_gradualunfreeze_{gradual_unfreeze}_discriminate_{discriminate}_usesmallervocab_{use_smaller_vocab}_accumulation_steps_{accumulation_steps}.txt"
     else:
-        path = f"/home/ubuntu/finBERT/gpt_downstream/tadp_eval_gridsearch_{experiment_name}/log_name_{name}_lr_{lr}_wd_{wd}_seed_{seed}_bs_{bs}_max_length_{max_length}_gradualunfreeze_{gradual_unfreeze}_discriminate_{discriminate}_usesmallervocab_{use_smaller_vocab}.txt"
+        path = f"/home/ubuntu/finBERT/gpt_downstream/tadp_eval_gridsearch_{experiment_name}/log_name_{name}_lr_{lr}_wd_{wd}_seed_{seed}_bs_{bs}_max_length_{max_length}_gradualunfreeze_{gradual_unfreeze}_discriminate_{discriminate}_usesmallervocab_{use_smaller_vocab}_accumulation_steps_{accumulation_steps}.txt"
 
     # setup accelerator
     accelerator = Accelerator(fp16=True)
     
     accelerator.print(">-*-*-*-*-*-*-<")
-    accelerator.print(f"LR: {lr}, WD: {wd}, Seed: {seed}, BS: {bs}, Max Length: {max_length}, Gradual Unfreeze: {gradual_unfreeze}, Discriminative Finetuning: {discriminate}, Weight: {weight}, Use Smaller Vocab: {use_smaller_vocab}")
+    accelerator.print(f"LR: {lr}, WD: {wd}, Seed: {seed}, BS: {bs}, Max Length: {max_length}, Gradual Unfreeze: {gradual_unfreeze}, Discriminative Finetuning: {discriminate}, Weight: {weight}, Use Smaller Vocab: {use_smaller_vocab}, Accumulation Steps: {accumulation_steps}")
     accelerator.print(">-*-*-*-*-*-*-<")
     with open(path, 'w') as f:
         accelerator.print(">-*-*-*-*-*-*-<", file=f)
-        accelerator.print(f"LR: {lr}, WD: {wd}, Seed: {seed}, BS: {bs}, Max Length: {max_length}, Gradual Unfreeze: {gradual_unfreeze}, Discriminative Finetuning: {discriminate}, Weight: {weight}, Use Smaller Vocab: {use_smaller_vocab}", file=f)
+        accelerator.print(f"LR: {lr}, WD: {wd}, Seed: {seed}, BS: {bs}, Max Length: {max_length}, Gradual Unfreeze: {gradual_unfreeze}, Discriminative Finetuning: {discriminate}, Weight: {weight}, Use Smaller Vocab: {use_smaller_vocab}, Accumulation Steps: {accumulation_steps}", file=f)
         accelerator.print(">-*-*-*-*-*-*-<", file=f)
     
     # Set seed for reproducibility.
@@ -536,7 +538,7 @@ def main(lr, wd, seed, name, experiment_name, weight=None, bs=4, max_length=60, 
             accelerator.print('Training on batches...', file=f)
             accelerator.print('Training on batches...')
             # Perform one full pass over the training set.2
-            train_labels, train_predict, train_loss = train(accelerator, model, train_dataloader, optimizer, scheduler, device, i, gradual_unfreeze)
+            train_labels, train_predict, train_loss = train(accelerator, model, train_dataloader, optimizer, scheduler, device, i, gradual_unfreeze, accumulation_steps)
             train_acc = accuracy_score(train_labels, train_predict)
             
             # Get prediction form model on validation data. 
@@ -605,6 +607,7 @@ if __name__ == "__main__":
     parser.add_argument('--discriminate', type=str, required=True)
     parser.add_argument('--use_smaller_vocab', type=str, required=True)
     parser.add_argument('--experiment_name', type=str, required=True)
+    parser.add_argument('--accumulation_steps', type=str, required=True)
     args = parser.parse_args()
 
     lr = float(args.lr)
@@ -618,8 +621,9 @@ if __name__ == "__main__":
     gradual_unfreeze = True if args.gradual_unfreeze == "True" else False
     discriminate = True if args.discriminate == "True" else False
     use_smaller_vocab = True if args.use_smaller_vocab == "True" else False
+    accumulation_steps = int(args.accumulation_steps)
 
-    results = main(lr=lr, wd=wd, seed=seed, name=args.name, weight=weight, bs=bs, max_length=max_length, gradual_unfreeze=gradual_unfreeze, discriminate=discriminate, use_smaller_vocab=use_smaller_vocab, experiment_name=args.experiment_name)
+    results = main(lr=lr, wd=wd, seed=seed, name=args.name, weight=weight, bs=bs, max_length=max_length, gradual_unfreeze=gradual_unfreeze, discriminate=discriminate, use_smaller_vocab=use_smaller_vocab, experiment_name=args.experiment_name, accumulation_steps=accumulation_steps)
     print()
     print("*"*40)
     print(results)

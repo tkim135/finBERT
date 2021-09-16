@@ -69,6 +69,8 @@ max_lengths=(60)
 bs=4
 #max_length=1024
 
+accumulation_steps = (8 16)
+
 # lrwdconfigs=(a1 a2 a3 a4 a5 b1 b2 b3 b4 b5 c1 c2 c3 c4 c5)
 # declare -A lrs=(
 #     [a1]=5e-5
@@ -113,31 +115,33 @@ declare -A wds=(
     [a1]=0.001
 )
 
-experiment_name="9_14_21_results"
+experiment_name="9_15_21_results"
 
 for max_length in ${max_lengths[@]}; do
     for lrwdconfig in ${lrwdconfigs[@]}; do
         for i in ${!weights[@]}; do
-            for seed in ${seeds[@]}; do
-                lr=${lrs[$lrwdconfig]}
-                wd=${wds[$lrwdconfig]}
-                start=`date +%s`
-                weight=${weights[i]}
-                name=${names[i]}
-                use_smaller_vocab=${small_vocab[i]}
-                use_gradual_unfreeze=${gradual_unfreeze[i]}
-                use_discriminate=${discriminate[i]}
-                echo "name: ${name}, weight: ${weight}"
-                out_folder=/home/ubuntu/finBERT/gpt_downstream/tadp_eval_gridsearch_${experiment_name}/${name}
-                #out_folder=/home/ubuntu/finBERT/public_gridsearch/tadp_eval_gridsearch/${name}
-                [ -d ${out_folder} ] || mkdir -p ${out_folder}
-                log_file=/home/ubuntu/finBERT/gpt_downstream/tadp_eval_gridsearch_${experiment_name}/${name}/full_name_${name}_seed_${seed}_bs_${bs}_ss_${max_length}_ftlr_${lr}_ftwd_${wd}_discriminate_${use_discriminate}_unfreeze_${gradual_unfreeze}_smallervocab_${use_smaller_vocab}.txt
-                #log_file=/home/ubuntu/finBERT/gpt_downstream/public_gridsearch/${name}/full_name_${name}_seed_${seed}_bs_${bs}_ss_${max_length}_ftlr_${lr}_ftwd_${wd}_gradual_unfreeze_${gradual_unfreeze}_discriminate_${discriminate}.txt
-                # CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 accelerate launch
-                CUDA_VISIBLE_DEVICES=4,5,6,7 accelerate launch example.py --name ${name} --weight ${weight} --lr ${lr} --wd ${wd} --seed ${seed} --bs ${bs} --max_length ${max_length} --gradual_unfreeze ${use_gradual_unfreeze} --discriminate ${use_discriminate} --use_smaller_vocab ${use_smaller_vocab} --experiment_name ${experiment_name} 2>&1 | tee ${log_file}
-                end=`date +%s`
-                runtime=$((end-start))
-                echo "time taken: ${runtime}"
+            for accumulation_step in ${accumulation_steps[@]}; do
+                for seed in ${seeds[@]}; do
+                    lr=${lrs[$lrwdconfig]}
+                    wd=${wds[$lrwdconfig]}
+                    start=`date +%s`
+                    weight=${weights[i]}
+                    name=${names[i]}
+                    use_smaller_vocab=${small_vocab[i]}
+                    use_gradual_unfreeze=${gradual_unfreeze[i]}
+                    use_discriminate=${discriminate[i]}
+                    echo "name: ${name}, weight: ${weight}"
+                    out_folder=/home/ubuntu/finBERT/gpt_downstream/tadp_eval_gridsearch_${experiment_name}/${name}
+                    #out_folder=/home/ubuntu/finBERT/public_gridsearch/tadp_eval_gridsearch/${name}
+                    [ -d ${out_folder} ] || mkdir -p ${out_folder}
+                    log_file=/home/ubuntu/finBERT/gpt_downstream/tadp_eval_gridsearch_${experiment_name}/${name}/full_name_${name}_seed_${seed}_bs_${bs}_ss_${max_length}_ftlr_${lr}_ftwd_${wd}_discriminate_${use_discriminate}_unfreeze_${gradual_unfreeze}_smallervocab_${use_smaller_vocab}_accumulation_steps_${accumulation_step}.txt
+                    #log_file=/home/ubuntu/finBERT/gpt_downstream/public_gridsearch/${name}/full_name_${name}_seed_${seed}_bs_${bs}_ss_${max_length}_ftlr_${lr}_ftwd_${wd}_gradual_unfreeze_${gradual_unfreeze}_discriminate_${discriminate}.txt
+                    # CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 accelerate launch
+                    CUDA_VISIBLE_DEVICES=0,1,2,3 accelerate launch example.py --name ${name} --weight ${weight} --lr ${lr} --wd ${wd} --seed ${seed} --bs ${bs} --max_length ${max_length} --gradual_unfreeze ${use_gradual_unfreeze} --discriminate ${use_discriminate} --use_smaller_vocab ${use_smaller_vocab} --experiment_name ${experiment_name} --accumulation_steps ${accumulation_step} 2>&1 | tee ${log_file}
+                    end=`date +%s`
+                    runtime=$((end-start))
+                    echo "time taken: ${runtime}"
+                done
             done
         done
     done
