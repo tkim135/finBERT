@@ -1,0 +1,57 @@
+Epoch
+
+Training on batches...
+Validation on batches...
+
+>->->->->->->->->->-
+train_loss: 0.06515484973476522, train_acc: 0.49581589958158995
+valid_loss: 1.0344253931290064, valid_acc: 0.48717948717948717
+>->->->->->->->->->-
+
+
+Training on batches...
+Validation on batches...
+
+>->->->->->->->->->-
+train_loss: 0.052710491244264225, train_acc: 0.6202928870292888
+valid_loss: 0.8600301498021835, valid_acc: 0.5641025641025641
+>->->->->->->->->->-
+
+
+Training on batches...
+Validation on batches...
+
+>->->->->->->->->->-
+train_loss: 0.04555494391269763, train_acc: 0.6443514644351465
+valid_loss: 0.8027364290677584, valid_acc: 0.5897435897435898
+>->->->->->->->->->-
+
+
+Training on batches...
+Validation on batches...
+
+>->->->->->->->->->-
+train_loss: 0.03475488906250838, train_acc: 0.7604602510460251
+valid_loss: 0.6816155971624912, valid_acc: 0.6730769230769231
+>->->->->->->->->->-
+
+
+Training on batches...
+Validation on batches...
+
+>->->->->->->->->->-
+train_loss: 0.026885471863976083, train_acc: 0.8138075313807531
+valid_loss: 0.6171550827148633, valid_acc: 0.6923076923076923
+>->->->->->->->->->-
+
+
+Training on batches...
+Validation on batches...
+
+>->->->->->->->->->-
+train_loss: 0.019863146587146375, train_acc: 0.8723849372384938
+valid_loss: 0.589036091015889, valid_acc: 0.717948717948718
+>->->->->->->->->->-
+
+Test on batches...
+{'train_acc_epochs': [0.49581589958158995, 0.6202928870292888, 0.6443514644351465, 0.7604602510460251, 0.8138075313807531, 0.8723849372384938], 'val_acc_epochs': [0.48717948717948717, 0.5641025641025641, 0.5897435897435898, 0.6730769230769231, 0.6923076923076923, 0.717948717948718], 'val_acc': 0.717948717948718, 'val_metric_epochs': [{'accuracy': 0.5256410256410257}, {'accuracy': 0.5833333333333334}, {'accuracy': 0.6266025641025641}, {'accuracy': 0.7019230769230769}, {'accuracy': 0.7243589743589743}, {'accuracy': 0.7403846153846154}], 'val_metric': {'accuracy': 0.7403846153846154}, 'test_acc': 0.7395833333333334, 'test_metric': {'accuracy': 0.728515625}}

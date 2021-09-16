@@ -1,0 +1,57 @@
+Epoch
+
+Training on batches...
+Validation on batches...
+
+>->->->->->->->->->-
+train_loss: 0.11895396819174539, train_acc: 0.5690376569037657
+valid_loss: 0.8831959259815705, valid_acc: 0.5641025641025641
+>->->->->->->->->->-
+
+
+Training on batches...
+Validation on batches...
+
+>->->->->->->->->->-
+train_loss: 0.08460837477919447, train_acc: 0.6935146443514645
+valid_loss: 0.7180809852404472, valid_acc: 0.6410256410256411
+>->->->->->->->->->-
+
+
+Training on batches...
+Validation on batches...
+
+>->->->->->->->->->-
+train_loss: 0.057201793986259644, train_acc: 0.8043933054393305
+valid_loss: 0.5717530357532012, valid_acc: 0.7371794871794872
+>->->->->->->->->->-
+
+
+Training on batches...
+Validation on batches...
+
+>->->->->->->->->->-
+train_loss: 0.03829332957020863, train_acc: 0.858786610878661
+valid_loss: 0.519749355621827, valid_acc: 0.8076923076923077
+>->->->->->->->->->-
+
+
+Training on batches...
+Validation on batches...
+
+>->->->->->->->->->-
+train_loss: 0.031203042575504988, train_acc: 0.9027196652719666
+valid_loss: 0.4802094858426314, valid_acc: 0.8076923076923077
+>->->->->->->->->->-
+
+
+Training on batches...
+Validation on batches...
+
+>->->->->->->->->->-
+train_loss: 0.02151513066937734, train_acc: 0.9320083682008368
+valid_loss: 0.529970862926581, valid_acc: 0.8141025641025641
+>->->->->->->->->->-
+
+Test on batches...
+{'train_acc_epochs': [0.5690376569037657, 0.6935146443514645, 0.8043933054393305, 0.858786610878661, 0.9027196652719666, 0.9320083682008368], 'val_acc_epochs': [0.5641025641025641, 0.6410256410256411, 0.7371794871794872, 0.8076923076923077, 0.8076923076923077, 0.8141025641025641], 'val_acc': 0.8141025641025641, 'val_metric_epochs': [{'accuracy': 0.5657051282051282}, {'accuracy': 0.6714743589743589}, {'accuracy': 0.7435897435897436}, {'accuracy': 0.7788461538461539}, {'accuracy': 0.7788461538461539}, {'accuracy': 0.7740384615384616}], 'val_metric': {'accuracy': 0.7740384615384616}, 'test_acc': 0.7838541666666666, 'test_metric': {'accuracy': 0.77734375}}

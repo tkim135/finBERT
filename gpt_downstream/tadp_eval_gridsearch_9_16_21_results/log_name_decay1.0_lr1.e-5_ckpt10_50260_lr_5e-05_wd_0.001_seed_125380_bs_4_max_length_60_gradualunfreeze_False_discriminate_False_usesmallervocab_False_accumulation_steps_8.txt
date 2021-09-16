@@ -1,0 +1,57 @@
+Epoch
+
+Training on batches...
+Validation on batches...
+
+>->->->->->->->->->-
+train_loss: 0.1251133954674629, train_acc: 0.553347280334728
+valid_loss: 0.952390621869992, valid_acc: 0.532051282051282
+>->->->->->->->->->-
+
+
+Training on batches...
+Validation on batches...
+
+>->->->->->->->->->-
+train_loss: 0.09307173804757984, train_acc: 0.6642259414225942
+valid_loss: 0.7998414650941507, valid_acc: 0.5897435897435898
+>->->->->->->->->->-
+
+
+Training on batches...
+Validation on batches...
+
+>->->->->->->->->->-
+train_loss: 0.06311527586631695, train_acc: 0.7866108786610879
+valid_loss: 0.6198747372015928, valid_acc: 0.7051282051282052
+>->->->->->->->->->-
+
+
+Training on batches...
+Validation on batches...
+
+>->->->->->->->->->-
+train_loss: 0.042016714608694224, train_acc: 0.8640167364016736
+valid_loss: 0.6018349482462957, valid_acc: 0.7051282051282052
+>->->->->->->->->->-
+
+
+Training on batches...
+Validation on batches...
+
+>->->->->->->->->->-
+train_loss: 0.03213082129237043, train_acc: 0.9037656903765691
+valid_loss: 0.5615224028244997, valid_acc: 0.7435897435897436
+>->->->->->->->->->-
+
+
+Training on batches...
+Validation on batches...
+
+>->->->->->->->->->-
+train_loss: 0.018894372562484264, train_acc: 0.9592050209205021
+valid_loss: 0.6024468204913995, valid_acc: 0.7371794871794872
+>->->->->->->->->->-
+
+Test on batches...
+{'train_acc_epochs': [0.553347280334728, 0.6642259414225942, 0.7866108786610879, 0.8640167364016736, 0.9037656903765691, 0.9592050209205021], 'val_acc_epochs': [0.532051282051282, 0.5897435897435898, 0.7051282051282052, 0.7051282051282052, 0.7435897435897436, 0.7371794871794872], 'val_acc': 0.7371794871794872, 'val_metric_epochs': [{'accuracy': 0.5416666666666666}, {'accuracy': 0.6362179487179487}, {'accuracy': 0.7323717948717948}, {'accuracy': 0.75}, {'accuracy': 0.7612179487179487}, {'accuracy': 0.7564102564102564}], 'val_metric': {'accuracy': 0.7564102564102564}, 'test_acc': 0.7473958333333334, 'test_metric': {'accuracy': 0.755859375}}

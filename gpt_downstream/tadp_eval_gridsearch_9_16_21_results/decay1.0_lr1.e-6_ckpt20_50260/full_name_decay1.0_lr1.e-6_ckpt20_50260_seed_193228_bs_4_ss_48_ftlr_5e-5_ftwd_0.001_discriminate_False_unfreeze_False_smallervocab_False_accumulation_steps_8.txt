@@ -1,0 +1,60 @@
+The module torch.distributed.launch is deprecated and going to be removed in future.Migrate to torch.distributed.run
+INFO:torch.distributed.launcher.api:Starting elastic_operator with launch configs:
+  entrypoint       : example.py
+  min_nodes        : 1
+  max_nodes        : 1
+  nproc_per_node   : 4
+  run_id           : none
+  rdzv_backend     : static
+  rdzv_endpoint    : 127.0.0.1:29500
+  rdzv_configs     : {'rank': 0, 'timeout': 900}
+  max_restarts     : 3
+  monitor_interval : 5
+  log_dir          : None
+  metrics_cfg      : {}
+
+INFO:torch.distributed.elastic.agent.server.local_elastic_agent:log directory set to: /tmp/torchelastic_b4onxbwc/none_hnqhsive
+INFO:torch.distributed.elastic.agent.server.api:[default] starting workers for entrypoint: python3.6
+INFO:torch.distributed.elastic.agent.server.api:[default] Rendezvous'ing worker group
+/home/ubuntu/finBERT/venv/lib/python3.6/site-packages/torch/distributed/elastic/utils/store.py:53: FutureWarning: This is an experimental API and will be changed in future.
+  "This is an experimental API and will be changed in future.", FutureWarning
+INFO:torch.distributed.elastic.agent.server.api:[default] Rendezvous complete for workers. Result:
+  restart_count=0
+  master_addr=127.0.0.1
+  master_port=29500
+  group_rank=0
+  group_world_size=1
+  local_ranks=[0, 1, 2, 3]
+  role_ranks=[0, 1, 2, 3]
+  global_ranks=[0, 1, 2, 3]
+  role_world_sizes=[4, 4, 4, 4]
+  global_world_sizes=[4, 4, 4, 4]
+
+INFO:torch.distributed.elastic.agent.server.api:[default] Starting worker group
+INFO:torch.distributed.elastic.multiprocessing:Setting worker0 reply file to: /tmp/torchelastic_b4onxbwc/none_hnqhsive/attempt_0/0/error.json
+INFO:torch.distributed.elastic.multiprocessing:Setting worker1 reply file to: /tmp/torchelastic_b4onxbwc/none_hnqhsive/attempt_0/1/error.json
+INFO:torch.distributed.elastic.multiprocessing:Setting worker2 reply file to: /tmp/torchelastic_b4onxbwc/none_hnqhsive/attempt_0/2/error.json
+INFO:torch.distributed.elastic.multiprocessing:Setting worker3 reply file to: /tmp/torchelastic_b4onxbwc/none_hnqhsive/attempt_0/3/error.json
+>-*-*-*-*-*-*-<
+LR: 5e-05, WD: 0.001, Seed: 193228, BS: 4, Max Length: 48, Gradual Unfreeze: False, Discriminative Finetuning: False, Weight: /home/ubuntu/finBERT/weights/hf_ckpt_decay1.0_lr1.e-6_ss1024_bs16_results_finbert/pytorch_model_lr1.e-6_wd1.0_ckpt20.bin, Use Smaller Vocab: False, Accumulation Steps: 8
+>-*-*-*-*-*-*-<
+Some weights of the model checkpoint at None were not used when initializing GPT2ForSequenceClassification: ['lm_head.weight']
+- This IS expected if you are initializing GPT2ForSequenceClassification from the checkpoint of a model trained on another task or with another architecture (e.g. initializing a BertForSequenceClassification model from a BertForPreTraining model).
+- This IS NOT expected if you are initializing GPT2ForSequenceClassification from the checkpoint of a model that you expect to be exactly identical (initializing a BertForSequenceClassification model from a BertForSequenceClassification model).
+Some weights of GPT2ForSequenceClassification were not initialized from the model checkpoint at None and are newly initialized: ['score.weight']
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+Some weights of the model checkpoint at None were not used when initializing GPT2ForSequenceClassification: ['lm_head.weight']
+- This IS expected if you are initializing GPT2ForSequenceClassification from the checkpoint of a model trained on another task or with another architecture (e.g. initializing a BertForSequenceClassification model from a BertForPreTraining model).
+- This IS NOT expected if you are initializing GPT2ForSequenceClassification from the checkpoint of a model that you expect to be exactly identical (initializing a BertForSequenceClassification model from a BertForSequenceClassification model).
+Some weights of GPT2ForSequenceClassification were not initialized from the model checkpoint at None and are newly initialized: ['score.weight']
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+Some weights of the model checkpoint at None were not used when initializing GPT2ForSequenceClassification: ['lm_head.weight']
+- This IS expected if you are initializing GPT2ForSequenceClassification from the checkpoint of a model trained on another task or with another architecture (e.g. initializing a BertForSequenceClassification model from a BertForPreTraining model).
+- This IS NOT expected if you are initializing GPT2ForSequenceClassification from the checkpoint of a model that you expect to be exactly identical (initializing a BertForSequenceClassification model from a BertForSequenceClassification model).
+Some weights of GPT2ForSequenceClassification were not initialized from the model checkpoint at None and are newly initialized: ['score.weight']
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+Some weights of the model checkpoint at None were not used when initializing GPT2ForSequenceClassification: ['lm_head.weight']
+- This IS expected if you are initializing GPT2ForSequenceClassification from the checkpoint of a model trained on another task or with another architecture (e.g. initializing a BertForSequenceClassification model from a BertForPreTraining model).
+- This IS NOT expected if you are initializing GPT2ForSequenceClassification from the checkpoint of a model that you expect to be exactly identical (initializing a BertForSequenceClassification model from a BertForSequenceClassification model).
+Some weights of GPT2ForSequenceClassification were not initialized from the model checkpoint at None and are newly initialized: ['score.weight']
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.

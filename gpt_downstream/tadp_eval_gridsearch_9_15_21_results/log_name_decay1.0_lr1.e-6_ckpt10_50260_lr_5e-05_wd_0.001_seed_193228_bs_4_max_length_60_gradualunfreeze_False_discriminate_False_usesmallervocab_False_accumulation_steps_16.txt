@@ -1,0 +1,57 @@
+Epoch
+
+Training on batches...
+Validation on batches...
+
+>->->->->->->->->->-
+train_loss: 0.09335268491481637, train_acc: 0.3148535564853556
+valid_loss: 1.0861781193659856, valid_acc: 0.5064102564102564
+>->->->->->->->->->-
+
+
+Training on batches...
+Validation on batches...
+
+>->->->->->->->->->-
+train_loss: 0.059263113652313106, train_acc: 0.5784518828451883
+valid_loss: 0.9182981833433493, valid_acc: 0.5384615384615384
+>->->->->->->->->->-
+
+
+Training on batches...
+Validation on batches...
+
+>->->->->->->->->->-
+train_loss: 0.048939527328044304, train_acc: 0.6422594142259415
+valid_loss: 0.8656860742813501, valid_acc: 0.5576923076923077
+>->->->->->->->->->-
+
+
+Training on batches...
+Validation on batches...
+
+>->->->->->->->->->-
+train_loss: 0.04237836474654066, train_acc: 0.6903765690376569
+valid_loss: 0.7901641650077624, valid_acc: 0.6217948717948718
+>->->->->->->->->->-
+
+
+Training on batches...
+Validation on batches...
+
+>->->->->->->->->->-
+train_loss: 0.034253289369733764, train_acc: 0.7583682008368201
+valid_loss: 0.6486630867689084, valid_acc: 0.6794871794871795
+>->->->->->->->->->-
+
+
+Training on batches...
+Validation on batches...
+
+>->->->->->->->->->-
+train_loss: 0.024913800202278912, train_acc: 0.8368200836820083
+valid_loss: 0.5926386905022156, valid_acc: 0.7307692307692307
+>->->->->->->->->->-
+
+Test on batches...
+{'train_acc_epochs': [0.3148535564853556, 0.5784518828451883, 0.6422594142259415, 0.6903765690376569, 0.7583682008368201, 0.8368200836820083], 'val_acc_epochs': [0.5064102564102564, 0.5384615384615384, 0.5576923076923077, 0.6217948717948718, 0.6794871794871795, 0.7307692307692307], 'val_acc': 0.7307692307692307, 'val_metric_epochs': [{'accuracy': 0.5128205128205128}, {'accuracy': 0.5496794871794872}, {'accuracy': 0.5721153846153846}, {'accuracy': 0.6650641025641025}, {'accuracy': 0.719551282051282}, {'accuracy': 0.75}], 'val_metric': {'accuracy': 0.75}, 'test_acc': 0.7317708333333334, 'test_metric': {'accuracy': 0.7428385416666666}}

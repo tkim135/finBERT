@@ -38,21 +38,26 @@
 # pytorch_model_lr1.e-6_wd1.0_ckpt9.bin
 
 # public
-weights=(/home/ubuntu/finBERT/weights/hf_ckpt_decay1.0_lr1.e-6_ss1024_bs16_results_finbert/pytorch_model_lr1.e-6_wd1.0_ckpt9.bin /home/ubuntu/finBERT/weights/hf_ckpt_decay1.0_lr1.e-6_ss1024_bs16_results_finbert/pytorch_model_lr1.e-6_wd1.0_ckpt9.bin /home/ubuntu/finBERT/weights/hf_ckpt_decay0.5_lr1.e-6_ss1024_bs16_results_finbert/pytorch_model_lr1.e-6_wd0.5_ckpt10.bin /home/ubuntu/finBERT/weights/hf_ckpt_decay0.5_lr1.e-5_ss1024_bs16_results_finbert/pytorch_model_lr1.e-5_wd0.5_ckpt10.bin /home/ubuntu/finBERT/weights/hf_ckpt_decay1.0_lr1.e-5_ss1024_bs16_results_finbert/pytorch_model_lr1.e-5_wd1.0_ckpt10.bin)
-names=(decay1.0_lr1.e-6_ckpt10_50260 decay1.0_lr1.e-6_ckpt10_50257 decay0.5_lr1.e-6_ckpt10_50260 decay0.5_lr1.e-5_ckpt10_50260 decay1.0_lr1.e-5_ckpt10_50260)
-small_vocab=("False" "True" "False" "False" "False")
-gradual_unfreeze=("False" "False" "False" "False" "False")
-discriminate=("False" "False" "False" "False" "False")
+# weights=(/home/ubuntu/finBERT/weights/hf_ckpt_decay0.5_lr1.e-6_ss1024_bs16_results_finbert/pytorch_model_lr1.e-6_wd0.5_ckpt20.bin /home/ubuntu/finBERT/weights/hf_ckpt_decay1.0_lr1.e-6_ss1024_bs16_results_finbert/pytorch_model_lr1.e-6_wd1.0_ckpt20.bin /home/ubuntu/finBERT/weights/hf_ckpt_decay1.0_lr1.e-6_ss1024_bs16_results_finbert/pytorch_model_lr1.e-6_wd1.0_ckpt9.bin /home/ubuntu/finBERT/weights/hf_ckpt_decay1.0_lr1.e-6_ss1024_bs16_results_finbert/pytorch_model_lr1.e-6_wd1.0_ckpt9.bin /home/ubuntu/finBERT/weights/hf_ckpt_decay0.5_lr1.e-6_ss1024_bs16_results_finbert/pytorch_model_lr1.e-6_wd0.5_ckpt10.bin /home/ubuntu/finBERT/weights/hf_ckpt_decay0.5_lr1.e-5_ss1024_bs16_results_finbert/pytorch_model_lr1.e-5_wd0.5_ckpt10.bin /home/ubuntu/finBERT/weights/hf_ckpt_decay1.0_lr1.e-5_ss1024_bs16_results_finbert/pytorch_model_lr1.e-5_wd1.0_ckpt10.bin)
+# names=(decay0.5_lr1.e-6_ckpt20_50260 decay1.0_lr1.e-6_ckpt20_50260 decay1.0_lr1.e-6_ckpt10_50260 decay1.0_lr1.e-6_ckpt10_50257 decay0.5_lr1.e-6_ckpt10_50260 decay0.5_lr1.e-5_ckpt10_50260 decay1.0_lr1.e-5_ckpt10_50260)
+# small_vocab=("False" "False" "False" "True" "False" "False" "False")
+# gradual_unfreeze=("False" "False" "False" "False" "False" "False" "False")
+# discriminate=("False" "False" "False" "False" "False" "False" "False")
 # weights=(/home/ubuntu/finBERT/weights/hf_ckpt_decay0.5_lr1.e-4_ss1024_bs16_results_finbert/pytorch_model_lr1.e-4_wd0.5_ckpt6.bin)
 # names=(decay0.5_lr1e-4_ckpt6)
 # small_vocab=("False")
 
 # test
-#weights=(public_ckpt public_ckpt public_ckpt public_ckpt)
-#names=(hf_public_ckpt hf_public_ckpt hf_public_ckpt hf_public_ckpt)
-#small_vocab=("True" "True" "True" "True")
-#gradual_unfreeze=("False" "True" "False" "True")
-#discriminate=("False" "False" "True" "True")
+# weights=(public_ckpt public_ckpt public_ckpt public_ckpt)
+# names=(hf_public_ckpt hf_public_ckpt hf_public_ckpt hf_public_ckpt)
+# small_vocab=("True" "True" "True" "True")
+# gradual_unfreeze=("False" "True" "False" "True")
+# discriminate=("False" "False" "True" "True")
+weights=(public_ckpt public_ckpt)
+names=(hf_public_ckpt hf_public_ckpt)
+small_vocab=("True" "False")
+gradual_unfreeze=("False" "False")
+discriminate=("False" "False")
 
 seeds=(42 125380 160800 22758 176060 193228)
 
@@ -69,7 +74,7 @@ max_lengths=(60)
 bs=4
 #max_length=1024
 
-accumulation_steps = (8 16)
+accumulation_steps=(1)
 
 # lrwdconfigs=(a1 a2 a3 a4 a5 b1 b2 b3 b4 b5 c1 c2 c3 c4 c5)
 # declare -A lrs=(
@@ -110,12 +115,34 @@ accumulation_steps = (8 16)
 lrwdconfigs=(a1)
 declare -A lrs=(
     [a1]=5e-5
+    [a2]=5e-6
+    [a3]=5e-7
+    [b1]=5e-5
+    [b2]=5e-6
+    [b3]=5e-7
+    [c1]=5e-5
+    [c2]=5e-6
+    [c3]=5e-7
+    [d1]=5e-5
+    [d2]=5e-6
+    [d3]=5e-7
 )
 declare -A wds=(
     [a1]=0.001
+    [a2]=0.001
+    [a3]=0.001
+    [b1]=0.0001
+    [b2]=0.0001
+    [b3]=0.0001
+    [c1]=0.01
+    [c2]=0.01
+    [c3]=0.01
+    [d1]=0.1
+    [d2]=0.1
+    [d3]=0.1
 )
 
-experiment_name="9_15_21_results"
+experiment_name="public_ckpt_search"
 
 for max_length in ${max_lengths[@]}; do
     for lrwdconfig in ${lrwdconfigs[@]}; do

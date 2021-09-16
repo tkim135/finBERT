@@ -1,0 +1,57 @@
+Epoch
+
+Training on batches...
+Validation on batches...
+
+>->->->->->->->->->-
+train_loss: 0.06646833858729406, train_acc: 0.5031380753138075
+valid_loss: 1.0306224333934295, valid_acc: 0.5192307692307693
+>->->->->->->->->->-
+
+
+Training on batches...
+Validation on batches...
+
+>->->->->->->->->->-
+train_loss: 0.05479459882281315, train_acc: 0.602510460251046
+valid_loss: 0.8947198329827725, valid_acc: 0.5448717948717948
+>->->->->->->->->->-
+
+
+Training on batches...
+Validation on batches...
+
+>->->->->->->->->->-
+train_loss: 0.046547205877104564, train_acc: 0.6610878661087866
+valid_loss: 0.8326078561636118, valid_acc: 0.5512820512820513
+>->->->->->->->->->-
+
+
+Training on batches...
+Validation on batches...
+
+>->->->->->->->->->-
+train_loss: 0.03775951640376486, train_acc: 0.7259414225941423
+valid_loss: 0.7481781763908191, valid_acc: 0.6346153846153846
+>->->->->->->->->->-
+
+
+Training on batches...
+Validation on batches...
+
+>->->->->->->->->->-
+train_loss: 0.026993828642505484, train_acc: 0.8357740585774058
+valid_loss: 0.59886512083885, valid_acc: 0.6923076923076923
+>->->->->->->->->->-
+
+
+Training on batches...
+Validation on batches...
+
+>->->->->->->->->->-
+train_loss: 0.022585048281809773, train_acc: 0.8399581589958159
+valid_loss: 0.5469093062938788, valid_acc: 0.717948717948718
+>->->->->->->->->->-
+
+Test on batches...
+{'train_acc_epochs': [0.5031380753138075, 0.602510460251046, 0.6610878661087866, 0.7259414225941423, 0.8357740585774058, 0.8399581589958159], 'val_acc_epochs': [0.5192307692307693, 0.5448717948717948, 0.5512820512820513, 0.6346153846153846, 0.6923076923076923, 0.717948717948718], 'val_acc': 0.717948717948718, 'val_metric_epochs': [{'accuracy': 0.5256410256410257}, {'accuracy': 0.5737179487179487}, {'accuracy': 0.6041666666666666}, {'accuracy': 0.6794871794871795}, {'accuracy': 0.7227564102564102}, {'accuracy': 0.7435897435897436}], 'val_metric': {'accuracy': 0.7435897435897436}, 'test_acc': 0.7421875, 'test_metric': {'accuracy': 0.75}}

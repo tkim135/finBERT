@@ -1,0 +1,57 @@
+Epoch
+
+Training on batches...
+Validation on batches...
+
+>->->->->->->->->->-
+train_loss: 0.061861513050031465, train_acc: 0.5481171548117155
+valid_loss: 0.9431371444310898, valid_acc: 0.5576923076923077
+>->->->->->->->->->-
+
+
+Training on batches...
+Validation on batches...
+
+>->->->->->->->->->-
+train_loss: 0.05265058832687314, train_acc: 0.6223849372384938
+valid_loss: 0.8267912253355368, valid_acc: 0.5705128205128205
+>->->->->->->->->->-
+
+
+Training on batches...
+Validation on batches...
+
+>->->->->->->->->->-
+train_loss: 0.04422597855204818, train_acc: 0.6705020920502092
+valid_loss: 0.7710263178898737, valid_acc: 0.6282051282051282
+>->->->->->->->->->-
+
+
+Training on batches...
+Validation on batches...
+
+>->->->->->->->->->-
+train_loss: 0.03478794711716005, train_acc: 0.7667364016736402
+valid_loss: 0.6570529937744141, valid_acc: 0.6730769230769231
+>->->->->->->->->->-
+
+
+Training on batches...
+Validation on batches...
+
+>->->->->->->->->->-
+train_loss: 0.025493679731834883, train_acc: 0.8305439330543933
+valid_loss: 0.5876512680298243, valid_acc: 0.7307692307692307
+>->->->->->->->->->-
+
+
+Training on batches...
+Validation on batches...
+
+>->->->->->->->->->-
+train_loss: 0.019726758853972706, train_acc: 0.8650627615062761
+valid_loss: 0.5387739432163727, valid_acc: 0.7371794871794872
+>->->->->->->->->->-
+
+Test on batches...
+{'train_acc_epochs': [0.5481171548117155, 0.6223849372384938, 0.6705020920502092, 0.7667364016736402, 0.8305439330543933, 0.8650627615062761], 'val_acc_epochs': [0.5576923076923077, 0.5705128205128205, 0.6282051282051282, 0.6730769230769231, 0.7307692307692307, 0.7371794871794872], 'val_acc': 0.7371794871794872, 'val_metric_epochs': [{'accuracy': 0.5400641025641025}, {'accuracy': 0.5544871794871795}, {'accuracy': 0.625}, {'accuracy': 0.7131410256410257}, {'accuracy': 0.7435897435897436}, {'accuracy': 0.7532051282051282}], 'val_metric': {'accuracy': 0.7532051282051282}, 'test_acc': 0.765625, 'test_metric': {'accuracy': 0.7486979166666666}}

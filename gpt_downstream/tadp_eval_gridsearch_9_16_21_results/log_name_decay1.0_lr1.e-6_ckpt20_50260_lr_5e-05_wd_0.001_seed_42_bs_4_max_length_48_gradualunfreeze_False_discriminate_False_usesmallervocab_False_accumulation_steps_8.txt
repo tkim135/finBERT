@@ -1,0 +1,57 @@
+Epoch
+
+Training on batches...
+Validation on batches...
+
+>->->->->->->->->->-
+train_loss: 0.1207120288864838, train_acc: 0.5648535564853556
+valid_loss: 0.8553611559745593, valid_acc: 0.5448717948717948
+>->->->->->->->->->-
+
+
+Training on batches...
+Validation on batches...
+
+>->->->->->->->->->-
+train_loss: 0.08504162747490855, train_acc: 0.6914225941422594
+valid_loss: 0.74764067087418, valid_acc: 0.6025641025641025
+>->->->->->->->->->-
+
+
+Training on batches...
+Validation on batches...
+
+>->->->->->->->->->-
+train_loss: 0.06060365059073999, train_acc: 0.7939330543933054
+valid_loss: 0.553965476843027, valid_acc: 0.7564102564102564
+>->->->->->->->->->-
+
+
+Training on batches...
+Validation on batches...
+
+>->->->->->->->->->-
+train_loss: 0.04189015415236042, train_acc: 0.858786610878661
+valid_loss: 0.530288849121485, valid_acc: 0.7564102564102564
+>->->->->->->->->->-
+
+
+Training on batches...
+Validation on batches...
+
+>->->->->->->->->->-
+train_loss: 0.033496095592382064, train_acc: 0.8891213389121339
+valid_loss: 0.5133106540410947, valid_acc: 0.7692307692307693
+>->->->->->->->->->-
+
+
+Training on batches...
+Validation on batches...
+
+>->->->->->->->->->-
+train_loss: 0.02295791295407706, train_acc: 0.9320083682008368
+valid_loss: 0.5088910376414274, valid_acc: 0.7948717948717948
+>->->->->->->->->->-
+
+Test on batches...
+{'train_acc_epochs': [0.5648535564853556, 0.6914225941422594, 0.7939330543933054, 0.858786610878661, 0.8891213389121339, 0.9320083682008368], 'val_acc_epochs': [0.5448717948717948, 0.6025641025641025, 0.7564102564102564, 0.7564102564102564, 0.7692307692307693, 0.7948717948717948], 'val_acc': 0.7948717948717948, 'val_metric_epochs': [{'accuracy': 0.5801282051282052}, {'accuracy': 0.6410256410256411}, {'accuracy': 0.7548076923076923}, {'accuracy': 0.7532051282051282}, {'accuracy': 0.7836538461538461}, {'accuracy': 0.7708333333333334}], 'val_metric': {'accuracy': 0.7708333333333334}, 'test_acc': 0.7682291666666666, 'test_metric': {'accuracy': 0.7591145833333334}}

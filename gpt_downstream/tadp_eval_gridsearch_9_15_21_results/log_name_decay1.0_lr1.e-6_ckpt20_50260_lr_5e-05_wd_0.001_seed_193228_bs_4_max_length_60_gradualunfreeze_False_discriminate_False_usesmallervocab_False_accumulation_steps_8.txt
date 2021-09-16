@@ -1,0 +1,57 @@
+Epoch
+
+Training on batches...
+Validation on batches...
+
+>->->->->->->->->->-
+train_loss: 0.15131563721341568, train_acc: 0.4445606694560669
+valid_loss: 0.9123417780949519, valid_acc: 0.5384615384615384
+>->->->->->->->->->-
+
+
+Training on batches...
+Validation on batches...
+
+>->->->->->->->->->-
+train_loss: 0.09329341645021319, train_acc: 0.6558577405857741
+valid_loss: 0.8100531162359775, valid_acc: 0.5705128205128205
+>->->->->->->->->->-
+
+
+Training on batches...
+Validation on batches...
+
+>->->->->->->->->->-
+train_loss: 0.05951058995524211, train_acc: 0.799163179916318
+valid_loss: 0.589942672313788, valid_acc: 0.7051282051282052
+>->->->->->->->->->-
+
+
+Training on batches...
+Validation on batches...
+
+>->->->->->->->->->-
+train_loss: 0.042238244529673244, train_acc: 0.8483263598326359
+valid_loss: 0.6132554228489215, valid_acc: 0.7243589743589743
+>->->->->->->->->->-
+
+
+Training on batches...
+Validation on batches...
+
+>->->->->->->->->->-
+train_loss: 0.031393302503240655, train_acc: 0.9058577405857741
+valid_loss: 0.5613516446871635, valid_acc: 0.7692307692307693
+>->->->->->->->->->-
+
+
+Training on batches...
+Validation on batches...
+
+>->->->->->->->->->-
+train_loss: 0.02186337986251799, train_acc: 0.9424686192468619
+valid_loss: 0.6405373032276447, valid_acc: 0.7756410256410257
+>->->->->->->->->->-
+
+Test on batches...
+{'train_acc_epochs': [0.4445606694560669, 0.6558577405857741, 0.799163179916318, 0.8483263598326359, 0.9058577405857741, 0.9424686192468619], 'val_acc_epochs': [0.5384615384615384, 0.5705128205128205, 0.7051282051282052, 0.7243589743589743, 0.7692307692307693, 0.7756410256410257], 'val_acc': 0.7756410256410257, 'val_metric_epochs': [{'accuracy': 0.5496794871794872}, {'accuracy': 0.6073717948717948}, {'accuracy': 0.7371794871794872}, {'accuracy': 0.7419871794871795}, {'accuracy': 0.780448717948718}, {'accuracy': 0.7724358974358975}], 'val_metric': {'accuracy': 0.7724358974358975}, 'test_acc': 0.765625, 'test_metric': {'accuracy': 0.76953125}}

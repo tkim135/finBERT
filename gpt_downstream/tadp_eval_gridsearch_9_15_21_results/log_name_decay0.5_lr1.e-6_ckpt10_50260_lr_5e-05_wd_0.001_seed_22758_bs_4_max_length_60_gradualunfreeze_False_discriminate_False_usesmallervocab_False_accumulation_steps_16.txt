@@ -1,0 +1,57 @@
+Epoch
+
+Training on batches...
+Validation on batches...
+
+>->->->->->->->->->-
+train_loss: 0.07600304272384324, train_acc: 0.40376569037656906
+valid_loss: 1.063705835586939, valid_acc: 0.4935897435897436
+>->->->->->->->->->-
+
+
+Training on batches...
+Validation on batches...
+
+>->->->->->->->->->-
+train_loss: 0.055737635081782, train_acc: 0.5700836820083682
+valid_loss: 0.9130362486227964, valid_acc: 0.5576923076923077
+>->->->->->->->->->-
+
+
+Training on batches...
+Validation on batches...
+
+>->->->->->->->->->-
+train_loss: 0.04645380016151333, train_acc: 0.6558577405857741
+valid_loss: 0.8232678144406049, valid_acc: 0.5769230769230769
+>->->->->->->->->->-
+
+
+Training on batches...
+Validation on batches...
+
+>->->->->->->->->->-
+train_loss: 0.039579173635738166, train_acc: 0.7217573221757322
+valid_loss: 0.7241476988181089, valid_acc: 0.6666666666666666
+>->->->->->->->->->-
+
+
+Training on batches...
+Validation on batches...
+
+>->->->->->->->->->-
+train_loss: 0.02726527828738779, train_acc: 0.8117154811715481
+valid_loss: 0.5957566392727387, valid_acc: 0.7307692307692307
+>->->->->->->->->->-
+
+
+Training on batches...
+Validation on batches...
+
+>->->->->->->->->->-
+train_loss: 0.02252856984921579, train_acc: 0.8462343096234309
+valid_loss: 0.555577467649411, valid_acc: 0.7435897435897436
+>->->->->->->->->->-
+
+Test on batches...
+{'train_acc_epochs': [0.40376569037656906, 0.5700836820083682, 0.6558577405857741, 0.7217573221757322, 0.8117154811715481, 0.8462343096234309], 'val_acc_epochs': [0.4935897435897436, 0.5576923076923077, 0.5769230769230769, 0.6666666666666666, 0.7307692307692307, 0.7435897435897436], 'val_acc': 0.7435897435897436, 'val_metric_epochs': [{'accuracy': 0.4855769230769231}, {'accuracy': 0.5657051282051282}, {'accuracy': 0.6057692307692307}, {'accuracy': 0.6987179487179487}, {'accuracy': 0.7612179487179487}, {'accuracy': 0.7836538461538461}], 'val_metric': {'accuracy': 0.7836538461538461}, 'test_acc': 0.7552083333333334, 'test_metric': {'accuracy': 0.75}}

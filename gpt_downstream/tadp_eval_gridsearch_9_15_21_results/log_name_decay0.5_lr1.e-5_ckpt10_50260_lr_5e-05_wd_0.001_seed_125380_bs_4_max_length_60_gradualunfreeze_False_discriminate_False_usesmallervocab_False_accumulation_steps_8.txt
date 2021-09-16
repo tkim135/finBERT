@@ -1,0 +1,57 @@
+Epoch
+
+Training on batches...
+Validation on batches...
+
+>->->->->->->->->->-
+train_loss: 0.12501244165907346, train_acc: 0.5596234309623431
+valid_loss: 0.9491815811548477, valid_acc: 0.5448717948717948
+>->->->->->->->->->-
+
+
+Training on batches...
+Validation on batches...
+
+>->->->->->->->->->-
+train_loss: 0.09203349995313828, train_acc: 0.6673640167364017
+valid_loss: 0.7968935355162009, valid_acc: 0.6025641025641025
+>->->->->->->->->->-
+
+
+Training on batches...
+Validation on batches...
+
+>->->->->->->->->->-
+train_loss: 0.06195974474671496, train_acc: 0.7928870292887029
+valid_loss: 0.6222008222188705, valid_acc: 0.6987179487179487
+>->->->->->->->->->-
+
+
+Training on batches...
+Validation on batches...
+
+>->->->->->->->->->-
+train_loss: 0.040410754524140176, train_acc: 0.8713389121338913
+valid_loss: 0.6203035589976188, valid_acc: 0.7243589743589743
+>->->->->->->->->->-
+
+
+Training on batches...
+Validation on batches...
+
+>->->->->->->->->->-
+train_loss: 0.027940753691490725, train_acc: 0.9163179916317992
+valid_loss: 0.5831846289145641, valid_acc: 0.75
+>->->->->->->->->->-
+
+
+Training on batches...
+Validation on batches...
+
+>->->->->->->->->->-
+train_loss: 0.016119542901860122, train_acc: 0.9665271966527197
+valid_loss: 0.6192699525600824, valid_acc: 0.7435897435897436
+>->->->->->->->->->-
+
+Test on batches...
+{'train_acc_epochs': [0.5596234309623431, 0.6673640167364017, 0.7928870292887029, 0.8713389121338913, 0.9163179916317992, 0.9665271966527197], 'val_acc_epochs': [0.5448717948717948, 0.6025641025641025, 0.6987179487179487, 0.7243589743589743, 0.75, 0.7435897435897436], 'val_acc': 0.7435897435897436, 'val_metric_epochs': [{'accuracy': 0.5528846153846154}, {'accuracy': 0.6314102564102564}, {'accuracy': 0.7355769230769231}, {'accuracy': 0.7516025641025641}, {'accuracy': 0.7724358974358975}, {'accuracy': 0.7676282051282052}], 'val_metric': {'accuracy': 0.7676282051282052}, 'test_acc': 0.7369791666666666, 'test_metric': {'accuracy': 0.7532552083333334}}

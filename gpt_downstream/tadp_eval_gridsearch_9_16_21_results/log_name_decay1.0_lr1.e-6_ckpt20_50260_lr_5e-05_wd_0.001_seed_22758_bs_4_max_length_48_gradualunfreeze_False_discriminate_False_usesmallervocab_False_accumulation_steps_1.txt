@@ -1,0 +1,57 @@
+Epoch
+
+Training on batches...
+Validation on batches...
+
+>->->->->->->->->->-
+train_loss: 0.6741974855067839, train_acc: 0.7133891213389121
+valid_loss: 0.539072376031142, valid_acc: 0.7756410256410257
+>->->->->->->->->->-
+
+
+Training on batches...
+Validation on batches...
+
+>->->->->->->->->->-
+train_loss: 0.2923928946880117, train_acc: 0.8849372384937239
+valid_loss: 0.4975727788912944, valid_acc: 0.8205128205128205
+>->->->->->->->->->-
+
+
+Training on batches...
+Validation on batches...
+
+>->->->->->->->->->-
+train_loss: 0.11994663092880568, train_acc: 0.9539748953974896
+valid_loss: 0.7296642156747671, valid_acc: 0.7692307692307693
+>->->->->->->->->->-
+
+
+Training on batches...
+Validation on batches...
+
+>->->->->->->->->->-
+train_loss: 0.12384072731728334, train_acc: 0.9738493723849372
+valid_loss: 1.2915488894169147, valid_acc: 0.7564102564102564
+>->->->->->->->->->-
+
+
+Training on batches...
+Validation on batches...
+
+>->->->->->->->->->-
+train_loss: 0.10917098215434341, train_acc: 0.9769874476987448
+valid_loss: 1.8434578677018483, valid_acc: 0.782051282051282
+>->->->->->->->->->-
+
+
+Training on batches...
+Validation on batches...
+
+>->->->->->->->->->-
+train_loss: 0.03309875626943101, train_acc: 0.99581589958159
+valid_loss: 2.278647999732922, valid_acc: 0.8205128205128205
+>->->->->->->->->->-
+
+Test on batches...
+{'train_acc_epochs': [0.7133891213389121, 0.8849372384937239, 0.9539748953974896, 0.9738493723849372, 0.9769874476987448, 0.99581589958159], 'val_acc_epochs': [0.7756410256410257, 0.8205128205128205, 0.7692307692307693, 0.7564102564102564, 0.782051282051282, 0.8205128205128205], 'val_acc': 0.8205128205128205, 'val_metric_epochs': [{'accuracy': 0.7868589743589743}, {'accuracy': 0.7964743589743589}, {'accuracy': 0.7772435897435898}, {'accuracy': 0.782051282051282}, {'accuracy': 0.782051282051282}, {'accuracy': 0.7996794871794872}], 'val_metric': {'accuracy': 0.7996794871794872}, 'test_acc': 0.8177083333333334, 'test_metric': {'accuracy': 0.796875}}

@@ -1,0 +1,57 @@
+Epoch
+
+Training on batches...
+Validation on batches...
+
+>->->->->->->->->->-
+train_loss: 0.11451605473602167, train_acc: 0.5763598326359832
+valid_loss: 0.8325790014022436, valid_acc: 0.5641025641025641
+>->->->->->->->->->-
+
+
+Training on batches...
+Validation on batches...
+
+>->->->->->->->->->-
+train_loss: 0.08544317498865486, train_acc: 0.6882845188284519
+valid_loss: 0.7241494105412409, valid_acc: 0.6346153846153846
+>->->->->->->->->->-
+
+
+Training on batches...
+Validation on batches...
+
+>->->->->->->->->->-
+train_loss: 0.05581072459161032, train_acc: 0.8075313807531381
+valid_loss: 0.5572800911389865, valid_acc: 0.7307692307692307
+>->->->->->->->->->-
+
+
+Training on batches...
+Validation on batches...
+
+>->->->->->->->->->-
+train_loss: 0.04105022395318023, train_acc: 0.8514644351464435
+valid_loss: 0.5441465446582208, valid_acc: 0.75
+>->->->->->->->->->-
+
+
+Training on batches...
+Validation on batches...
+
+>->->->->->->->->->-
+train_loss: 0.028491162948279202, train_acc: 0.9131799163179917
+valid_loss: 0.5277903683674641, valid_acc: 0.8141025641025641
+>->->->->->->->->->-
+
+
+Training on batches...
+Validation on batches...
+
+>->->->->->->->->->-
+train_loss: 0.020104200598709755, train_acc: 0.9393305439330544
+valid_loss: 0.54643520177939, valid_acc: 0.7692307692307693
+>->->->->->->->->->-
+
+Test on batches...
+{'train_acc_epochs': [0.5763598326359832, 0.6882845188284519, 0.8075313807531381, 0.8514644351464435, 0.9131799163179917, 0.9393305439330544], 'val_acc_epochs': [0.5641025641025641, 0.6346153846153846, 0.7307692307692307, 0.75, 0.8141025641025641, 0.7692307692307693], 'val_acc': 0.7692307692307693, 'val_metric_epochs': [{'accuracy': 0.5544871794871795}, {'accuracy': 0.6666666666666666}, {'accuracy': 0.7516025641025641}, {'accuracy': 0.7403846153846154}, {'accuracy': 0.7740384615384616}, {'accuracy': 0.7676282051282052}], 'val_metric': {'accuracy': 0.7676282051282052}, 'test_acc': 0.7786458333333334, 'test_metric': {'accuracy': 0.7669270833333334}}

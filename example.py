@@ -161,6 +161,9 @@ def train(accelerator, model, dataloader, optimizer, scheduler, device, i, gradu
     # Put the model into training mode.
     model.train()
     
+    
+    model.zero_grad()
+
     # For each batch of training data...
     for step, batch in enumerate(tqdm(dataloader, total=len(dataloader))):
         # gradual unfreezing

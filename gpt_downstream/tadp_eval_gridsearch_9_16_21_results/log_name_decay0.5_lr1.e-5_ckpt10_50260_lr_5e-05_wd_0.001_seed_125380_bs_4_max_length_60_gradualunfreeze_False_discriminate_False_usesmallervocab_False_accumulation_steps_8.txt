@@ -1,0 +1,57 @@
+Epoch
+
+Training on batches...
+Validation on batches...
+
+>->->->->->->->->->-
+train_loss: 0.12501244165907346, train_acc: 0.5596234309623431
+valid_loss: 0.9491815811548477, valid_acc: 0.5448717948717948
+>->->->->->->->->->-
+
+
+Training on batches...
+Validation on batches...
+
+>->->->->->->->->->-
+train_loss: 0.09226026295618034, train_acc: 0.6673640167364017
+valid_loss: 0.7978045634734325, valid_acc: 0.5897435897435898
+>->->->->->->->->->-
+
+
+Training on batches...
+Validation on batches...
+
+>->->->->->->->->->-
+train_loss: 0.062246159903673944, train_acc: 0.7918410041841004
+valid_loss: 0.6210598762218769, valid_acc: 0.6987179487179487
+>->->->->->->->->->-
+
+
+Training on batches...
+Validation on batches...
+
+>->->->->->->->->->-
+train_loss: 0.041356818960925024, train_acc: 0.8713389121338913
+valid_loss: 0.6060794439071264, valid_acc: 0.7243589743589743
+>->->->->->->->->->-
+
+
+Training on batches...
+Validation on batches...
+
+>->->->->->->->->->-
+train_loss: 0.029780642133377586, train_acc: 0.9121338912133892
+valid_loss: 0.5657228399545718, valid_acc: 0.7564102564102564
+>->->->->->->->->->-
+
+
+Training on batches...
+Validation on batches...
+
+>->->->->->->->->->-
+train_loss: 0.017451763386881, train_acc: 0.9581589958158996
+valid_loss: 0.6003694633642832, valid_acc: 0.7307692307692307
+>->->->->->->->->->-
+
+Test on batches...
+{'train_acc_epochs': [0.5596234309623431, 0.6673640167364017, 0.7918410041841004, 0.8713389121338913, 0.9121338912133892, 0.9581589958158996], 'val_acc_epochs': [0.5448717948717948, 0.5897435897435898, 0.6987179487179487, 0.7243589743589743, 0.7564102564102564, 0.7307692307692307], 'val_acc': 0.7307692307692307, 'val_metric_epochs': [{'accuracy': 0.5528846153846154}, {'accuracy': 0.6266025641025641}, {'accuracy': 0.7291666666666666}, {'accuracy': 0.7483974358974359}, {'accuracy': 0.7708333333333334}, {'accuracy': 0.7532051282051282}], 'val_metric': {'accuracy': 0.7532051282051282}, 'test_acc': 0.7395833333333334, 'test_metric': {'accuracy': 0.755859375}}

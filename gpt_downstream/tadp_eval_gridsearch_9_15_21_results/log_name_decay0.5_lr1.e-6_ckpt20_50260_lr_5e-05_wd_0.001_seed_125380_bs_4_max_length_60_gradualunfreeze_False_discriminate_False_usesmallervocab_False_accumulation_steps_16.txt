@@ -1,0 +1,57 @@
+Epoch
+
+Training on batches...
+Validation on batches...
+
+>->->->->->->->->->-
+train_loss: 0.06373376726605404, train_acc: 0.5282426778242678
+valid_loss: 0.9951970027043269, valid_acc: 0.532051282051282
+>->->->->->->->->->-
+
+
+Training on batches...
+Validation on batches...
+
+>->->->->->->->->->-
+train_loss: 0.05385915006054994, train_acc: 0.6223849372384938
+valid_loss: 0.8774766188401443, valid_acc: 0.5641025641025641
+>->->->->->->->->->-
+
+
+Training on batches...
+Validation on batches...
+
+>->->->->->->->->->-
+train_loss: 0.044666657387960905, train_acc: 0.6809623430962343
+valid_loss: 0.7948683714255308, valid_acc: 0.6153846153846154
+>->->->->->->->->->-
+
+
+Training on batches...
+Validation on batches...
+
+>->->->->->->->->->-
+train_loss: 0.035860490287696965, train_acc: 0.7196652719665272
+valid_loss: 0.6633228155282828, valid_acc: 0.6602564102564102
+>->->->->->->->->->-
+
+
+Training on batches...
+Validation on batches...
+
+>->->->->->->->->->-
+train_loss: 0.025799850259116505, train_acc: 0.8117154811715481
+valid_loss: 0.5765550197699131, valid_acc: 0.717948717948718
+>->->->->->->->->->-
+
+
+Training on batches...
+Validation on batches...
+
+>->->->->->->->->->-
+train_loss: 0.021706030941782636, train_acc: 0.8410041841004184
+valid_loss: 0.5712794539255973, valid_acc: 0.7371794871794872
+>->->->->->->->->->-
+
+Test on batches...
+{'train_acc_epochs': [0.5282426778242678, 0.6223849372384938, 0.6809623430962343, 0.7196652719665272, 0.8117154811715481, 0.8410041841004184], 'val_acc_epochs': [0.532051282051282, 0.5641025641025641, 0.6153846153846154, 0.6602564102564102, 0.717948717948718, 0.7371794871794872], 'val_acc': 0.7371794871794872, 'val_metric_epochs': [{'accuracy': 0.5400641025641025}, {'accuracy': 0.5592948717948718}, {'accuracy': 0.6169871794871795}, {'accuracy': 0.7099358974358975}, {'accuracy': 0.7403846153846154}, {'accuracy': 0.7628205128205128}], 'val_metric': {'accuracy': 0.7628205128205128}, 'test_acc': 0.7395833333333334, 'test_metric': {'accuracy': 0.73828125}}
