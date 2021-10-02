@@ -53,11 +53,21 @@
 # small_vocab=("True" "True" "True" "True")
 # gradual_unfreeze=("False" "True" "False" "True")
 # discriminate=("False" "False" "True" "True")
-weights=(public_ckpt public_ckpt)
-names=(hf_public_ckpt hf_public_ckpt)
-small_vocab=("True" "False")
-gradual_unfreeze=("False" "False")
-discriminate=("False" "False")
+# weights=(public_ckpt public_ckpt)
+# names=(hf_public_ckpt hf_public_ckpt)
+# small_vocab=("True" "False")
+# gradual_unfreeze=("False" "False")
+# discriminate=("False" "False")
+
+# /home/ubuntu/finBERT/weights/updated_sn_tadp_ckpt_decay1.0_lr1.e-6_ss1024_bs16_results_finbert/pytorch_model_lr1.e-6_wd1.0_ckpt9.bin
+# /home/ubuntu/finBERT/weights/updated_sn_tadp_ckpt_decay1.0_lr1.e-6_ss1024_bs16_results_finbert/pytorch_model_lr1.e-6_wd1.0_ckpt5.bin
+# /home/ubuntu/finBERT/weights/updated_sn_tadp_ckpt_decay0.5_lr1.e-6_ss1024_bs16_results_finbert/pytorch_model_lr1.e-6_wd0.5_ckpt9.bin
+# /home/ubuntu/finBERT/weights/updated_sn_tadp_ckpt_decay0.5_lr1.e-6_ss1024_bs16_results_finbert/pytorch_model_lr1.e-6_wd0.5_ckpt5.bin
+weights=(/home/ubuntu/finBERT/weights/updated_sn_tadp_ckpt_decay1.0_lr1.e-6_ss1024_bs16_results_finbert/pytorch_model_lr1.e-6_wd1.0_ckpt9.bin /home/ubuntu/finBERT/weights/updated_sn_tadp_ckpt_decay1.0_lr1.e-6_ss1024_bs16_results_finbert/pytorch_model_lr1.e-6_wd1.0_ckpt5.bin /home/ubuntu/finBERT/weights/updated_sn_tadp_ckpt_decay0.5_lr1.e-6_ss1024_bs16_results_finbert/pytorch_model_lr1.e-6_wd0.5_ckpt9.bin /home/ubuntu/finBERT/weights/updated_sn_tadp_ckpt_decay0.5_lr1.e-6_ss1024_bs16_results_finbert/pytorch_model_lr1.e-6_wd0.5_ckpt5.bin)
+names=(decay1.0_lr1.e-6_ckpt9_50260 decay1.0_lr1.e-6_ckpt5_50260 decay0.5_lr1.e-6_ckpt9_50260 decay0.5_lr1.e-6_ckpt5_50260)
+small_vocab=("False" "False" "False" "False")
+gradual_unfreeze=("False" "False" "False" "False")
+discriminate=("False" "False" "False" "False")
 
 seeds=(42 125380 160800 22758 176060 193228)
 
@@ -115,34 +125,12 @@ accumulation_steps=(1)
 lrwdconfigs=(a1)
 declare -A lrs=(
     [a1]=5e-5
-    [a2]=5e-6
-    [a3]=5e-7
-    [b1]=5e-5
-    [b2]=5e-6
-    [b3]=5e-7
-    [c1]=5e-5
-    [c2]=5e-6
-    [c3]=5e-7
-    [d1]=5e-5
-    [d2]=5e-6
-    [d3]=5e-7
 )
 declare -A wds=(
     [a1]=0.001
-    [a2]=0.001
-    [a3]=0.001
-    [b1]=0.0001
-    [b2]=0.0001
-    [b3]=0.0001
-    [c1]=0.01
-    [c2]=0.01
-    [c3]=0.01
-    [d1]=0.1
-    [d2]=0.1
-    [d3]=0.1
 )
 
-experiment_name="public_ckpt_search"
+experiment_name="10_1_21_results_correct_tokenizer"
 
 for max_length in ${max_lengths[@]}; do
     for lrwdconfig in ${lrwdconfigs[@]}; do
@@ -164,7 +152,7 @@ for max_length in ${max_lengths[@]}; do
                     log_file=/home/ubuntu/finBERT/gpt_downstream/tadp_eval_gridsearch_${experiment_name}/${name}/full_name_${name}_seed_${seed}_bs_${bs}_ss_${max_length}_ftlr_${lr}_ftwd_${wd}_discriminate_${use_discriminate}_unfreeze_${gradual_unfreeze}_smallervocab_${use_smaller_vocab}_accumulation_steps_${accumulation_step}.txt
                     #log_file=/home/ubuntu/finBERT/gpt_downstream/public_gridsearch/${name}/full_name_${name}_seed_${seed}_bs_${bs}_ss_${max_length}_ftlr_${lr}_ftwd_${wd}_gradual_unfreeze_${gradual_unfreeze}_discriminate_${discriminate}.txt
                     # CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 accelerate launch
-                    CUDA_VISIBLE_DEVICES=0,1,2,3 accelerate launch example.py --name ${name} --weight ${weight} --lr ${lr} --wd ${wd} --seed ${seed} --bs ${bs} --max_length ${max_length} --gradual_unfreeze ${use_gradual_unfreeze} --discriminate ${use_discriminate} --use_smaller_vocab ${use_smaller_vocab} --experiment_name ${experiment_name} --accumulation_steps ${accumulation_step} 2>&1 | tee ${log_file}
+                    CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 accelerate launch example.py --name ${name} --weight ${weight} --lr ${lr} --wd ${wd} --seed ${seed} --bs ${bs} --max_length ${max_length} --gradual_unfreeze ${use_gradual_unfreeze} --discriminate ${use_discriminate} --use_smaller_vocab ${use_smaller_vocab} --experiment_name ${experiment_name} --accumulation_steps ${accumulation_step} 2>&1 | tee ${log_file}
                     end=`date +%s`
                     runtime=$((end-start))
                     echo "time taken: ${runtime}"

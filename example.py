@@ -11,13 +11,14 @@ from transformers import (set_seed,
                           TrainingArguments,
                           Trainer,
                           GPT2Config,
-                          GPT2Tokenizer,
                           AdamW, 
                           get_linear_schedule_with_warmup,
                           GPT2ForSequenceClassification)
 from accelerate import Accelerator
 import argparse
 from datasets import load_dataset, load_metric
+from GPTTokenizer import GPT2Tokenizer
+from transformers import PreTrainedTokenizer
 
 # tokenizer = GPT2Tokenizer.from_pretrained('microsoft/DialogRPT-updown')
 # model = GPT2ForSequenceClassification.from_pretrained('microsoft/DialogRPT-updown')
@@ -55,7 +56,7 @@ class Gpt2ClassificationCollator(object):
 
     """
 
-    def __init__(self, use_tokenizer, labels_encoder, max_sequence_len=None):
+    def __init__(self, use_tokenizer: PreTrainedTokenizer, labels_encoder, max_sequence_len=None):
         # Tokenizer to be used inside the class.
         self.use_tokenizer = use_tokenizer
         # Check max sequence length.
@@ -87,11 +88,22 @@ class Gpt2ClassificationCollator(object):
         labels = [self.labels_encoder[label] for label in labels]
         # Call tokenizer on all texts to convert into tensors of numbers with 
         # appropriate padding.
-        inputs = self.use_tokenizer(text=texts, return_tensors="pt", padding=True, truncation=True,  max_length=self.max_sequence_len)
+        # inputs = self.use_tokenizer(text=texts, return_tensors="pt", padding=True, truncation=True,  max_length=self.max_sequence_len) # old
+        #inputs = self.use_tokenizer(text=texts, add_special_tokens=True, max_length=self.max_sequence_len, padding="max length", truncation=True, return_overflowing_tokens=True)
+        inputs = self.use_tokenizer(text=texts)
+        input_ids = [torch.tensor(element.ids) for element in inputs]
+        attention_masks = [torch.tensor(element.attention_mask) for element in inputs]
+        token_type_ids = [torch.tensor(element.type_ids) for element in inputs]
+        inputs_dict = {
+            "input_ids": torch.stack(input_ids, dim=0),
+            "attention_mask": torch.stack(attention_masks, dim=0),
+            "token_type_ids": torch.stack(token_type_ids, dim=0)
+        }
         # Update the inputs with the associated encoded labels as tensor.
-        inputs.update({'labels':torch.tensor(labels)})
+        #import pdb; pdb.set_trace()
+        inputs_dict.update({'labels':torch.tensor(labels)})
 
-        return inputs
+        return inputs_dict
 
 class FinanceDataset(Dataset):
     r"""
@@ -375,11 +387,15 @@ def main(lr, wd, seed, name, experiment_name, weight=None, bs=4, max_length=60, 
     #gradual_unfreeze = False
 
     layer_no = 48
+
+    #config = GPT2Config.from_pretrained('/home/ubuntu/tonyk/casehold/multiple_choice/config.json')
+    #tokenizer = GPT2Tokenizer("/home/ubuntu/tonyk/casehold/multiple_choice/tokenizer.json", pad_to_length=None)
     
     with open(path, 'w') as f:
         # Get model configuration.
         accelerator.print('Loading configuraiton...', file=f)
-        model_config = GPT2Config.from_pretrained(pretrained_model_name_or_path=model_name_or_path, num_labels=n_labels)
+        # model_config = GPT2Config.from_pretrained(pretrained_model_name_or_path=model_name_or_path, num_labels=n_labels)
+        model_config = GPT2Config.from_pretrained('/home/ubuntu/finBERT/sn_config.json')
 
         # modify model_config
         # if not weight is None or not use_smaller_vocab:
@@ -395,12 +411,15 @@ def main(lr, wd, seed, name, experiment_name, weight=None, bs=4, max_length=60, 
 
         # Get model's tokenizer.
         accelerator.print('Loading tokenizer...', file=f)
-        tokenizer = GPT2Tokenizer.from_pretrained(pretrained_model_name_or_path=model_name_or_path)
+        #tokenizer = GPT2Tokenizer.from_pretrained(pretrained_model_name_or_path=model_name_or_path)
+        tokenizer = GPT2Tokenizer("/home/ubuntu/finBERT/tokenizer.json", "/home/ubuntu/finBERT/merges.txt", pad_to_length=None)
+        
         # default to left padding
         # tokenizer.padding_side = "left"
         # Define PAD Token = EOS Token = 50256
         # getting rid of this 
-        tokenizer.pad_token = tokenizer.eos_token
+        # fixed this
+        # tokenizer.pad_token = tokenizer.eos_token
         #tokenizer.pad_token_id = tokenizer.eos_token_id
 
         # Get the actual model.
@@ -435,7 +454,8 @@ def main(lr, wd, seed, name, experiment_name, weight=None, bs=4, max_length=60, 
 
         # fix model padding token id
         #model.config.pad_token_id = 50258
-        model.config.pad_token_id = model.config.eos_token_id
+        # fixed this
+        # model.config.pad_token_id = model.config.eos_token_id
         #print(model.config.pad_token)
         
         # apply the discriminative fine-tuning. discrimination rate is governed by dft_rate.
