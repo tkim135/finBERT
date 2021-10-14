@@ -288,6 +288,7 @@ def validation(accelerator, model, dataloader, device, metric):
             #logits = outputs_loss['logits']
             #loss = outputs_loss['loss']
 
+            #import pdb; pdb.set_trace()
             loss, logits = outputs[:2]
             # old hf version
             #logits = outputs_loss['logits']
@@ -323,7 +324,7 @@ def validation(accelerator, model, dataloader, device, metric):
     # Return all true labels and prediciton for future evaluations.
     return true_labels, predictions_labels, avg_epoch_loss
 
-def main(lr, wd, seed, name, experiment_name, weight=None, bs=4, max_length=60, gradual_unfreeze=False, discriminate=False, use_smaller_vocab=False, accumulation_steps=8):
+def main(lr, wd, seed, name, experiment_name, weight=None, bs=1, max_length=60, gradual_unfreeze=False, discriminate=False, use_smaller_vocab=False, accumulation_steps=8):
     if not weight is None:
         path = f"/home/ubuntu/finBERT/gpt_downstream/tadp_eval_gridsearch_{experiment_name}/log_name_{name}_lr_{lr}_wd_{wd}_seed_{seed}_bs_{bs}_max_length_{max_length}_gradualunfreeze_{gradual_unfreeze}_discriminate_{discriminate}_usesmallervocab_{use_smaller_vocab}_accumulation_steps_{accumulation_steps}.txt"
     else:
@@ -361,7 +362,7 @@ def main(lr, wd, seed, name, experiment_name, weight=None, bs=4, max_length=60, 
 
     # Name of transformers model - will use already pretrained model.
     # Path of transformer model - will load your own model from local disk.
-    model_name_or_path = 'gpt2-small'
+    model_name_or_path = 'gpt2-xl'
 
     # Dictionary of labels and their id - this will be used to convert.
     # String labels to number ids.
@@ -587,6 +588,12 @@ def main(lr, wd, seed, name, experiment_name, weight=None, bs=4, max_length=60, 
         accelerator.print(results,file=f)
         accelerator.print(results)
         torch.cuda.empty_cache()
+
+        #save a checkpoint of a model
+        torch.save({
+            'model_state_dict': model.state_dict(),
+        }, '/home/ubuntu/finBERT/checkpoints/1013_gpt2xl_bs1.bin')
+
         return results
 
 if __name__ == "__main__":
