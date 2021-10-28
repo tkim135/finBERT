@@ -13,8 +13,8 @@ from sklearn.metrics import classification_report
 from transformers import AutoModelForSequenceClassification
 
 # make this change throughout the file
-from finbert.finbert_gpt import *
-import finbert.utils_gpt as tools
+from finbert.finbert import *
+import finbert.utils as tools
 
 #%load_ext autoreload
 #%autoreload 2
@@ -36,6 +36,7 @@ logging.basicConfig(filename='example.log', filemode='w', level=logging.ERROR)
 args = parser.parse_args()
 
 def report(df, cols=['label','prediction','logits']):
+    import pdb; pdb.set_trace()
     #print('Validation loss:{0:.2f}'.format(metrics['best_validation_loss']))
     cs = CrossEntropyLoss(weight=finbert.class_weights)
     loss = cs(torch.tensor(list(df[cols[2]])),torch.tensor(list(df[cols[0]])))
@@ -150,14 +151,14 @@ seeds = [
 ,4381
 ]
 
-# CUDA_VISIBLE_DEVICES=1 python3 -u run_seeds.py --model_name_or_path /scratch/varunt/finBERT/models/hfrun_decay0.01_lr5e-5_ss512_bs256_results_finbert_dir 2>&1 --start_seed 0 --end_seed 6 | tee hf_0.001decay_5e-5.txt
+# CUDA_VISIBLE_DEVICES=0 python3 -u run_seeds.py --model_name_or_path bert-large-uncased 2>&1 --start_seed 0 --end_seed 1 | tee hf_0.001decay_5e-5_results.txt
 
 #/scratch/varunt/finBERT/models/hfrun_decay0.01_lr5e-5_ss512_bs256_results_finbert_dir/checkpoint_epoch_6_16750.pt
 
-batch_sizes = [128]
-max_seq_lengths = [32]
-learning_rates = [5e-5, 5e-4, 5e-6]
-decays = [0.001, 0.01, 0.0001]
+batch_sizes = [4]
+max_seq_lengths = [60]
+learning_rates = [5e-5]
+decays = [0.001]
 num_epochs = [6]
 
 #print(learning_rates)
@@ -177,8 +178,8 @@ for current_batch_size in batch_sizes:
                             torch.manual_seed(seeds[seed_idx])
 
                             lm_path = args.model_name_or_path #"/scratch/venkats/finbert_pretrained_weights" #project_dir/'models'/'language_model'/'finbertTRC2'
-                            cl_path = "/home/ubuntu/finbert_clpath" + args.type + "/" + "seed_" + str(seeds[seed_idx]) + "/" + lm_path + "/"  #project_dir/'models'/'classifier_model'/'finbert-sentiment'
-                            cl_data_path = "/home/ubuntu/finBERT/datasets" #project_dir/'data'/'sentiment_data'mport ipdb; ipdb.set_trace()
+                            cl_path = "/scratch/varunt/finbert_clpath" + args.type + "/" + "seed_" + str(seeds[seed_idx]) + "/" + lm_path + "/"  #project_dir/'models'/'classifier_model'/'finbert-sentiment'
+                            cl_data_path = "/scratch/varunt/datasets" #project_dir/'data'/'sentiment_data'mport ipdb; ipdb.set_trace()
                             print ("==========================================================")
 
                             try:
@@ -220,7 +221,7 @@ for current_batch_size in batch_sizes:
                             np.random.seed(seeds[seed_idx])
                             torch.manual_seed(seeds[seed_idx])
                             finbert = FinBert(config)
-                            finbert.base_model = 'gpt2' #'bert-large-uncased' #'bert-base-uncased'
+                            finbert.base_model = 'bert-large-uncased' #'bert-base-uncased'
                             finbert.config.discriminate=False # True
                             finbert.config.gradual_unfreeze=False # True
 
