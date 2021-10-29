@@ -16,6 +16,8 @@ from transformers import AutoModelForSequenceClassification
 from finbert.finbert import *
 import finbert.utils as tools
 
+import torch
+
 #%load_ext autoreload
 #%autoreload 2
 
@@ -35,16 +37,24 @@ logging.basicConfig(filename='example.log', filemode='w', level=logging.ERROR)
 
 args = parser.parse_args()
 
-def report(df, cols=['label','prediction','logits']):
-    import pdb; pdb.set_trace()
+def report(df=None, cols=None, test_data=None, epoch=None):
+    #import pdb; pdb.set_trace()
     #print('Validation loss:{0:.2f}'.format(metrics['best_validation_loss']))
     cs = CrossEntropyLoss(weight=finbert.class_weights)
     loss = cs(torch.tensor(list(df[cols[2]])),torch.tensor(list(df[cols[0]])))
     print("Loss:{0:.2f}".format(loss))
     test_accuracy = (df[cols[0]] == df[cols[1]]).sum() / df.shape[0]
-    print("Accuracy:{0:.2f}".format((df[cols[0]] == df[cols[1]]).sum() / df.shape[0]) )
+    print("Accuracy:{0:.2f}".format((df[cols[0]] == df[cols[1]]).sum() / df.shape[0]))
+    #class_scores = torch.softmax(torch.from_numpy(df["predictions"].values).float(), dim=1).numpy()
     #print("\nClassification Report:")
     #print(classification_report(df[cols[0]], df[cols[1]]))
+    with open(f"val_results_{epoch}.txt", "w") as f:
+        for i in range(len(test_data)):
+            example = test_data[i].text
+            prediction = df[cols[1]][i]
+            correct_label = df[cols[0]][i]
+            class_scores = torch.softmax(torch.tensor(df["predictions"][i]), dim=0).numpy()
+            print(f"idx: {i}, example: {example}, prediction: {prediction}, correct_label: {correct_label}, class_scores: {class_scores}", file=f)
     return test_accuracy
 
 seeds = [
@@ -178,8 +188,8 @@ for current_batch_size in batch_sizes:
                             torch.manual_seed(seeds[seed_idx])
 
                             lm_path = args.model_name_or_path #"/scratch/venkats/finbert_pretrained_weights" #project_dir/'models'/'language_model'/'finbertTRC2'
-                            cl_path = "/scratch/varunt/finbert_clpath" + args.type + "/" + "seed_" + str(seeds[seed_idx]) + "/" + lm_path + "/"  #project_dir/'models'/'classifier_model'/'finbert-sentiment'
-                            cl_data_path = "/scratch/varunt/datasets" #project_dir/'data'/'sentiment_data'mport ipdb; ipdb.set_trace()
+                            cl_path = "/home/ubuntu/finbert_clpath" + args.type + "/" + "seed_" + str(seeds[seed_idx]) + "/" + lm_path + "/"  #project_dir/'models'/'classifier_model'/'finbert-sentiment'
+                            cl_data_path = "/home/ubuntu/finBERT/datasets" #project_dir/'data'/'sentiment_data'mport ipdb; ipdb.set_trace()
                             print ("==========================================================")
 
                             try:
@@ -228,7 +238,7 @@ for current_batch_size in batch_sizes:
                             random.seed(seeds[seed_idx])
                             np.random.seed(seeds[seed_idx])
                             torch.manual_seed(seeds[seed_idx])
-                            finbert.prepare_model(label_list=['positive','negative','neutral'])
+                            finbert.prepare_model(label_list=["negative", "positive", "neutral"])
 
                             # Get the training examples
                             random.seed(seeds[seed_idx])
@@ -252,14 +262,13 @@ for current_batch_size in batch_sizes:
                             torch.manual_seed(seeds[seed_idx])
                             test_data = finbert.get_data('test')
 
-
                             random.seed(seeds[seed_idx])
                             np.random.seed(seeds[seed_idx])
                             torch.manual_seed(seeds[seed_idx])
-                            results = finbert.evaluate(examples=test_data, model=trained_model)
+                            results = finbert.evaluate(examples=test_data, model=model)
                             results['prediction'] = results.predictions.apply(lambda x: np.argmax(x,axis=0))
                             print ("Results:")
-                            test_accuracy = report(results,cols=['labels','prediction','predictions'])
+                            test_accuracy = report(df=results,cols=['labels','prediction','predictions'], test_data=test_data, epoch=current_num_epoch)
                             test_accuracies.append(test_accuracy)
                             print ("==========================================================")
                         except RuntimeError as e:
@@ -271,26 +280,26 @@ for current_batch_size in batch_sizes:
                                 print ("Hit some random OOM")
                                 continue
                     # new seed                    
-                    print("*"*40)
-                    print("*"*40)
-                    print("Final Results:")
-                    print("Current Learning Rate: {}, Current Decay: {}".format(current_learning_rate, current_decay))
-                    max_validation_accuracy = max(best_validation_accuracies)
-                    avg_validation_accuracy = np.mean(best_validation_accuracies)
-                    corresponding_index = best_validation_accuracies.index(max_validation_accuracy)
-                    corresponding_test_accuracy = test_accuracies[corresponding_index]
-                    avg_test_accuracy = np.mean(test_accuracies)
-                    stddev_test_accuracy = np.std(test_accuracies)
+                    # print("*"*40)
+                    # print("*"*40)
+                    # print("Final Results:")
+                    # print("Current Learning Rate: {}, Current Decay: {}".format(current_learning_rate, current_decay))
+                    # max_validation_accuracy = max(best_validation_accuracies)
+                    # avg_validation_accuracy = np.mean(best_validation_accuracies)
+                    # corresponding_index = best_validation_accuracies.index(max_validation_accuracy)
+                    # corresponding_test_accuracy = test_accuracies[corresponding_index]
+                    # avg_test_accuracy = np.mean(test_accuracies)
+                    # stddev_test_accuracy = np.std(test_accuracies)
 
-                    print("Validation Accuracies: {}".format(best_validation_accuracies))
-                    print("Test Accuracies: {}".format(test_accuracies))
-                    print("Best Validation Accuracy: {}".format(max_validation_accuracy))
-                    print("Avg Validation Accuracy: {}".format(avg_validation_accuracy))
-                    print("Corresponding Test Accuracy: {}".format(corresponding_test_accuracy))
-                    print("Average Test Accuracy: {}".format(avg_test_accuracy))
-                    print("Std Dev Test Accuracy: {}".format(stddev_test_accuracy))
-                    print("*"*40)
-                    print("*"*40)
+                    # print("Validation Accuracies: {}".format(best_validation_accuracies))
+                    # print("Test Accuracies: {}".format(test_accuracies))
+                    # print("Best Validation Accuracy: {}".format(max_validation_accuracy))
+                    # print("Avg Validation Accuracy: {}".format(avg_validation_accuracy))
+                    # print("Corresponding Test Accuracy: {}".format(corresponding_test_accuracy))
+                    # print("Average Test Accuracy: {}".format(avg_test_accuracy))
+                    # print("Std Dev Test Accuracy: {}".format(stddev_test_accuracy))
+                    # print("*"*40)
+                    # print("*"*40)
 
                     # reset stats per each LR, Decay pair
                     best_validation_accuracies = []

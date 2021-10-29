@@ -1,0 +1,17 @@
+run_seeds.py:25: FutureWarning: Passing a negative integer is deprecated in version 1.0 and will not be supported in future version. Instead, use None to not limit the column width.
+  pd.set_option('max_colwidth', -1)
+==========================================================
+this is a test
+> -------------- < 
+Current Batch Size: 4
+Max Seq Len: 60
+Current LR: 5e-05
+Current Epochs: 6
+Current Decays: 0.001
+Seed: Count: 0 (Abs: 42)
+LM Path: /home/ubuntu/finbert_clpathhf/seed_42/bert-large-uncased
+> -------------- < 
+Results:
+Loss:2.30
+Accuracy:0.48
+==========================================================

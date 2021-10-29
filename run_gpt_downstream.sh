@@ -70,8 +70,8 @@
 #discriminate=("False" "False" "False" "False")
 
 # solo
-weights=(public_ckpt)
-names=(hf_public_ckpt)
+weights=(/home/ubuntu/finBERT/checkpoints/1015_gpt2small_bs4.bin)
+names=(gpt2small_eval)
 small_vocab=("False")
 gradual_unfreeze=("False")
 discriminate=("False")
@@ -89,7 +89,7 @@ max_lengths=(60)
 #lr=5e-5
 #wd=0.001
 
-bs=1
+bs=4
 #max_length=1024
 
 accumulation_steps=(1)
@@ -138,7 +138,7 @@ declare -A wds=(
     [a1]=0.001
 )
 
-experiment_name="10_13_21_gpt2small"
+experiment_name="10_15_21_gpt2small"
 
 for max_length in ${max_lengths[@]}; do
     for lrwdconfig in ${lrwdconfigs[@]}; do
@@ -160,6 +160,7 @@ for max_length in ${max_lengths[@]}; do
                     log_file=/home/ubuntu/finBERT/gpt_downstream/tadp_eval_gridsearch_${experiment_name}/${name}/full_name_${name}_seed_${seed}_bs_${bs}_ss_${max_length}_ftlr_${lr}_ftwd_${wd}_discriminate_${use_discriminate}_unfreeze_${gradual_unfreeze}_smallervocab_${use_smaller_vocab}_accumulation_steps_${accumulation_step}.txt
                     #log_file=/home/ubuntu/finBERT/gpt_downstream/public_gridsearch/${name}/full_name_${name}_seed_${seed}_bs_${bs}_ss_${max_length}_ftlr_${lr}_ftwd_${wd}_gradual_unfreeze_${gradual_unfreeze}_discriminate_${discriminate}.txt
                     # CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 accelerate launch
+                    #CUDA_VISIBLE_DEVICES=0 accelerate launch hf_tokenizer_example.py --name ${name} --weight ${weight} --lr ${lr} --wd ${wd} --seed ${seed} --bs ${bs} --max_length ${max_length} --gradual_unfreeze ${use_gradual_unfreeze} --discriminate ${use_discriminate} --use_smaller_vocab ${use_smaller_vocab} --experiment_name ${experiment_name} --accumulation_steps ${accumulation_step} 2>&1 | tee ${log_file}
                     CUDA_VISIBLE_DEVICES=0 accelerate launch hf_zero_shot_example.py --name ${name} --weight ${weight} --lr ${lr} --wd ${wd} --seed ${seed} --bs ${bs} --max_length ${max_length} --gradual_unfreeze ${use_gradual_unfreeze} --discriminate ${use_discriminate} --use_smaller_vocab ${use_smaller_vocab} --experiment_name ${experiment_name} --accumulation_steps ${accumulation_step} 2>&1 | tee ${log_file}
                     end=`date +%s`
                     runtime=$((end-start))

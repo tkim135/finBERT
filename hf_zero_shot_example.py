@@ -278,6 +278,9 @@ def validation(accelerator, model, dataloader, device, metric):
             # differentiates sentence 1 and 2 in 2-sentence tasks.
             # The documentation for this `model` function is here: 
             # https://huggingface.co/transformers/v2.2.0/model_doc/bert.html#transformers.BertForSequenceClassification
+            
+            #import pdb; pdb.set_trace()
+            #batch['attention_mask'] = None
             outputs = model(**batch)
             
             # The call to `model` always returns a tuple, so we need to pull the 
@@ -345,7 +348,7 @@ def main(lr, wd, seed, name, experiment_name, weight=None, bs=1, max_length=60, 
     set_seed(seed)
 
     # Number of training epochs (authors on fine-tuning Bert recommend between 2 and 4).
-    epochs = 6
+    epochs = 1
 
     # Number of batches - depending on the max sequence length and GPU memory.
     # For 512 sequence length batch of 10 works without cuda memory issues.
@@ -362,7 +365,7 @@ def main(lr, wd, seed, name, experiment_name, weight=None, bs=1, max_length=60, 
 
     # Name of transformers model - will use already pretrained model.
     # Path of transformer model - will load your own model from local disk.
-    model_name_or_path = 'gpt2-xl'
+    model_name_or_path = 'gpt2'
 
     # Dictionary of labels and their id - this will be used to convert.
     # String labels to number ids.
@@ -376,6 +379,8 @@ def main(lr, wd, seed, name, experiment_name, weight=None, bs=1, max_length=60, 
     #gradual_unfreeze = False
 
     layer_no = 48
+
+    import pdb; pdb.set_trace()
     
     with open(path, 'w') as f:
         # Get model configuration.
@@ -407,18 +412,18 @@ def main(lr, wd, seed, name, experiment_name, weight=None, bs=1, max_length=60, 
         # Get the actual model.
         accelerator.print('Loading model...', file=f)
         if not weight is None:
-            # tranpose some of the tensors
+            # # tranpose some of the tensors
             checkpoint = torch.load(weight)
-            tensor_names = ["attn.c_attn.weight", "attn.c_proj.weight", "mlp.c_fc.weight", "mlp.c_proj.weight"]
-            for i in range(layer_no):
-                for tensor_name in tensor_names:
-                    full_tensor_name = f"transformer.h.{i}.{tensor_name}"
-                    checkpoint[full_tensor_name] = torch.transpose(checkpoint[full_tensor_name], 0, 1)
-            #model = GPT2ForSequenceClassification.from_pretrained(pretrained_model_name_or_path=weight, config=model_config)
+            # tensor_names = ["attn.c_attn.weight", "attn.c_proj.weight", "mlp.c_fc.weight", "mlp.c_proj.weight"]
+            # for i in range(layer_no):
+            #     for tensor_name in tensor_names:
+            #         full_tensor_name = f"transformer.h.{i}.{tensor_name}"
+            #         checkpoint[full_tensor_name] = torch.transpose(checkpoint[full_tensor_name], 0, 1)
+            # #model = GPT2ForSequenceClassification.from_pretrained(pretrained_model_name_or_path=weight, config=model_config)
 
-            # if we want to use vocab size of 50257
-            if use_smaller_vocab:
-                checkpoint['transformer.wte.weight'] = checkpoint['transformer.wte.weight'][:50257,:]
+            # # if we want to use vocab size of 50257
+            # if use_smaller_vocab:
+            #     checkpoint['transformer.wte.weight'] = checkpoint['transformer.wte.weight'][:50257,:]
 
             model = GPT2ForSequenceClassification.from_pretrained(pretrained_model_name_or_path=None, state_dict=checkpoint, config=model_config)
         else:
@@ -490,6 +495,11 @@ def main(lr, wd, seed, name, experiment_name, weight=None, bs=1, max_length=60, 
         
         # Load model to defined device.
         #model.to(device)
+
+        #quantize model
+        model.bfloat16()
+        model.float()
+
         model = model.to(accelerator.device)
         accelerator.print('Model loaded to `%s`'%device, file=f)
 
@@ -592,7 +602,7 @@ def main(lr, wd, seed, name, experiment_name, weight=None, bs=1, max_length=60, 
         #save a checkpoint of a model
         torch.save({
             'model_state_dict': model.state_dict(),
-        }, '/home/ubuntu/finBERT/checkpoints/1013_gpt2xl_bs1.bin')
+        }, '/home/ubuntu/finBERT/checkpoints/1015_gpt2small_bs1_eval.bin')
 
         return results
 

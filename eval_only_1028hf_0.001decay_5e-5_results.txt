@@ -1,0 +1,24 @@
+run_seeds.py:23: FutureWarning: Passing a negative integer is deprecated in version 1.0 and will not be supported in future version. Instead, use None to not limit the column width.
+  pd.set_option('max_colwidth', -1)
+==========================================================
+this is a test
+> -------------- < 
+Current Batch Size: 4
+Max Seq Len: 60
+Current LR: 5e-05
+Current Epochs: 6
+Current Decays: 0.001
+Seed: Count: 0 (Abs: 42)
+LM Path: /home/ubuntu/finbert_clpathhf/seed_42/bert-large-uncased
+> -------------- < 
+Results:
+> /home/ubuntu/finBERT/run_seeds.py(41)report()
+-> cs = CrossEntropyLoss(weight=finbert.class_weights)
+(Pdb) Loss:1.36
+Accuracy:0.65
+Traceback (most recent call last):
+  File "run_seeds.py", line 268, in <module>
+    test_accuracy = report(df=results,cols=['labels','prediction','predictions'], test_data=test_data, epoch=current_num_epoch)
+  File "run_seeds.py", line 41, in report
+    cs = CrossEntropyLoss(weight=finbert.class_weights)
+FileNotFoundError: [Errno 2] No such file or directory: 'val_results_{epoch}.txt'

@@ -361,7 +361,7 @@ def main(lr, wd, seed, name, experiment_name, weight=None, bs=4, max_length=60, 
 
     # Name of transformers model - will use already pretrained model.
     # Path of transformer model - will load your own model from local disk.
-    model_name_or_path = 'gpt2-xl'
+    model_name_or_path = 'gpt2'
 
     # Dictionary of labels and their id - this will be used to convert.
     # String labels to number ids.
@@ -587,6 +587,12 @@ def main(lr, wd, seed, name, experiment_name, weight=None, bs=4, max_length=60, 
         accelerator.print(results,file=f)
         accelerator.print(results)
         torch.cuda.empty_cache()
+
+        #save a checkpoint of a model
+        torch.save({
+            'model_state_dict': model.state_dict(),
+        }, '/home/ubuntu/finBERT/checkpoints/1015_gpt2small_bs4.bin')
+
         return results
 
 if __name__ == "__main__":

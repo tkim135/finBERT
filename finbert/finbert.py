@@ -610,8 +610,8 @@ def predict(text, model, write_to_csv=False, path=None):
     tokenizer = AutoTokenizer.from_pretrained('bert-base-uncased')
     sentences = sent_tokenize(text)
 
-    label_list = ['positive', 'negative', 'neutral']
-    label_dict = {0: 'positive', 1: 'negative', 2: 'neutral'}
+    label_list = ["negative", "positive", "neutral"]
+    label_dict = {0: 'negative', 1: 'positive', 2: 'neutral'}
     result = pd.DataFrame(columns=['sentence', 'logit', 'prediction', 'sentiment_score'])
     for batch in chunks(sentences, 5):
         examples = [InputExample(str(i), sentence) for i, sentence in enumerate(batch)]
