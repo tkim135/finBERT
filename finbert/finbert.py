@@ -538,47 +538,115 @@ class FinBert(object):
         labels = []
         agree_levels = []
         text_ids = []
+        all_scores = []
 
-        for input_ids, attention_mask, token_type_ids, label_ids, agree_ids in tqdm(eval_loader, desc="Testing", disable=True):
+        import pdb; pdb.set_trace()
+        #model.train()
+        all_token_scores = 0
+        sum_token_scores = 0
+        flag = False
+        for input_ids, attention_mask, token_type_ids, label_ids, agree_ids in tqdm(eval_loader, desc="Testing", disable=False):
             input_ids = input_ids.to(self.device)
+            #input_ids = input_ids.int()
+            # import pdb; pdb.set_trace()
+            #input_ids.requires_grad = True
+            #input_ids = input_ids.torch(torch)
             attention_mask = attention_mask.to(self.device)
             token_type_ids = token_type_ids.to(self.device)
             label_ids = label_ids.to(self.device)
             agree_ids = agree_ids.to(self.device)
 
-            with torch.no_grad():
-                logits = model(input_ids, attention_mask, token_type_ids)[0]
+            # original
+            # with torch.no_grad():
+            #     logits = model(input_ids, attention_mask, token_type_ids)[0]
 
-                if self.config.output_mode == "classification":
-                    loss_fct = CrossEntropyLoss()
-                    tmp_eval_loss = loss_fct(logits.view(-1, self.num_labels), label_ids.view(-1))
-                elif self.config.output_mode == "regression":
-                    loss_fct = MSELoss()
-                    tmp_eval_loss = loss_fct(logits.view(-1), label_ids.view(-1))
+            #     if self.config.output_mode == "classification":
+            #         loss_fct = CrossEntropyLoss()
+            #         tmp_eval_loss = loss_fct(logits.view(-1, self.num_labels), label_ids.view(-1))
+            #     elif self.config.output_mode == "regression":
+            #         loss_fct = MSELoss()
+            #         tmp_eval_loss = loss_fct(logits.view(-1), label_ids.view(-1))
 
-                np_logits = logits.cpu().numpy()
+            #     np_logits = logits.cpu().numpy()
 
-                if self.config.output_mode == 'classification':
-                    prediction = np.array(np_logits)
-                elif self.config.output_mode == "regression":
-                    prediction = np.array(np_logits)
+            #     if self.config.output_mode == 'classification':
+            #         prediction = np.array(np_logits)
+            #     elif self.config.output_mode == "regression":
+            #         prediction = np.array(np_logits)
 
-                for agree_id in agree_ids:
-                    agree_levels.append(agree_id.item())
+            #     for agree_id in agree_ids:
+            #         agree_levels.append(agree_id.item())
 
-                for label_id in label_ids:
-                    labels.append(label_id.item())
+            #     for label_id in label_ids:
+            #         labels.append(label_id.item())
 
-                for pred in prediction:
-                    predictions.append(pred)
+            #     for pred in prediction:
+            #         predictions.append(pred)
 
-                text_ids.append(input_ids)
+            #     text_ids.append(input_ids)
 
-                # tmp_eval_loss = loss_fct(logits.view(-1, self.num_labels), label_ids.view(-1))
-                # tmp_eval_loss = model(input_ids, token_type_ids, attention_mask, label_ids)
+            #     # tmp_eval_loss = loss_fct(logits.view(-1, self.num_labels), label_ids.view(-1))
+            #     # tmp_eval_loss = model(input_ids, token_type_ids, attention_mask, label_ids)
 
-                eval_loss += tmp_eval_loss.mean().item()
-                nb_eval_steps += 1
+            #     eval_loss += tmp_eval_loss.mean().item()
+            #     nb_eval_steps += 1
+            model.train()
+            logits = model(input_ids, attention_mask, token_type_ids)[0]
+
+            if self.config.output_mode == "classification":
+                loss_fct = CrossEntropyLoss()
+                tmp_eval_loss = loss_fct(logits.view(-1, self.num_labels), label_ids.view(-1))
+            elif self.config.output_mode == "regression":
+                loss_fct = MSELoss()
+                tmp_eval_loss = loss_fct(logits.view(-1), label_ids.view(-1))
+
+            tmp_eval_loss.backward()
+            if flag == False:
+                flag = True
+                all_token_scores = [torch.norm(model.bert.embeddings.word_embeddings.weight.grad[x]) for x in range(len(model.bert.embeddings.word_embeddings.weight.grad))]
+                sum_token_scores = sum(all_token_scores)
+            #import pdb; pdb.set_trace()
+            scores = []
+            for i in input_ids:
+                s = []
+                for token in i:
+                    if token == 50256:
+                        break
+                    else:
+                        #token_score = torch.norm(model.bert.embeddings.word_embeddings.weight.grad[token]).item()
+                        token_score = all_token_scores[token]
+                        normalized_token_score = token_score / sum_token_scores
+                        s.append("{}".format(normalized_token_score))
+                        #s.append(f“{:.2f}“.format(torch.norm(outtensor[tok,:]).item()))
+                all_scores.append(s)
+            #print(scores)
+            #model.zero_grad()
+
+            #pdb.set_trace()
+            #print(all_input_ids.grad)
+            np_logits = logits.detach().cpu().numpy()
+
+            if self.config.output_mode == 'classification':
+                prediction = np.array(np_logits)
+            elif self.config.output_mode == "regression":
+                prediction = np.array(np_logits)
+
+            for agree_id in agree_ids:
+                agree_levels.append(agree_id.item())
+
+            for label_id in label_ids:
+                labels.append(label_id.item())
+
+            for pred in prediction:
+                predictions.append(pred)
+
+            text_ids.append(input_ids)
+
+            # tmp_eval_loss = loss_fct(logits.view(-1, self.num_labels), label_ids.view(-1))
+            # tmp_eval_loss = model(input_ids, token_type_ids, attention_mask, label_ids)
+
+            eval_loss += tmp_eval_loss.mean().item()
+            nb_eval_steps += 1
 
             # logits = logits.detach().cpu().numpy()
             # label_ids = label_ids.to('cpu').numpy()
@@ -587,43 +655,67 @@ class FinBert(object):
             # eval_loss += tmp_eval_loss.mean().item()
             # eval_accuracy += tmp_eval_accuracy
 
-        evaluation_df = pd.DataFrame({'predictions': predictions, 'labels': labels, "agree_levels": agree_levels})
+            #all_scores.append(scores)
+
+        import pdb; pdb.set_trace()
+        evaluation_df = pd.DataFrame({'predictions': predictions, 'labels': labels, "agree_levels": agree_levels, "word_importance": all_scores})
 
         return evaluation_df
 
 
-def predict(text, model, write_to_csv=False, path=None):
-    """
-    Predict sentiments of sentences in a given text. The function first tokenizes sentences, make predictions and write
-    results.
-    Parameters
-    ----------
-    text: string
-        text to be analyzed
-    model: BertForSequenceClassification
-        path to the classifier model
-    write_to_csv (optional): bool
-    path (optional): string
-        path to write the string
-    """
-    model.eval()
-    tokenizer = AutoTokenizer.from_pretrained('bert-base-uncased')
-    sentences = sent_tokenize(text)
+    def predict(self, text, model, write_to_csv=False, path=None):
+        """
+        Predict sentiments of sentences in a given text. The function first tokenizes sentences, make predictions and write
+        results.
+        Parameters
+        ----------
+        text: string
+            text to be analyzed
+        model: BertForSequenceClassification
+            path to the classifier model
+        write_to_csv (optional): bool
+        path (optional): string
+            path to write the string
+        """
+        #model.eval()
+        #import pdb; pdb.set_trace()
+        model.train()
+        tokenizer = AutoTokenizer.from_pretrained('bert-base-uncased')
+        sentences = sent_tokenize(text)
 
-    label_list = ["negative", "positive", "neutral"]
-    label_dict = {0: 'negative', 1: 'positive', 2: 'neutral'}
-    result = pd.DataFrame(columns=['sentence', 'logit', 'prediction', 'sentiment_score'])
-    for batch in chunks(sentences, 5):
-        examples = [InputExample(str(i), sentence) for i, sentence in enumerate(batch)]
+        label_list = ["negative", "positive", "neutral"]
+        label_dict = {0: 'negative', 1: 'positive', 2: 'neutral'}
+        result = pd.DataFrame(columns=['sentence', 'logit', 'prediction', 'sentiment_score'])
+        for batch in chunks(sentences, 5):
+            examples = [InputExample(str(i), sentence) for i, sentence in enumerate(batch)]
 
-        features = convert_examples_to_features(examples, label_list, 64, tokenizer)
+            features = convert_examples_to_features(examples, label_list, 64, tokenizer)
 
-        all_input_ids = torch.tensor([f.input_ids for f in features], dtype=torch.long)
-        all_attention_mask = torch.tensor([f.attention_mask for f in features], dtype=torch.long)
-        all_token_type_ids = torch.tensor([f.token_type_ids for f in features], dtype=torch.long)
+            all_input_ids = torch.tensor([f.input_ids for f in features], dtype=torch.long)
+            #all_input_ids.requires_grad = True
+            #agree_ids = agree_ids.to(self.device)
+            all_input_ids = all_input_ids.to(self.device)
+            all_attention_mask = torch.tensor([f.attention_mask for f in features], dtype=torch.long)
+            all_attention_mask = all_attention_mask.to(self.device)
+            all_token_type_ids = torch.tensor([f.token_type_ids for f in features], dtype=torch.long)
+            all_token_type_ids = all_token_type_ids.to(self.device)
 
-        with torch.no_grad():
+            #with torch.no_grad():
+            # outputs = model(all_input_ids, all_attention_mask, all_token_type_ids)
+            #loss = outputs[1]
+            #loss.backwards()
             logits = model(all_input_ids, all_attention_mask, all_token_type_ids)[0]
+            weights = self.class_weights.to(self.device)
+
+            if self.config.output_mode == "classification":
+                loss_fct = CrossEntropyLoss(weight=weights)
+                loss = loss_fct(logits.view(-1, self.num_labels), label_ids.view(-1))
+            loss.backward()
+            model.zero_grad()
+            print(all_input_ids.grad)
+            #logits = outputs.logits
+            #logits = outputs[0]
+            #logits = model(all_input_ids, all_attention_mask, all_token_type_ids)[0]
             logging.info(logits)
             logits = softmax(np.array(logits))
             sentiment_score = pd.Series(logits[:, 0] - logits[:, 1])
@@ -637,8 +729,8 @@ def predict(text, model, write_to_csv=False, path=None):
             batch_result = pd.DataFrame(batch_result)
             result = pd.concat([result, batch_result], ignore_index=True)
 
-    result['prediction'] = result.prediction.apply(lambda x: label_dict[x])
-    if write_to_csv:
-        result.to_csv(path, sep=',', index=False)
+        result['prediction'] = result.prediction.apply(lambda x: label_dict[x])
+        if write_to_csv:
+            result.to_csv(path, sep=',', index=False)
 
-    return result
+        return result

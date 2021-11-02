@@ -38,7 +38,7 @@ logging.basicConfig(filename='example.log', filemode='w', level=logging.ERROR)
 args = parser.parse_args()
 
 def report(df=None, cols=None, test_data=None, epoch=None):
-    #import pdb; pdb.set_trace()
+    import pdb; pdb.set_trace()
     #print('Validation loss:{0:.2f}'.format(metrics['best_validation_loss']))
     cs = CrossEntropyLoss(weight=finbert.class_weights)
     loss = cs(torch.tensor(list(df[cols[2]])),torch.tensor(list(df[cols[0]])))
@@ -51,10 +51,11 @@ def report(df=None, cols=None, test_data=None, epoch=None):
     with open(f"val_results_{epoch}.txt", "w") as f:
         for i in range(len(test_data)):
             example = test_data[i].text
-            prediction = df[cols[1]][i]
-            correct_label = df[cols[0]][i]
+            prediction = df['prediction'][i]
+            correct_label = df['labels'][i]
             class_scores = torch.softmax(torch.tensor(df["predictions"][i]), dim=0).numpy()
-            print(f"idx: {i}, example: {example}, prediction: {prediction}, correct_label: {correct_label}, class_scores: {class_scores}", file=f)
+            word_scores = df["word_importance"][i]
+            print(f"idx: {i}, example: {example}, prediction: {prediction}, correct_label: {correct_label}, class_scores: {class_scores}, word_scores: {word_scores}", file=f)
     return test_accuracy
 
 seeds = [
@@ -169,7 +170,7 @@ batch_sizes = [4]
 max_seq_lengths = [60]
 learning_rates = [5e-5]
 decays = [0.001]
-num_epochs = [6]
+num_epochs = [1]
 
 #print(learning_rates)
 #print(decays)
@@ -251,25 +252,37 @@ for current_batch_size in batch_sizes:
                             torch.manual_seed(seeds[seed_idx])
                             model = finbert.create_the_model()
 
-                            random.seed(seeds[seed_idx])
-                            np.random.seed(seeds[seed_idx])
-                            torch.manual_seed(seeds[seed_idx])
-                            trained_model, best_validation_acc = finbert.train(train_examples = train_data, model = model)
-                            best_validation_accuracies.append(best_validation_acc)
+                            #training
+                            # random.seed(seeds[seed_idx])
+                            # np.random.seed(seeds[seed_idx])
+                            # torch.manual_seed(seeds[seed_idx])
+                            # trained_model, best_validation_acc = finbert.train(train_examples = train_data, model = model)
+                            # best_validation_accuracies.append(best_validation_acc)
 
                             random.seed(seeds[seed_idx])
                             np.random.seed(seeds[seed_idx])
                             torch.manual_seed(seeds[seed_idx])
                             test_data = finbert.get_data('test')
 
+                            # prediction
                             random.seed(seeds[seed_idx])
                             np.random.seed(seeds[seed_idx])
                             torch.manual_seed(seeds[seed_idx])
                             results = finbert.evaluate(examples=test_data, model=model)
                             results['prediction'] = results.predictions.apply(lambda x: np.argmax(x,axis=0))
                             print ("Results:")
-                            test_accuracy = report(df=results,cols=['labels','prediction','predictions'], test_data=test_data, epoch=current_num_epoch)
+                            test_accuracy = report(df=results,cols=['labels','prediction','predictions', 'word_importance'], test_data=test_data, epoch=current_num_epoch)
                             test_accuracies.append(test_accuracy)
+
+                            # examples = [
+                            #     "sold out $tza 45 $put (down $1), which were hedging my 45 $call. letting the calls ride solo now",
+                            #     "$aapl. test the high today and probably go beyond after hours...",
+                            #     "The Bristol Port Company has sealed a one million pound contract with Cooper Specialised Handling to supply it with four 45-tonne , customised reach stackers from Konecranes",
+                            #     "The iTunes-based material will be accessible on Windows-based or Macintosh computers and transferable to portable devices , including Apple 's iPods",
+                            #     "kingfisher share price slides on cost to implement new strategy"
+                            # ]
+                            # for example_text in examples:
+                            #     finbert.predict(text=example_text, model=model, write_to_csv=False, path=None)
                             print ("==========================================================")
                         except RuntimeError as e:
                             if 'out of memory' in str(e) and not raise_oom:
