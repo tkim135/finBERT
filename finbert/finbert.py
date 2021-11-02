@@ -539,11 +539,14 @@ class FinBert(object):
         agree_levels = []
         text_ids = []
         all_scores = []
+        tokens = []
+        all_word_scores_sum = []
+        all_word_scores_max = []
 
-        import pdb; pdb.set_trace()
         #model.train()
-        all_token_scores = 0
+        #all_token_scores = 0
         sum_token_scores = 0
+        tokenizer = AutoTokenizer.from_pretrained('bert-base-uncased')
         flag = False
         for input_ids, attention_mask, token_type_ids, label_ids, agree_ids in tqdm(eval_loader, desc="Testing", disable=False):
             input_ids = input_ids.to(self.device)
@@ -604,21 +607,93 @@ class FinBert(object):
             if flag == False:
                 flag = True
                 all_token_scores = [torch.norm(model.bert.embeddings.word_embeddings.weight.grad[x]) for x in range(len(model.bert.embeddings.word_embeddings.weight.grad))]
-                sum_token_scores = sum(all_token_scores)
+                #sum_token_scores = sum(all_token_scores)
             #import pdb; pdb.set_trace()
             scores = []
-            for i in input_ids:
+            for input in input_ids:
                 s = []
-                for token in i:
+                example_tokens = tokenizer.convert_ids_to_tokens(input)
+                import re
+                decoded_sentence = re.findall(r"[\w']+|[.,!?;-]", tokenizer.decode(input))
+                #decoded_sentence = tokenizer.decode(input).split(" ")
+                #tokens.append(example_tokens)
+                current_word_idx = 0
+                current_partial_word = ""
+                current_partial_word_scores_max = []
+                current_partial_word_scores_sum = 0
+                unnormalized_sentence_word_scores_max = []
+                unnormalized_sentence_word_scores_sum = []
+                sentence_word_scores = []
+                for i, token in enumerate(input):
                     if token == 50256:
                         break
                     else:
                         #token_score = torch.norm(model.bert.embeddings.word_embeddings.weight.grad[token]).item()
                         token_score = all_token_scores[token]
-                        normalized_token_score = token_score / sum_token_scores
-                        s.append("{}".format(normalized_token_score))
+                        example_token = example_tokens[i]
+                        if example_token == "[CLS]":
+                            current_word_idx += 1
+                            continue
+                        if example_token == decoded_sentence[current_word_idx]:
+                            unnormalized_sentence_word_scores_max.append((decoded_sentence[current_word_idx], token_score))
+                            unnormalized_sentence_word_scores_sum.append((decoded_sentence[current_word_idx], token_score))
+                            current_word_idx += 1
+                            current_partial_word = ""
+                            current_partial_word_scores_max = []
+                            current_partial_word_scores_sum = 0
+                        else:
+                            if example_token[0] == '#' and example_token != '#':
+                                hashtag_last_index = example_token.rfind('#')
+                                current_partial_word += example_token[(hashtag_last_index+1):]
+                                if current_partial_word == decoded_sentence[current_word_idx]:
+                                    if current_partial_word_scores_max == [] and current_partial_word_scores_sum == 0:
+                                        current_partial_word_scores_max = [token_score]
+                                        current_partial_word_scores_sum = token_score
+                                    unnormalized_sentence_word_scores_max.append((decoded_sentence[current_word_idx], max(current_partial_word_scores_max)))
+                                    unnormalized_sentence_word_scores_sum.append((decoded_sentence[current_word_idx], current_partial_word_scores_sum))
+                                    current_word_idx += 1
+                                    current_partial_word = ""
+                                    current_partial_word_scores_max = []
+                                    current_partial_word_scores_sum = 0
+                                else:
+                                    current_partial_word_scores_max.append(token_score)
+                                    current_partial_word_scores_sum += token_score
+                            else:
+                                current_partial_word = example_token
+                                current_partial_word_scores_max.append(token_score)
+                                current_partial_word_scores_sum += token_score
+                            
+                        #normalized_token_score = token_score / sum_token_scores
+                        s.append("{}:{}".format(example_token, token_score))
                         #s.append(f“{:.2f}“.format(torch.norm(outtensor[tok,:]).item()))
+                #import pdb; pdb.set_trace()
+                
                 all_scores.append(s)
+
+                all_word_scores_max_score_sum = 0
+                for word, max_score in unnormalized_sentence_word_scores_max:
+                    all_word_scores_max_score_sum += max_score
+                normalized_sentence_word_scores_max = []
+                checksum = 0
+                for word, max_score in unnormalized_sentence_word_scores_max:
+                    new_max_score = max_score / all_word_scores_max_score_sum
+                    checksum += new_max_score
+                    normalized_sentence_word_scores_max.append((word, new_max_score))
+                print(checksum)
+                all_word_scores_sum.append(normalized_sentence_word_scores_max)
+
+                all_word_scores_sum_score_sum = 0
+                for token, sum_score in unnormalized_sentence_word_scores_sum:
+                    all_word_scores_sum_score_sum += sum_score
+                normalized_sentence_word_scores_sum = []
+                checksum = 0
+                for word, sum_score in unnormalized_sentence_word_scores_sum:
+                    new_sum_score = sum_score / all_word_scores_sum_score_sum
+                    checksum += new_sum_score
+                    normalized_sentence_word_scores_sum.append((word, new_sum_score))
+                print(checksum)
+                all_word_scores_max.append(normalized_sentence_word_scores_sum)
+                
             #print(scores)
             #model.zero_grad()
 
@@ -657,8 +732,8 @@ class FinBert(object):
 
             #all_scores.append(scores)
 
-        import pdb; pdb.set_trace()
-        evaluation_df = pd.DataFrame({'predictions': predictions, 'labels': labels, "agree_levels": agree_levels, "word_importance": all_scores})
+        #import pdb; pdb.set_trace()
+        evaluation_df = pd.DataFrame({'predictions': predictions, 'labels': labels, "agree_levels": agree_levels, "word_importance": all_scores, "word_scores_sum": all_word_scores_sum, "word_scores_max": all_word_scores_max})
 
         return evaluation_df
 

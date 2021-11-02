@@ -48,14 +48,16 @@ def report(df=None, cols=None, test_data=None, epoch=None):
     #class_scores = torch.softmax(torch.from_numpy(df["predictions"].values).float(), dim=1).numpy()
     #print("\nClassification Report:")
     #print(classification_report(df[cols[0]], df[cols[1]]))
-    with open(f"val_results_{epoch}.txt", "w") as f:
+    with open(f"1102_val_results_{epoch}.txt", "w") as f:
         for i in range(len(test_data)):
             example = test_data[i].text
             prediction = df['prediction'][i]
             correct_label = df['labels'][i]
             class_scores = torch.softmax(torch.tensor(df["predictions"][i]), dim=0).numpy()
             word_scores = df["word_importance"][i]
-            print(f"idx: {i}, example: {example}, prediction: {prediction}, correct_label: {correct_label}, class_scores: {class_scores}, word_scores: {word_scores}", file=f)
+            word_scores_sum = df["word_scores_sum"][i]
+            word_scores_max = df["word_scores_max"][i]
+            print(f"idx: {i}, example: {example}, prediction: {prediction}, correct_label: {correct_label}, class_scores: {class_scores}, word_scores: {word_scores}, word_scores_sum: {word_scores_sum},  word_scores_max: {word_scores_max}", file=f)
     return test_accuracy
 
 seeds = [
@@ -271,7 +273,7 @@ for current_batch_size in batch_sizes:
                             results = finbert.evaluate(examples=test_data, model=model)
                             results['prediction'] = results.predictions.apply(lambda x: np.argmax(x,axis=0))
                             print ("Results:")
-                            test_accuracy = report(df=results,cols=['labels','prediction','predictions', 'word_importance'], test_data=test_data, epoch=current_num_epoch)
+                            test_accuracy = report(df=results,cols=['labels','prediction','predictions', 'word_importance', 'word_scores_sum', 'word_scores_max'], test_data=test_data, epoch=current_num_epoch)
                             test_accuracies.append(test_accuracy)
 
                             # examples = [
