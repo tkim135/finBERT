@@ -13,11 +13,13 @@ from transformers import (set_seed,
                           GPT2Config,
                           AdamW, 
                           get_linear_schedule_with_warmup,
-                          GPT2ForSequenceClassification)
+                          GPT2ForSequenceClassification,
+                          T5Config,
+                          T5Tokenizer,
+                          T5ForConditionalGeneration)
 from accelerate import Accelerator
 import argparse
 from datasets import load_dataset, load_metric
-from GPTTokenizer import GPT2Tokenizer
 from transformers import PreTrainedTokenizer
 
 # tokenizer = GPT2Tokenizer.from_pretrained('microsoft/DialogRPT-updown')
@@ -89,19 +91,9 @@ class Gpt2ClassificationCollator(object):
         # Call tokenizer on all texts to convert into tensors of numbers with 
         # appropriate padding.
         # inputs = self.use_tokenizer(text=texts, return_tensors="pt", padding=True, truncation=True,  max_length=self.max_sequence_len) # old
-        #inputs = self.use_tokenizer(text=texts, add_special_tokens=True, max_length=self.max_sequence_len, padding="max length", truncation=True, return_overflowing_tokens=True)
-        inputs = self.use_tokenizer(text=texts)
-        input_ids = [torch.tensor(element.ids) for element in inputs]
-        attention_masks = [torch.tensor(element.attention_mask) for element in inputs]
-        token_type_ids = [torch.tensor(element.type_ids) for element in inputs]
-        inputs_dict = {
-            "input_ids": torch.stack(input_ids, dim=0),
-            "attention_mask": torch.stack(attention_masks, dim=0),
-            "token_type_ids": torch.stack(token_type_ids, dim=0)
-        }
+        inputs_dict = self.use_tokenizer(text=texts, return_tensors="pt", max_length=self.max_sequence_len, padding="max_length", truncation=True)
         # Update the inputs with the associated encoded labels as tensor.
-        #import pdb; pdb.set_trace()
-        inputs_dict.update({'labels':torch.tensor(labels)})
+        inputs_dict.update({'labels':torch.tensor(labels).unsqueeze(-1)})
 
         return inputs_dict
 
@@ -307,8 +299,8 @@ def validation(accelerator, model, dataloader, device, metric):
 
             predictions = logits.argmax(dim=-1)
             metric.add_batch(
-                predictions=accelerator.gather(predictions),
-                references=accelerator.gather(batch["labels"]),
+                predictions=accelerator.gather(predictions.squeeze(1)),
+                references=accelerator.gather(batch["labels"].squeeze(1)),
             )
             
             # Move logits and labels to CPU
@@ -337,9 +329,9 @@ def validation(accelerator, model, dataloader, device, metric):
 
 def main(lr, wd, seed, name, experiment_name, weight=None, bs=4, max_length=60, gradual_unfreeze=False, discriminate=False, use_smaller_vocab=False, accumulation_steps=8):
     if not weight is None:
-        path = f"/home/ubuntu/finBERT/gpt_downstream/tadp_eval_gridsearch_{experiment_name}/log_name_{name}_lr_{lr}_wd_{wd}_seed_{seed}_bs_{bs}_max_length_{max_length}_gradualunfreeze_{gradual_unfreeze}_discriminate_{discriminate}_usesmallervocab_{use_smaller_vocab}_accumulation_steps_{accumulation_steps}.txt"
+        path = f"/import/ml-sc-scratch2/tonyk/finBERT/log_name_{name}_lr_{lr}_wd_{wd}_seed_{seed}_bs_{bs}_max_length_{max_length}_gradualunfreeze_{gradual_unfreeze}_discriminate_{discriminate}_usesmallervocab_{use_smaller_vocab}_accumulation_steps_{accumulation_steps}.txt"
     else:
-        path = f"/home/ubuntu/finBERT/gpt_downstream/tadp_eval_gridsearch_{experiment_name}/log_name_{name}_lr_{lr}_wd_{wd}_seed_{seed}_bs_{bs}_max_length_{max_length}_gradualunfreeze_{gradual_unfreeze}_discriminate_{discriminate}_usesmallervocab_{use_smaller_vocab}_accumulation_steps_{accumulation_steps}.txt"
+        path = f"/import/ml-sc-scratch2/tonyk/finBERT/log_name_{name}_lr_{lr}_wd_{wd}_seed_{seed}_bs_{bs}_max_length_{max_length}_gradualunfreeze_{gradual_unfreeze}_discriminate_{discriminate}_usesmallervocab_{use_smaller_vocab}_accumulation_steps_{accumulation_steps}.txt"
 
     # setup accelerator
     accelerator = Accelerator(fp16=True)
@@ -373,7 +365,7 @@ def main(lr, wd, seed, name, experiment_name, weight=None, bs=4, max_length=60, 
 
     # Name of transformers model - will use already pretrained model.
     # Path of transformer model - will load your own model from local disk.
-    model_name_or_path = 'gpt2-xl'
+    model_name_or_path = 't5-3b'
 
     # Dictionary of labels and their id - this will be used to convert.
     # String labels to number ids.
@@ -395,24 +387,13 @@ def main(lr, wd, seed, name, experiment_name, weight=None, bs=4, max_length=60, 
         # Get model configuration.
         accelerator.print('Loading configuraiton...', file=f)
         # model_config = GPT2Config.from_pretrained(pretrained_model_name_or_path=model_name_or_path, num_labels=n_labels)
-        model_config = GPT2Config.from_pretrained('/home/ubuntu/finBERT/sn_config.json')
-
-        # modify model_config
-        # if not weight is None or not use_smaller_vocab:
-        #     model_config.vocab_size = 50260
-        # else:
-        #     model_config.vocab_size = 50257
-        if use_smaller_vocab:
-            model_config.vocab_size = 50257
-        elif not weight is None:
-            model_config.vocab_size = 50260
+        model_config = T5Config.from_pretrained(model_name_or_path, cache_dir="/import/ml-sc-scratch2/tonyk/.cache")
 
         accelerator.print('model_config.vocab_size: {model_config.vocab_size}', file=f)
 
         # Get model's tokenizer.
         accelerator.print('Loading tokenizer...', file=f)
-        #tokenizer = GPT2Tokenizer.from_pretrained(pretrained_model_name_or_path=model_name_or_path)
-        tokenizer = GPT2Tokenizer("/home/ubuntu/finBERT/tokenizer.json", "/home/ubuntu/finBERT/merges.txt", pad_to_length=None)
+        tokenizer = T5Tokenizer.from_pretrained(pretrained_model_name_or_path=model_name_or_path, cache_dir="/import/ml-sc-scratch2/tonyk/.cache")
         
         # default to left padding
         # tokenizer.padding_side = "left"
@@ -424,40 +405,11 @@ def main(lr, wd, seed, name, experiment_name, weight=None, bs=4, max_length=60, 
 
         # Get the actual model.
         accelerator.print('Loading model...', file=f)
-        if not weight is None:
-            # tranpose some of the tensors
-            checkpoint = torch.load(weight)
-            tensor_names = ["attn.c_attn.weight", "attn.c_proj.weight", "mlp.c_fc.weight", "mlp.c_proj.weight"]
-            for i in range(layer_no):
-                for tensor_name in tensor_names:
-                    full_tensor_name = f"transformer.h.{i}.{tensor_name}"
-                    checkpoint[full_tensor_name] = torch.transpose(checkpoint[full_tensor_name], 0, 1)
-            #model = GPT2ForSequenceClassification.from_pretrained(pretrained_model_name_or_path=weight, config=model_config)
+        model = T5ForConditionalGeneration.from_pretrained(pretrained_model_name_or_path=model_name_or_path, config=model_config, cache_dir="/import/ml-sc-scratch2/tonyk/.cache")
 
-            # if we want to use vocab size of 50257
-            if use_smaller_vocab:
-                checkpoint['transformer.wte.weight'] = checkpoint['transformer.wte.weight'][:50257,:]
-
-            model = GPT2ForSequenceClassification.from_pretrained(pretrained_model_name_or_path=None, state_dict=checkpoint, config=model_config)
-        else:
-            model = GPT2ForSequenceClassification.from_pretrained(pretrained_model_name_or_path=model_name_or_path, config=model_config)
-
-        #import pdb; pdb.set_trace()
-        # for all weight tensors
-        # float().abs().sum() --> checkpoint
-        # do the same in the model --> model
-        
         # resize model embedding to match new tokenizer
-        #model.resize_token_embeddings(len(tokenizer))
-        if not weight is None and not use_smaller_vocab:
-            model.resize_token_embeddings(50260)
+        model.resize_token_embeddings(len(tokenizer))
 
-        # fix model padding token id
-        #model.config.pad_token_id = 50258
-        # fixed this
-        # model.config.pad_token_id = model.config.eos_token_id
-        #print(model.config.pad_token)
-        
         # apply the discriminative fine-tuning. discrimination rate is governed by dft_rate.
         optimizer_grouped_parameters = []
         if discriminate:
@@ -517,7 +469,8 @@ def main(lr, wd, seed, name, experiment_name, weight=None, bs=4, max_length=60, 
                                                           labels_encoder=labels_ids, 
                                                           max_sequence_len=max_length)
 
-    data_dir = "/home/ubuntu/finBERT/datasets"
+    #data_dir = "/home/ubuntu/finBERT/datasets"
+    data_dir = "/import/ml-sc-scratch1/varunt/data/finbert_to_gpu"
     train_dataset = FinanceDataset(data_dir=data_dir, phase="train")
     validation_dataset = FinanceDataset(data_dir=data_dir, phase="validation")
     test_dataset = FinanceDataset(data_dir=data_dir, phase="test")
@@ -623,30 +576,21 @@ if __name__ == "__main__":
     parser.add_argument('--wd', type=str, required=True)
     parser.add_argument('--seed', type=str, required=True)
     parser.add_argument('--name', type=str, required=True)
-    parser.add_argument('--weight', type=str, required=True)
-    parser.add_argument('--bs', type=str, required=True)
-    parser.add_argument('--max_length', type=str, required=True)
-    parser.add_argument('--gradual_unfreeze', type=str, required=True)
-    parser.add_argument('--discriminate', type=str, required=True)
-    parser.add_argument('--use_smaller_vocab', type=str, required=True)
+    parser.add_argument('--weight', type=str)
+    parser.add_argument('--bs', type=str)
+    parser.add_argument('--max_length', type=str)
+    parser.add_argument('--gradual_unfreeze', type=str)
+    parser.add_argument('--discriminate', type=str)
+    parser.add_argument('--use_smaller_vocab', type=str)
     parser.add_argument('--experiment_name', type=str, required=True)
-    parser.add_argument('--accumulation_steps', type=str, required=True)
+    parser.add_argument('--accumulation_steps', type=str)
     args = parser.parse_args()
 
     lr = float(args.lr)
     wd = float(args.wd)
     seed = int(args.seed)
-    bs = int(args.bs)
-    max_length = int(args.max_length)
-    #import pdb; pdb.set_trace()
-    weight = None if args.weight == 'public_ckpt' else args.weight
-    #print(weight)
-    gradual_unfreeze = True if args.gradual_unfreeze == "True" else False
-    discriminate = True if args.discriminate == "True" else False
-    use_smaller_vocab = True if args.use_smaller_vocab == "True" else False
-    accumulation_steps = int(args.accumulation_steps)
 
-    results = main(lr=lr, wd=wd, seed=seed, name=args.name, weight=weight, bs=bs, max_length=max_length, gradual_unfreeze=gradual_unfreeze, discriminate=discriminate, use_smaller_vocab=use_smaller_vocab, experiment_name=args.experiment_name, accumulation_steps=accumulation_steps)
+    results = main(lr=lr, wd=wd, seed=seed, name=args.name, experiment_name=args.experiment_name)
     print()
     print("*"*40)
     print(results)
