@@ -334,7 +334,7 @@ def main(lr, wd, seed, name, experiment_name, weight=None, bs=4, max_length=60, 
         path = f"/import/ml-sc-scratch2/tonyk/finBERT/log_name_{name}_lr_{lr}_wd_{wd}_seed_{seed}_bs_{bs}_max_length_{max_length}_gradualunfreeze_{gradual_unfreeze}_discriminate_{discriminate}_usesmallervocab_{use_smaller_vocab}_accumulation_steps_{accumulation_steps}.txt"
 
     # setup accelerator
-    accelerator = Accelerator(fp16=True)
+    accelerator = Accelerator(fp16=False)
     
     accelerator.print(">-*-*-*-*-*-*-<")
     accelerator.print(f"LR: {lr}, WD: {wd}, Seed: {seed}, BS: {bs}, Max Length: {max_length}, Gradual Unfreeze: {gradual_unfreeze}, Discriminative Finetuning: {discriminate}, Weight: {weight}, Use Smaller Vocab: {use_smaller_vocab}, Accumulation Steps: {accumulation_steps}")
@@ -530,6 +530,8 @@ def main(lr, wd, seed, name, experiment_name, weight=None, bs=4, max_length=60, 
             accelerator.print(">-"*10,file=f)
             accelerator.print(f"train_loss: {train_loss}, train_acc: {train_acc}",file=f)
             accelerator.print(f"valid_loss: {val_loss}, valid_acc: {val_acc}",file=f)
+            accelerator.print(f"train_loss: {train_loss}, train_acc: {train_acc}")
+            accelerator.print(f"valid_loss: {val_loss}, valid_acc: {val_acc}")
             accelerator.print(">-"*10,file=f)
             accelerator.print(file=f)
             
@@ -577,20 +579,25 @@ if __name__ == "__main__":
     parser.add_argument('--seed', type=str, required=True)
     parser.add_argument('--name', type=str, required=True)
     parser.add_argument('--weight', type=str)
-    parser.add_argument('--bs', type=str)
+    parser.add_argument('--bs', type=str, default=4)
     parser.add_argument('--max_length', type=str)
     parser.add_argument('--gradual_unfreeze', type=str)
     parser.add_argument('--discriminate', type=str)
     parser.add_argument('--use_smaller_vocab', type=str)
     parser.add_argument('--experiment_name', type=str, required=True)
-    parser.add_argument('--accumulation_steps', type=str)
+    parser.add_argument('--accumulation_steps', type=str, default=8)
     args = parser.parse_args()
 
     lr = float(args.lr)
     wd = float(args.wd)
     seed = int(args.seed)
+    if args.bs:
+        bs=int(args.bs)
+    if args.accumulation_steps:
+        accumulation_steps=int(args.accumulation_steps)
 
-    results = main(lr=lr, wd=wd, seed=seed, name=args.name, experiment_name=args.experiment_name)
+    results = main(lr=lr, wd=wd, seed=seed, name=args.name, experiment_name=args.experiment_name, \
+                   bs=bs, accumulation_steps=accumulation_steps)
     print()
     print("*"*40)
     print(results)
