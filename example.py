@@ -21,6 +21,7 @@ from accelerate import Accelerator
 import argparse
 from datasets import load_dataset, load_metric
 from transformers import PreTrainedTokenizer
+from downstream_t5 import T5ForSequenceClassification
 
 # tokenizer = GPT2Tokenizer.from_pretrained('microsoft/DialogRPT-updown')
 # model = GPT2ForSequenceClassification.from_pretrained('microsoft/DialogRPT-updown')
@@ -93,7 +94,7 @@ class Gpt2ClassificationCollator(object):
         # inputs = self.use_tokenizer(text=texts, return_tensors="pt", padding=True, truncation=True,  max_length=self.max_sequence_len) # old
         inputs_dict = self.use_tokenizer(text=texts, return_tensors="pt", max_length=self.max_sequence_len, padding="max_length", truncation=True)
         # Update the inputs with the associated encoded labels as tensor.
-        inputs_dict.update({'labels':torch.tensor(labels).unsqueeze(-1)})
+        inputs_dict.update({'labels':torch.tensor(labels)})
 
         return inputs_dict
 
@@ -299,8 +300,8 @@ def validation(accelerator, model, dataloader, device, metric):
 
             predictions = logits.argmax(dim=-1)
             metric.add_batch(
-                predictions=accelerator.gather(predictions.squeeze(1)),
-                references=accelerator.gather(batch["labels"].squeeze(1)),
+                predictions=accelerator.gather(predictions),
+                references=accelerator.gather(batch["labels"]),
             )
             
             # Move logits and labels to CPU
@@ -329,9 +330,9 @@ def validation(accelerator, model, dataloader, device, metric):
 
 def main(lr, wd, seed, name, experiment_name, weight=None, bs=4, max_length=60, gradual_unfreeze=False, discriminate=False, use_smaller_vocab=False, accumulation_steps=8):
     if not weight is None:
-        path = f"/import/ml-sc-scratch2/tonyk/finBERT/log_name_{name}_lr_{lr}_wd_{wd}_seed_{seed}_bs_{bs}_max_length_{max_length}_gradualunfreeze_{gradual_unfreeze}_discriminate_{discriminate}_usesmallervocab_{use_smaller_vocab}_accumulation_steps_{accumulation_steps}.txt"
+        path = f"/import/ml-sc-scratch2/tonyk/finBERT/t5_classic_head/log_name_{name}_lr_{lr}_wd_{wd}_seed_{seed}_bs_{bs}_max_length_{max_length}_gradualunfreeze_{gradual_unfreeze}_discriminate_{discriminate}_usesmallervocab_{use_smaller_vocab}_accumulation_steps_{accumulation_steps}.txt"
     else:
-        path = f"/import/ml-sc-scratch2/tonyk/finBERT/log_name_{name}_lr_{lr}_wd_{wd}_seed_{seed}_bs_{bs}_max_length_{max_length}_gradualunfreeze_{gradual_unfreeze}_discriminate_{discriminate}_usesmallervocab_{use_smaller_vocab}_accumulation_steps_{accumulation_steps}.txt"
+        path = f"/import/ml-sc-scratch2/tonyk/finBERT/t5_classic_head/log_name_{name}_lr_{lr}_wd_{wd}_seed_{seed}_bs_{bs}_max_length_{max_length}_gradualunfreeze_{gradual_unfreeze}_discriminate_{discriminate}_usesmallervocab_{use_smaller_vocab}_accumulation_steps_{accumulation_steps}.txt"
 
     # setup accelerator
     accelerator = Accelerator(fp16=False)
@@ -387,7 +388,8 @@ def main(lr, wd, seed, name, experiment_name, weight=None, bs=4, max_length=60, 
         # Get model configuration.
         accelerator.print('Loading configuraiton...', file=f)
         # model_config = GPT2Config.from_pretrained(pretrained_model_name_or_path=model_name_or_path, num_labels=n_labels)
-        model_config = T5Config.from_pretrained(model_name_or_path, cache_dir="/import/ml-sc-scratch2/tonyk/.cache")
+        model_config = T5Config.from_pretrained(model_name_or_path, cache_dir="/import/ml-sc-scratch2/tonyk/.cache", num_labels=n_labels)
+        model_config.problem_type = None
 
         accelerator.print('model_config.vocab_size: {model_config.vocab_size}', file=f)
 
@@ -405,7 +407,7 @@ def main(lr, wd, seed, name, experiment_name, weight=None, bs=4, max_length=60, 
 
         # Get the actual model.
         accelerator.print('Loading model...', file=f)
-        model = T5ForConditionalGeneration.from_pretrained(pretrained_model_name_or_path=model_name_or_path, config=model_config, cache_dir="/import/ml-sc-scratch2/tonyk/.cache")
+        model = T5ForSequenceClassification.from_pretrained(pretrained_model_name_or_path=model_name_or_path, config=model_config, cache_dir="/import/ml-sc-scratch2/tonyk/.cache")
 
         # resize model embedding to match new tokenizer
         model.resize_token_embeddings(len(tokenizer))
